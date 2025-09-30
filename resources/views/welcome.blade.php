@@ -7,7 +7,7 @@
  
     @vite('resources/css/app.css') 
     
-    <link href="{{ asset('build/assets/app.css') }}" rel="stylesheet"> --}}
+    <link href="{{ asset('build/assets/app.css') }}" rel="stylesheet">
 </head>
 
 <body class="bg-[#1f72a4] min-h-screen flex items-center justify-center p-4">
@@ -38,8 +38,7 @@
             >
                 Daftar
             </a>
-            
-
+        
             <a 
                 href="/#login" 
                 class="
