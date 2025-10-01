@@ -17,7 +17,7 @@
             <img 
                 src="{{ asset('images/logo-ump.png') }}" 
                 alt="Logo UMP" 
-                class="mx-auto w-24 md:w-32 shadow-lg rounded-full border-4 border-white"
+                class="mx-auto w-24 md:w-32 shadow-lg rounded-full border-2 border-white"
             > 
         </div>
         
