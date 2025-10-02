@@ -55,8 +55,8 @@
         UNIVERSITAS MUHAMMADIYAH<br>
         PONTIANAK
     </div>
-    <form action="/login" method="get">
-        <button type="submit" class="btn-masuk">Masuk</button>
-    </form>
+    <a href="/login">
+        <button class="btn-masuk">Masuk</button>
+    </a>
 </body>
 </html>
