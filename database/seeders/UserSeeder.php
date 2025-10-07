@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
                 'name' => 'Administrator Sistem',
                 'no_hp' => '081234567890',
                 'email' => 'admin@arsip.com',
-                'password' => Hash::make('password'), // <-- Password dienkripsi di sini
+                'password' => Hash::make('tes'), // <-- Password dienkripsi di sini
                 'role_id' => $adminRole->id ?? null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

@@ -192,6 +192,7 @@ class SuratController extends Controller
         if ($filePath && Storage::disk('public')->exists($filePath)) {
             
             // [FIXED] Mengambil path absolut dan menggunakan response()->download()
+            // Ini untuk mengatasi error statis "Undefined method 'download'"
             $absolutePath = Storage::disk('public')->path($filePath);
             
             // response()->download akan memaksa browser untuk mengunduh file
@@ -203,30 +204,6 @@ class SuratController extends Controller
         
         // Jika file tidak ditemukan di storage
         return back()->with('error', 'File lampiran tidak ditemukan atau telah dihapus.');
-    }
-    // --------------------------------------------------------------------------------------
-    // [NEW] METHOD UNTUK MELIHAT FILE LAMPIRAN DI BROWSER
-    // --------------------------------------------------------------------------------------
-    /**
-     * Menampilkan file lampiran di browser.
-     */
-    public function viewFileSurat(Surat $surat)
-    {
-        // Pengecekan izin
-        if ($surat->to_user_id !== Auth::id() && $surat->from_user_id !== Auth::id()) {
-            abort(403, 'Akses Ditolak.');
-        }
-
-        // Asumsi nama kolom di database adalah 'file_path'
-        $filePath = $surat->file_path; 
-
-        if ($filePath && Storage::disk('public')->exists($filePath)) {
-            // response()->file() akan mencoba menampilkan file di browser (inline)
-            // Ini sangat cocok untuk PDF atau gambar
-            return response()->file(Storage::disk('public')->path($filePath));
-        }
-        
-        return back()->with('error', 'File lampiran tidak ditemukan.');
     }
     // --------------------------------------------------------------------------------------
 }

@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dosen/surat/daftar', [UsersController::class, 'daftarSurat'])->name('user.daftar_surat.index');
     
     // Rute Kirim Surat
-    Route::get('/dosen/surat/kirim', [UsersController::class, 'createSurat'])->name('user.kirim_surat.create');
+    Route::get('/dosen/surat/kirim', [UsersController::class, 'createSurat'])->name('user.kirim_surat.index');
     
     // Rute Aksi Surat (View dan Delete)
     

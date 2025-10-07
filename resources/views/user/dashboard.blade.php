@@ -206,7 +206,7 @@
             <a href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>DASHBOARD</a>
             <a href="#"><i class="bi bi-list-task me-2"></i>MENU</a>
             <a href="{{ route('user.daftar_surat.index') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT</a>
-            <a href="{{ route('user.kirim_surat.create') ?? '#' }}"><i class="bi bi-send-fill me-2"></i>KIRIM SURAT</a>
+            <a href="{{ route('user.kirim_surat.index') ?? '#' }}"><i class="bi bi-send-fill me-2"></i>KIRIM SURAT</a>
         </div>
     </div>
 

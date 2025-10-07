@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
-use App\Models\User; // Digunakan untuk mencari ID Admin dan Dosen
+use App\Models\User;
 
 class SuratSeeder extends Seeder
 {
@@ -14,47 +14,62 @@ class SuratSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ambil ID dari user yang sudah ada (Admin dan Dosen)
-        // ASUMSI: Admin memiliki role_id 1 dan Dosen memiliki role_id 2
+        // Ambil ID dari user yang sudah ada
+        // ASUMSI: Admin/Rektorat role_id 1, Dosen role_id 2
         $admin = User::where('role_id', 1)->first(); 
-        $dosen = User::where('role_id', 2)->first();
+        
+        // Ambil setidaknya DUA user Dosen untuk skenario Dosen ke Dosen
+        $dosen = User::where('role_id', 2)->get();
+        
+        $dosen_a = $dosen->first();
+        $dosen_b = $dosen->skip(1)->first(); // Dosen kedua
 
-        // Pastikan user ditemukan sebelum membuat surat
-        if (!$admin || !$dosen) {
-            echo "Peringatan: User Admin atau Dosen tidak ditemukan. Jalankan UserSeeder terlebih dahulu.\n";
+        // Pastikan user ditemukan
+        if (!$admin || $dosen->count() < 2) {
+            echo "Peringatan: User Admin tidak ditemukan atau kurang dari 2 user Dosen (role_id 2) tidak ditemukan. Jalankan UserSeeder/Factory terlebih dahulu.\n";
             return;
         }
 
         $data_surat = [
-            // 1. Contoh Surat Masuk untuk Dosen (Dikirim oleh Admin)
+            // --- SKENARIO 1: Dosen ke Dosen (Dosen A ke Dosen B) ---
             [
-                'kode_surat' => 'A/SK/001/2025',
-                'title' => 'Pemberitahuan Jadwal Kuliah Semester Genap',
-                'isi' => 'Mohon diperhatikan jadwal terbaru kuliah Fisika Dasar untuk Semester Genap.',
-                'to_user_id' => $dosen->id,
-                'from_user_id' => $admin->id,
-                'created_at' => Carbon::now()->subDays(5),
-                'updated_at' => Carbon::now()->subDays(5),
+                'kode_surat' => 'C/KOOR/001/2025',
+                'title' => 'Permintaan Materi Kuliah Interaksi Manusia dan Komputer',
+                'isi' => 'Mohon bantuan Bapak/Ibu untuk mengirimkan slide materi pertemuan ke-5 MK IMK sebelum hari Rabu.',
+                'to_user_id' => $dosen_b->id,
+                'from_user_id' => $dosen_a->id,
+                'created_at' => Carbon::now()->subDays(6),
+                'updated_at' => Carbon::now()->subDays(6),
             ],
-            // 2. Contoh Surat Keluar dari Dosen (Ditujukan ke Admin)
+            // --- SKENARIO 2: Dosen ke Rektorat/Admin (Perizinan) ---
             [
-                'kode_surat' => 'B/LP/001/2025',
-                'title' => 'Laporan Nilai Mata Kuliah Statistika',
-                'isi' => 'Terlampir adalah rekapitulasi nilai akhir mata kuliah Statistika.',
+                'kode_surat' => 'D/IZ/002/2025',
+                'title' => 'Permohonan Cuti Akademik (Dosen A)',
+                'isi' => 'Dengan hormat, saya mengajukan permohonan cuti akademik selama 1 bulan terhitung mulai 15 Oktober 2025.',
+                'to_user_id' => $admin->id, // Ditujukan ke Rektorat/Admin
+                'from_user_id' => $dosen_a->id,
+                'created_at' => Carbon::now()->subDays(4),
+                'updated_at' => Carbon::now()->subDays(4),
+            ],
+            // --- SKENARIO 3: Dosen ke Dosen (Informasi) ---
+            [
+                'kode_surat' => 'C/INFO/002/2025',
+                'title' => 'Revisi Waktu Bimbingan Tugas Akhir',
+                'isi' => 'Waktu bimbingan yang semula pukul 14:00 diundur menjadi 15:30 WIB. Mohon segera diinfokan ke mahasiswa.',
+                'to_user_id' => $dosen_b->id,
+                'from_user_id' => $dosen_a->id,
+                'created_at' => Carbon::now()->subDays(2),
+                'updated_at' => Carbon::now()->subDays(2),
+            ],
+            // --- SKENARIO 4: Dosen ke Rektorat/Admin (Laporan) ---
+            [
+                'kode_surat' => 'D/LP/003/2025',
+                'title' => 'Laporan Penggunaan Dana Penelitian',
+                'isi' => 'Terlampir adalah laporan pertanggungjawaban dana penelitian yang sudah disetujui.',
                 'to_user_id' => $admin->id,
-                'from_user_id' => $dosen->id,
-                'created_at' => Carbon::now()->subDays(3),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
-            // 3. Contoh Surat Masuk untuk Dosen (Dikirim oleh Admin)
-            [
-                'kode_surat' => 'A/IN/002/2025',
-                'title' => 'Undangan Rapat Koordinasi Program Studi',
-                'isi' => 'Diharapkan kehadiran pada rapat koordinasi prodi pada hari Jumat, 10 Oktober 2025.',
-                'to_user_id' => $dosen->id,
-                'from_user_id' => $admin->id,
-                'created_at' => Carbon::now()->subDays(1),
-                'updated_at' => Carbon::now()->subDays(1),
+                'from_user_id' => $dosen_b->id,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
         ];
 
