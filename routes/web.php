@@ -22,15 +22,14 @@ Route::get('/', function () {
 
 // --- RUTE AUTENTIKASI (Login) ---
 
-// Menampilkan form login
+// Ntuk form login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 
-// Memproses form login
+// buat proses form login
 Route::post('/login', [AuthController::class, 'login']);
 
 
-// --- RUTE YANG DIPROTEKSI (Membutuhkan Login) ---
-// Semua rute di dalam grup ini hanya dapat diakses oleh user yang sudah login
+// Semue rute di dalam ini hanya dapat diakses oleh user yang sudah login
 Route::middleware(['auth'])->group(function () {
     
     // Rute Logout
@@ -71,4 +70,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+
+    
+
+    // Disini kalok nak nambah { ke atas }
+
+
 });
