@@ -58,7 +58,7 @@ class UsersController extends Controller
     {
         // Logika untuk menampilkan form kirim surat
         // ...
-        return view('user.kirim surat.index');
+        return view('user.kirimsurat.index');
     }
 
     /**
