@@ -48,7 +48,7 @@ class UsersController extends Controller
     {
         // Logika untuk menampilkan semua surat
         // ...
-        return view('user.daftar_surat.index');
+        return view('user.daftarsurat.index');
     }
 
     /**
