@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-ARSIP - Dashboard User</title>
+    <title>E-ARSIP - Kirim Surat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -19,6 +19,8 @@
             --color-table-accent: #f7c948;
             --color-text-white: #fff;
             --color-text-dark: #000000;
+            /* Custom Color for the Kirim Surat form background */
+            --color-kirim-surat-bg: #f7c948; /* Matches the yellow/orange */
         }
 
         body {
@@ -53,6 +55,12 @@
         .sidebar-menu a:hover {
             background: var(--color-sidebar-link-hover);
         }
+        /* Highlight the active link for 'KIRIM SURAT' as per the image */
+        .sidebar-menu a[href*="kirim_surat"] {
+            background: var(--color-text-white); /* White background for active link */
+            color: var(--color-text-dark); /* Dark text for active link */
+        }
+
         .main-content-col {
             flex-grow: 1;
             padding: 20px;
@@ -158,7 +166,7 @@
             align-items: center;
         }
         @media (min-width: 992px) {
-             .action-buttons {
+            .action-buttons {
                 flex-direction: row; /* Horizontal layout on large screens */
             }
         }
@@ -183,6 +191,90 @@
             font-weight: bold;
             color: var(--color-text-white);
             margin: 0;
+        }
+
+        /* CUSTOM FORM STYLING for Kirim Surat */
+        .kirim-surat-panel {
+            background-color: var(--color-kirim-surat-bg); /* Yellow background */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+        .kirim-surat-panel h4 {
+            color: var(--color-text-dark);
+            font-weight: bold;
+            margin-bottom: 25px;
+            border-bottom: 3px solid var(--color-text-dark);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        .form-control-custom {
+            height: 50px; /* Adjust height to match the image */
+            border-radius: 10px;
+            border: 2px solid var(--color-text-dark);
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: none !important; /* Remove default bootstrap shadow on focus */
+        }
+        /* Style for disabled/readonly fields */
+        .form-control-custom:disabled, .form-control-custom[readonly] {
+            background-color: #fff; /* White background for disabled field */
+            color: var(--color-sidebar-primary); /* Use a distinct color for the auto-generated code */
+            opacity: 1; /* Ensure text is fully visible */
+        }
+        .form-label-custom {
+            color: var(--color-text-dark);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        .radio-label-custom {
+            color: var(--color-text-dark);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-right: 20px;
+        }
+        .form-check-input:checked {
+            background-color: var(--color-sidebar-primary); 
+            border-color: var(--color-sidebar-primary);
+        }
+        .form-check-input {
+            width: 1.3em;
+            height: 1.3em;
+        }
+        /* Style for the Upload File input to look like the image */
+        .input-group-upload .form-control-custom {
+            border-right: none;
+            flex-grow: 1;
+        }
+        .input-group-upload .input-group-text {
+            background-color: var(--color-text-white);
+            color: var(--color-text-dark);
+            border: 2px solid var(--color-text-dark);
+            border-left: none;
+            height: 50px;
+            border-radius: 0 10px 10px 0;
+            font-size: 1.5rem;
+            padding: 0 15px;
+        }
+        .btn-submit-custom {
+            background-color: var(--color-sidebar-primary);
+            color: var(--color-text-white);
+            font-weight: bold;
+            padding: 10px 30px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            transition: background-color 0.2s;
+        }
+        .btn-submit-custom:hover {
+            background-color: var(--color-sidebar-link-hover);
+        }
+        .radio-group-container {
+            margin-top: 15px;
+            margin-bottom: 25px;
         }
     </style>
 </head>
@@ -212,7 +304,7 @@
 
     <div class="main-content-col">
         <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
-            <h2 class="fw-bold text-white">DASHBOARD USER</h2>
+            <h2 class="fw-bold text-white">KIRIM SURAT</h2>
             
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -255,113 +347,92 @@
             </div>
         </div>
 
-        {{-- CARD COUNT: Menampilkan data dari Controller --}}
-        <div class="row g-4 mt-2">
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="card-box card-green">
-                    <div>
-                        <div class="text-uppercase" style="font-size: 0.9rem;">SURAT MASUK</div>
-                        {{-- Data jumlah surat masuk --}}
-                        <div class="number">{{ $suratMasukCount ?? 0 }}</div>
-                    </div>
-                    <i class="bi bi-envelope-fill icon"></i>
+{{-- START: KIRIM SURAT FORM CONTENT --}}
+        <div class="kirim-surat-panel">
+            <h4 class="text-uppercase">Kirim Surat</h4>
+            
+            {{-- The form itself --}}
+            <form action="{{ route('user.kirim_surat.store') ?? '#' }}" method="POST" enctype="multipart/form-data">
+                @csrf 
+                
+                {{-- KODE SURAT Field (AUTOMATICALLY GENERATED) --}}
+                <div class="mb-4">
+                    <label for="kode_surat" class="form-label-custom">KODE SURAT (Otomatis)</label>
+                    <input 
+                        type="text" 
+                        class="form-control form-control-custom" 
+                        id="kode_surat" 
+                        value="{{ $nextKode ?? 'Kode Akan Dibuat Otomatis' }}"
+                        placeholder="Kode akan di-generate oleh sistem" 
+                        readonly 
+                        disabled 
+                    >
                 </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="card-box card-orange">
-                    <div>
-                        <div class="text-uppercase" style="font-size: 0.9rem;">SURAT KELUAR</div>
-                        {{-- Data jumlah surat keluar --}}
-                        <div class="number">{{ $suratKeluarCount ?? 0 }}</div>
-                    </div>
-                    <i class="bi bi-envelope-open-fill icon"></i>
+                
+                {{-- TITLE Field --}}
+                <div class="mb-4">
+                    <label for="title" class="form-label-custom">TITLE</label>
+                    <input type="text" class="form-control form-control-custom" id="title" name="title" placeholder="Masukkan Judul Surat" required>
                 </div>
-            </div>
+
+                {{-- ISI (Content) Field --}}
+                <div class="mb-4">
+                    <label for="isi" class="form-label-custom">ISI</label>
+                    <textarea class="form-control form-control-custom" style="height: 120px;" id="isi" name="isi" placeholder="Masukkan Isi Surat" required></textarea>
+                </div>
+
+                {{-- UPLOAD FILE Field --}}
+                <div class="mb-4">
+                    <label for="upload_file" class="form-label-custom">UPLOAD FILE</label>
+                    <div class="input-group input-group-upload">
+                        {{-- Actual file input (hidden) --}}
+                        <input type="file" class="form-control d-none" id="upload_file" name="file_surat" required>
+                        {{-- Mock input for display --}}
+                        <input type="text" class="form-control form-control-custom" id="file_display" placeholder="Pilih file..." readonly onclick="document.getElementById('upload_file').click();">
+                        <span class="input-group-text" onclick="document.getElementById('upload_file').click();"><i class="bi bi-upload"></i></span>
+                    </div>
+                    <script>
+                        // Script to update the display input with the selected file name
+                        document.getElementById('upload_file').addEventListener('change', function() {
+                            const fileName = this.files.length > 0 ? this.files[0].name : '';
+                            document.getElementById('file_display').value = fileName;
+                        });
+                    </script>
+                </div>
+
+                {{-- TUJUAN (Destination) Radio Buttons --}}
+                <div class="radio-group-container">
+                    <p class="form-label-custom">TUJUAN</p>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_rektor" value="rektor" required>
+                        <label class="form-check-label radio-label-custom" for="tujuan_rektor">REKTOR</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dekan" value="dekan">
+                        <label class="form-check-label radio-label-custom" for="tujuan_dekan">DEKAN</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen" value="dosen">
+                        <label class="form-check-label radio-label-custom" for="tujuan_dosen">DOSEN</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_tenaga_pendidik" value="tenaga_pendidik">
+                        <label class="form-check-label radio-label-custom" for="tujuan_tenaga_pendidik">TENAGA PENDIDIK</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen_tugas_khusus" value="dosen_tugas_khusus">
+                        <label class="form-check-label radio-label-custom" for="tujuan_dosen_tugas_khusus">DOSEN TUGAS KHUSUS</label>
+                    </div>
+                </div>
+
+                {{-- Submit Button --}}
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-submit-custom btn-kirim-override">KIRIM</button>
+                </div>
+
+            </form>
         </div>
-
-        {{-- TABLE: SURAT MASUK --}}
-        <div class="table-container mt-5">
-            <div class="table-header">SURAT MASUK</div>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mt-0">
-                    <thead>
-                        <tr>
-                            <th style="width: 5%;">No</th>
-                            {{-- [UPDATED] Kolom 'Nomor Surat' dihapus --}}
-                            <th style="width: 15%;">Kode Surat</th>
-                            <th style="width: 30%;">Title</th>
-                            <th style="width: 30%;">Isi</th>
-                            <th style="width: 15%;">Lampiran</th> {{-- Lebar disesuaikan untuk 3 tombol --}}
-                            <th style="width: 5%;">Aksi</th> {{-- Lebar disesuaikan --}}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{-- LOOPING DATA SURAT MASUK dari Controller. --}}
-                        @forelse ($suratMasuk ?? [] as $index => $surat)
-                            <tr style="color: black;">
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $surat->kode_surat }}</td>
-                                <td>{{ $surat->title }}</td>
-                                {{-- Memotong isi surat agar tabel rapi --}}
-                                <td>{{ Illuminate\Support\Str::limit($surat->isi, 50) }}</td>
-                                
-                                {{-- [UPDATED] Kolom Lampiran dengan 3 Opsi Aksi --}}
-                                <td>
-                                    {{-- Menggunakan 'file_path' sesuai Controller --}}
-                                    @if (!empty($surat->file_path))
-                                        <div class="action-buttons">
-                                            
-                                            {{-- 1. Tombol Lihat/View File (target="_blank" untuk membuka di tab baru) --}}
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Lampiran" target="_blank">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            
-                                            {{-- 2. Tombol Download --}}
-                                            <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download Lampiran">
-                                                <i class="bi bi-file-earmark-arrow-down-fill"></i>
-                                            </a>
-
-                                            {{-- 3. Tombol Print (Menggunakan rute view_file dan memanggil window.print() di tab baru) --}}
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
-                                                <i class="bi bi-printer-fill"></i>
-                                            </a>
-                                        </div>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                
-                                <td>
-                                    <div class="d-flex flex-column align-items-center">
-                                        {{-- Tombol Lihat Detail Surat --}}
-                                        <button class="btn btn-action btn-primary" title="Lihat Detail Surat"
-                                            onclick="window.location.href='{{ route('surat.view', $surat->id) }}'">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        {{-- Tombol Hapus --}}
-                                        <button class="btn btn-action btn-danger mt-1" title="Hapus"
-                                            onclick="confirmDelete('{{ $surat->id }}')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-
-                                    {{-- Form Hapus tersembunyi untuk method DELETE --}}
-                                    <form id="delete-form-{{ $surat->id }}" method="POST" action="{{ route('surat.delete', $surat->id) }}" style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr style="color: black;">
-                                {{-- Colspan disesuaikan menjadi 6 (5 kolom th + 1 untuk No) --}}
-                                <td colspan="6" class="text-center">Tidak ada surat masuk yang ditemukan.</td> 
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        {{-- END: KIRIM SURAT FORM CONTENT --}}
     </div>
 </div>
 
@@ -370,11 +441,11 @@
 <script>
     /**
      * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
-     * Catatan: Kami menggunakan confirm() sesuai dengan kode yang Anda berikan,
-     * tetapi disarankan menggunakan modal kustom di aplikasi nyata.
      */
     function confirmDelete(suratId) {
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
+            // This function is included in the template but not directly used 
+            // in the 'Kirim Surat' view. It's safe to keep.
             document.getElementById('delete-form-' + suratId).submit();
         }
     }

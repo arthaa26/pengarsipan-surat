@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController; // Controller untuk logika pengguna (dosen/user)
-
+use App\Http\Controllers\KirimSuratController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -72,7 +72,9 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
 
-    
+    Route::resource('kirim-surat', KirimSuratController::class)->names('user.kirim_surat')->middleware(['auth']);
+    Route::post('/kirim-surat', [KirimSuratController::class, 'store'])->name('user.kirim_surat.store');
+
 
     // Disini kalok nak nambah { ke atas }
 
