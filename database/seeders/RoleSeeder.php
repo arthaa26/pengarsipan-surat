@@ -3,31 +3,25 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB; // ✅ Import DB
-use Illuminate\Support\Carbon; // ✅ Import Carbon
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class RoleSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $now = Carbon::now();
-
-        $rolesData = [
-            [
-                'name'        => 'admin', 
-                'description' => 'Administrator Sistem.',
-                'created_at'  => $now, // ✅ Tambahkan timestamps
-                'updated_at'  => $now,
-            ],
-            [
-                'name'        => 'dosen', 
-                'description' => 'Akses surat',
-                'created_at'  => $now,
-                'updated_at'  => $now,
-            ],
+        // Masukkan data roles dengan ID yang sudah ditentukan secara eksplisit
+        $roles = [
+            ['id' => 1, 'name' => 'admin', 'description' => 'Administrator Sistem', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 2, 'name' => 'dosen', 'description' => 'Pengguna Dosen Biasa', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 3, 'name' => 'rektor', 'description' => 'Pejabat Rektor', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 4, 'name' => 'dekan', 'description' => 'Pejabat Dekan', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 5, 'name' => 'kaprodi', 'description' => 'Pejabat Kepala Program Studi', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ];
 
-        // ✅ Gunakan Query Builder untuk seeding massal yang cepat
-        DB::table('roles')->insert($rolesData);
+        DB::table('roles')->insert($roles);
     }
 }

@@ -3,16 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory; // <--- Wajib
 
 class Surat_masuk extends Model
 {
+    use HasFactory;
+    
     protected $table = 'surat_masuk';
-
+    protected $primaryKey = 'id_surat_keluar'; // PENTING: ID utama di tabel ini
+    
     protected $fillable = [
         'id_surat_keluar',
         'kode_surat',
-        'tittle',
-        'isi_surat',
+        'tittle',       // Nama kolom di DB Anda
+        'isi_surat',    // Nama kolom di DB Anda
         'lampiran',
         'file_surat',
     ];

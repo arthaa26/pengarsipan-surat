@@ -4,7 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UsersController; // Controller untuk logika pengguna (dosen/user)
+use App\Http\Controllers\UsersController; 
+// --- Hapus Controller Admin yang sebelumnya di-import untuk menghindari masalah Autoloading ---
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,60 +24,72 @@ Route::get('/', function () {
 });
 
 // --- RUTE AUTENTIKASI (Login) ---
-
-// Ntuk form login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-
-// buat proses form login
 Route::post('/login', [AuthController::class, 'login']);
 
 
 // Semue rute di dalam ini hanya dapat diakses oleh user yang sudah login
 Route::middleware(['auth'])->group(function () {
-    
-    // Rute Logout
+
+    // Rute Logout (Global, tidak tergantung Admin/User)
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // 1. DASHBOARD ADMIN
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
 
-    // 2. DASHBOARD DOSEN / USER (Menggunakan UsersController)
-    
+    // ----------------------------------------------------
+    // [1. ADMIN GROUP]
+    // ----------------------------------------------------
+    Route::prefix('admin')->name('admin.')->group(function () {
+
+        // DASHBOARD ADMIN
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // DAFTAR SURAT (Menggunakan FQCN)
+        Route::resource('daftarsurat', App\Http\Controllers\Admin\DaftarSuratController::class)
+            ->names('daftarsurat');
+
+        // MANAJEMEN USER (Menggunakan FQCN untuk memperbaiki error 'Target class not exist')
+        Route::resource('manajemenuser', App\Http\Controllers\Admin\ManajemenUserController::class)
+            ->names('manajemenuser');
+
+        // PROFIL ADMIN
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+Route::get('/admin/surat/preview/{id}', [App\Http\Controllers\Admin\DaftarSuratController::class, 'previewFile'])->name('surat.preview_file');
+Route::get('/admin/surat/download/{id}', [App\Http\Controllers\Admin\DaftarSuratController::class, 'downloadFile'])->name('surat.download_file');
+Route::get('/admin/surat/{id}/detail', [App\Http\Controllers\Admin\DaftarSuratController::class, 'showDetail'])->name('surat.show_detail');
+    });
+    // routes/web.php (di dalam Route Group Admin atau di bawah rute utama)
+
+// Route Detail Surat untuk tombol 'Lihat'
+Route::get('/surat/{id}/detail', [App\Http\Controllers\Admin\DaftarSuratController::class, 'showDetail'])->name('surat.show_detail');
+
+// Route Preview File (Simpan & Cetak)
+Route::get('/surat/preview/{id}', [App\Http\Controllers\Admin\DaftarSuratController::class, 'previewFile'])->name('surat.preview_file');
+
+// Route Download File (Simpan)
+Route::get('/surat/download/{id}', [App\Http\Controllers\Admin\DaftarSuratController::class, 'downloadFile'])->name('surat.download_file');
+
+// Route Delete Surat (Digunakan oleh tombol Hapus)
+Route::delete('/surat/{id}', [App\Http\Controllers\Admin\DaftarSuratController::class, 'destroy'])->name('surat.delete');
+
+
+    // ----------------------------------------------------
+    // [2. DOSEN / USER GROUP]
+    // ----------------------------------------------------
+
     // Dashboard Utama User/Dosen
     Route::get('/dosen/dashboard', [UsersController::class, 'index'])->name('user.dashboard');
-    
-    // Rute Daftar Surat
+
+    // Rute Daftar Surat 
     Route::get('/dosen/surat/daftar', [UsersController::class, 'daftarSurat'])->name('user.daftar_surat.index');
-    
+
     // Rute Kirim Surat
     Route::get('/dosen/surat/kirim', [UsersController::class, 'createSurat'])->name('user.kirim_surat.index');
-    
-    // Rute Aksi Surat (View dan Delete)
-    
-    // Melihat detail surat
+
+    // Rute Aksi Surat
     Route::get('/surat/{surat}', [UsersController::class, 'viewSurat'])->name('surat.view');
-    
-    // Menghapus surat (menggunakan metode DELETE)
     Route::delete('/surat/{surat}', [UsersController::class, 'deleteSurat'])->name('surat.delete');
 
-    // ----------------------------------------------------
-    // [PERBAIKAN UTAMA] Rute Download Lampiran
-    // Rute ini harus ditangani oleh fungsi di UsersController untuk mengirim file
+    // Rute Download Lampiran
     Route::get('/surat/download/{surat}', [UsersController::class, 'downloadSurat'])->name('surat.download');
-    // ----------------------------------------------------
-
-
-    // Rute Dashboard Umum (jika masih diperlukan)
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
-
-    
-
-    // Disini kalok nak nambah { ke atas }
-
 
 });

@@ -42,6 +42,30 @@ class SuratMasukController extends Controller
         $surat->update($request->all());
         return redirect()->route('surat-masuk.index');
     }
+    <?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class SuratMasuk extends Model
+{
+    use HasFactory;
+
+    // Menghilangkan Error "Class not found"
+    // Perbaikan: Pastikan Model ini terhubung ke tabel yang benar.
+    protected $table = 'surat_masuk'; 
+
+    // Anda perlu menambahkan kolom yang digunakan di Controller ke $fillable
+    protected $fillable = [
+        'kode_surat', 
+        'title', 
+        'isi',
+        'created_at',
+        // Tambahkan kolom lain di tabel surat_masuk yang Anda butuhkan
+    ];
+}
 
     public function destroy($id)
     {

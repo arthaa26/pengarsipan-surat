@@ -23,6 +23,7 @@ class Users extends Authenticatable
         'no_hp',    
         'email',
         'password',
+        'role_id'
     ];
 
     /**

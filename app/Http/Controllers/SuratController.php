@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage; // <-- [NEW] Import untuk file storage
-
 class SuratController extends Controller
 {
     /**
