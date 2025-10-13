@@ -206,15 +206,26 @@
             align-items: center;
             cursor: pointer;
         }
+        /* BARU: Container untuk Nama dan Role di Dropdown Profile */
+        .user-identity {
+            display: flex;
+            flex-direction: column; 
+            line-height: 1.2;
+        }
         .user-name {
             font-size: 1.1rem;
             font-weight: bold;
-            margin-right: 10px;
             color: var(--color-text-white);
             display: none; 
         }
+        .user-role-sidebar {
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 2px;
+        }
         @media (min-width: 576px) {
-            .user-name {
+            .user-name, .user-role-sidebar {
                 display: block; 
             }
         }
@@ -248,12 +259,13 @@
             margin-bottom: 20px; 
         }
         .logo-img {
-            width: 85px; 
+            width: 85px; /* Ukuran logo */
             height: 85px;
             border-radius: 50%;
             object-fit: cover;
             margin-right: 10px;
             display: block; 
+            border: none; /* MENGHILANGKAN BORDER */
         }
         .logo-text {
             font-size: 1.4rem;
@@ -273,7 +285,7 @@
                 alt="Logo Muhammadiyah" 
                 class="logo-img" 
                 title="Logo Muhammadiyah"
-                onerror="this.onerror=null; this.src='https://placehold.co/35x35/f7c948/0066cc?text=M';"
+                onerror="this.onerror=null; this.src='https://placehold.co/85x85/f7c948/0066cc?text=M';"
             >
             <p class="logo-text">E-ARSIP</p>
         </div>
@@ -324,7 +336,19 @@
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
-                        <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
+                        {{-- START: TAMPILAN NAMA DAN ROLE --}}
+                        @php
+                            // Mengambil nama role dari relasi (asumsi Auth::user()->role tersedia)
+                            $currentRoleName = Auth::user()->role->name ?? 'N/A';
+                            $formattedRoleName = ucwords(str_replace('_', ' ', $currentRoleName));
+                        @endphp
+
+                        <div class="user-identity">
+                            <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
+                            {{-- Tampilkan role --}}
+                            <span class="user-role-sidebar d-none d-sm-block">({{ $formattedRoleName }})</span> 
+                        </div>
+                        {{-- END: TAMPILAN NAMA DAN ROLE --}}
                         
                         <div class="profile-icon">
                             {{-- Menampilkan URL foto profil dari database atau placeholder ikon --}}
@@ -343,16 +367,22 @@
                 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li class="dropdown-header">
-                        @auth {{ Auth::user()->name }} @else Guest @endauth
+                        @auth 
+                            {{ Auth::user()->name }} 
+                            {{-- Menggunakan variabel yang sama untuk konsistensi --}}
+                            <br><small class="text-muted">({{ $formattedRoleName }})</small>
+                        @else 
+                            Guest 
+                        @endauth
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        {{-- FIX: Tautan ke halaman Edit Profil --}}
+                        {{-- Tautan ke halaman Edit Profil --}}
                         <a class="dropdown-item" href="{{ route('user.profile.edit') ?? '#' }}"><i class="bi bi-person-circle me-2"></i>User Profile</a>
                     </li>
                     <li><a class="dropdown-item" href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                     <li>
-                        {{-- FIX: Tautan Surat dialihkan ke Daftar Surat Masuk (sebagai default) --}}
+                        {{-- Tautan Surat dialihkan ke Daftar Surat Masuk (sebagai default) --}}
                         <a class="dropdown-item" href="{{ route('user.daftar_surat.masuk') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>Surat</a>
                     </li>
                     <li><hr class="dropdown-divider"></li>
@@ -410,7 +440,6 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
-                            {{-- [BARU] Tambah kolom Tanggal Masuk --}}
                             <th style="width: 15%;">Tgl. Masuk</th> 
                             <th style="width: 15%;">Kode Surat</th>
                             <th style="width: 25%;">Title</th>
@@ -424,7 +453,7 @@
                         @forelse ($suratMasuk ?? [] as $index => $surat)
                             <tr style="color: black;">
                                 <td>{{ $index + 1 }}</td>
-                                {{-- [BARU] Tampilkan Tanggal Masuk (asumsi kolom 'created_at' ada dan berupa instance Carbon) --}}
+                                {{-- Tampilkan Tanggal Masuk --}}
                                 <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d M y H:i') }}</td>
                                 {{-- Menggunakan kode_surat dari Model/DB --}}
                                 <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
@@ -460,7 +489,6 @@
                                 
                                 <td>
                                     <div class="d-flex flex-column align-items-center">
-                                        {{-- Tombol Lihat Detail Surat --}}
                                         <button class="btn btn-action btn-primary" title="Lihat Detail Surat"
                                             onclick="window.location.href='{{ route('surat.view', $surat->id) }}'">
                                             <i class="bi bi-eye"></i>
@@ -494,16 +522,16 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     /**
-     * Peringatan hapus / simpan
+     * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
      */
     function confirmDelete(suratId) {
-        // Alert simpan / hapus / tidak
+        // PERHATIAN: DIsarankan menggunakan modal kustom daripada confirm() di aplikasi nyata
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
             document.getElementById('delete-form-' + suratId).submit();
         }
     }
 
-    // Untuk biar ndak loop icon panah pas ditutup/buka
+    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup (dari kode sebelumnya)
     document.addEventListener('DOMContentLoaded', function () {
         const collapseElement = document.getElementById('submenuDaftarSurat');
         const toggleButton = document.getElementById('daftarSuratDropdown');

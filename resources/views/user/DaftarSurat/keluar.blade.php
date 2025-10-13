@@ -259,10 +259,6 @@
 
                                 <td>
                                     <div class="d-flex flex-column align-items-center">
-                                        <button class="btn btn-action btn-primary" title="Lihat Detail Surat"
-                                            onclick="window.location.href='{{ route('surat.view', $surat->id) }}'">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
                                         <button class="btn btn-action btn-danger mt-1" title="Hapus"
                                             onclick="confirmDelete('{{ $surat->id }}')">
                                             <i class="bi bi-trash"></i>

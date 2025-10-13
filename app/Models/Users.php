@@ -16,11 +16,12 @@ class Users extends Authenticatable
      * The attributes that are mass assignable.
      *
      * @var list<string>
-     */             
+     */ 
     protected $fillable = [
+        'username',
         'name',
-        'username', 
-        'no_hp',    
+        'no_hp',
+        'profile_photo_url', // <--- BARU DITAMBAHKAN
         'email',
         'password',
         'role_id'
@@ -47,5 +48,10 @@ class Users extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

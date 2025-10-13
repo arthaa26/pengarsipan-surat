@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\KirimSurat;
-use App\Models\Role; 
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,14 +14,13 @@ use Illuminate\Validation\Rule;
 class UsersController extends Controller
 {
     // --- UTILITY: Mendapatkan Query Surat Masuk untuk User saat ini ---
-    private function getSuratMasukQuery()
+    // Diubah untuk menerima user yang sudah dimuat relasinya (Eager Loading)
+    private function getSuratMasukQuery($user)
     {
-        $user = Auth::user();
         $userId = $user->id;
 
-        // Ambil Nama Role untuk filter Jabatan/Tujuan
-        $userRole = Role::find($user->role_id);
-        $userRoleName = $userRole->name ?? 'dosen'; 
+        // Ambil Nama Role dari objek user yang dimuat. Jika relasi role tidak ada, gunakan fallback.
+        $userRoleName = $user->role->name ?? 'dosen'; 
         $roleTujuan = strtolower(str_replace(' ', '_', $userRoleName));
 
         return KirimSurat::where(function ($query) use ($userId, $roleTujuan) {
@@ -36,30 +35,56 @@ class UsersController extends Controller
         });
     }
 
-    // ... (Metode index(), daftarSuratMasuk(), daftarSuratKeluar() tidak berubah) ...
+    /**
+     * Menampilkan Dashboard Dosen/User (Hanya menampilkan COUNT dan tabel ringkasan).
+     */
     public function index()
     {
-        $userId = Auth::id();
-        $suratMasukQuery = $this->getSuratMasukQuery();
+        // 1. Muat user dengan relasi role-nya
+        // Jika model Anda bernama 'Users', pastikan Anda menggunakan Model::find(Auth::id())
+        $user = Auth::user();
+        if ($user) {
+             // Muat relasi Role untuk menghindari N+1 problem di utility/blade
+            $user->load('role'); 
+        }
+
+        $userId = $user->id ?? null;
+        
+        // Mendapatkan NAMA role yang diformat untuk tampilan di Blade
+        // Menggunakan operator null coalescing (?) untuk menghindari error jika $user atau $user->role null
+        $rawRoleName = $user->role->name ?? 'N/A';
+        $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
+
+        // 2. QUERY SURAT MASUK
+        $suratMasukQuery = $this->getSuratMasukQuery($user);
         $suratMasukCount = $suratMasukQuery->count();
         $suratMasuk = $suratMasukQuery->orderBy('created_at', 'desc')->limit(10)->get();
 
+        // 3. QUERY SURAT KELUAR
         $suratKeluarQuery = KirimSurat::where('user_id_1', $userId);
         $suratKeluarCount = $suratKeluarQuery->count();
         
+        // 4. Mengarahkan ke view dashboard user
         return view('user.dashboard', [ 
             'suratMasukCount' => $suratMasukCount,
             'suratKeluarCount' => $suratKeluarCount,
             'suratMasuk' => $suratMasuk,
+            'userRoleName' => $formattedRoleName, // Kirim role yang diformat
         ]);
     }
+    
     public function daftarSuratMasuk()
     {
-        $suratList = $this->getSuratMasukQuery()
+        $user = Auth::user();
+        if (!$user) { return redirect()->route('login'); }
+        $user->load('role');
+
+        $suratList = $this->getSuratMasukQuery($user)
                             ->orderBy('created_at', 'desc')
                             ->paginate(15);
         return view('user.DaftarSurat.masuk', compact('suratList'));
     }
+    
     public function daftarSuratKeluar()
     {
         $userId = Auth::id();
@@ -70,10 +95,12 @@ class UsersController extends Controller
     }
 
     // --- METODE PROFIL (Diperbaiki) ---
-
     public function editProfile()
     {
         $user = Auth::user();
+        if ($user) {
+             $user->load('role'); // Muat role untuk tampilan profil
+        }
         return view('user.profile.edit', compact('user'));
     }
 
@@ -81,38 +108,31 @@ class UsersController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Validasi utnuk Input (Ditambahkan validasi no_hp dan profile_photo)
+        // 1. Validasi
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)], 
-            'no_hp' => ['nullable', 'string', 'max:15'], // Validasi No. HP
+            'no_hp' => ['nullable', 'string', 'max:15'], 
             'password_new' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'], // Validasi Foto
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'], 
         ]);
 
-        // 2. Simpan File Foto Baru (Kalo ada)
+        // 2. Simpan Foto
         if ($request->hasFile('profile_photo')) {
-            // Hapus foto lama jika ada
             if ($user->profile_photo_url) {
-                // Asumsi: URL foto profil disimpan relatif ke storage/app/public
                 $oldPath = str_replace(Storage::url('/'), '', $user->profile_photo_url);
                 Storage::disk('public')->delete($oldPath);
             }
-            
-            // Untuk menyimpan file baru dan dapatkan path-nya
             $path = $request->file('profile_photo')->store('profile-photos', 'public');
-            
-            // untuk menyimpan profil ke database/storage
             $user->profile_photo_url = Storage::url($path);
         }
 
-        // 3. Controller untuk Update Data Teks
+        // 3. Update Data Teks
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->no_hp = $request->no_hp; // Menyimpan Nomor HP
-        
+        $user->no_hp = $request->no_hp; 
 
-        // 4. Comtroller untuk Update Password
+        // 4. Update Password
         if ($request->filled('password_new')) {
             $user->password = Hash::make($request->password_new);
         }
@@ -123,7 +143,7 @@ class UsersController extends Controller
     }
 
 
-    // ... (Metode untuk daftarSurat(), createSurat(), viewSurat(), viewFileSurat(), downloadSurat(), deleteSurat(), dan CRUD USERS lainnya tidak berubah) ...
+    // ... (Metode lainnya) ...
     public function daftarSurat()
     {
         return redirect()->route('user.daftar_surat.masuk');
