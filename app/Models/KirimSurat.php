@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+// Impor Model yang dibutuhkan
 use App\Models\User; 
+use App\Models\Faculty; 
 
 class KirimSurat extends Model 
 {
@@ -12,23 +15,33 @@ class KirimSurat extends Model
     protected $fillable = [
         'user_id_1',
         'user_id_2',
-        'kode_surat',   
-        'title',       
+        'kode_surat',
+        'title',          // <--- Masalah sintaks teratasi di sini
         'isi',
-        'tujuan',      
-        'file_path',    
+        'tujuan',
+        'file_path',
+        'tujuan_faculty_id', // <--- FIX: KOLOM YANG HILANG
     ];
 
     public $timestamps = true;
 
-    public function user1()
+    public function user1(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id_1');
     }
 
     // Relasi ke user penerima (opsional)
-    public function user2()
+    public function user2(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id_2');
+    }
+    
+    // --- RELASI BARU ---
+    /**
+     * Relasi ke Fakultas tujuan surat (digunakan untuk Dekan/Dosen/Kaprodi).
+     */
+    public function tujuanFaculty(): BelongsTo
+    {
+        return $this->belongsTo(Faculty::class, 'tujuan_faculty_id');
     }
 }

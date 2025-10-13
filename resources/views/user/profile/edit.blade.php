@@ -20,7 +20,8 @@
         .sidebar-menu > a { display: flex; align-items: center; background: var(--color-sidebar-link); color: var(--color-text-white); text-decoration: none; margin: 8px 0; padding: 10px; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
         .sidebar-menu > a:hover { background: var(--color-sidebar-link-hover); }
         .sidebar-menu a.active-link { background: var(--color-text-white); color: var(--color-text-dark); }
-        /* DROPDOWN STYLES */
+        
+        /* DROPDOWN & SIDEBAR STYLES */
         .sidebar-dropdown-item { margin: 8px 0; }
         .sidebar-dropdown-toggle { display: flex !important; align-items: center; justify-content: space-between; background: var(--color-sidebar-link); color: var(--color-text-white); padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; text-align: left; border: none; line-height: 1.2; transition: background 0.2s; }
         .sidebar-dropdown-toggle:hover { background: var(--color-sidebar-link-hover); }
@@ -28,39 +29,60 @@
         .sidebar-dropdown-menu { list-style: none; padding-left: 0; margin-bottom: 0; position: static; background-color: var(--color-sidebar-link-hover); border: none; padding: 0 10px 5px 10px; border-radius: 0 0 5px 5px; box-shadow: none; width: 100%; margin-top: 0; }
         .sidebar-dropdown-menu li a { display: flex; align-items: center; background: transparent !important; color: var(--color-text-white); font-weight: normal; padding: 8px 10px 8px 30px; margin: 2px 0; border-radius: 3px; text-decoration: none; }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
+
         /* MAIN CONTENT & FORM */
         .main-content-col { flex-grow: 1; padding: 20px; }
         .card-box-profile { border-radius: 10px; padding: 30px; background: var(--color-text-white); color: var(--color-text-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .form-label { font-weight: bold; }
-        /* Logo Styles */
+        
+        /* Profile & Logo Styles */
         .user-info { display: flex; align-items: center; cursor: pointer; }
-        .user-name { font-size: 1.1rem; font-weight: bold; margin-right: 10px; color: var(--color-text-white); display: none; }
-        @media (min-width: 576px) { .user-name { display: block; } }
-        .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: var(--color-text-white); border: 2px solid var(--color-text-white); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        
+        /* [BARU] Container untuk Nama dan Role/Fakultas */
+        .user-identity {
+            display: flex;
+            flex-direction: column; 
+            line-height: 1.2;
+            margin-right: 10px;
+            text-align: right; 
+        }
+
+        .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
+        
+        /* [BARU] Gaya untuk Role dan Fakultas */
+        .user-role-display { 
+            font-size: 0.9rem; 
+            font-weight: normal; 
+            color: rgba(255, 255, 255, 0.8); /* Agak redup */
+            display: none; 
+        }
+        
+        @media (min-width: 576px) { 
+            .user-name, .user-role-display { display: block; } 
+        }
+
+        .profile-img { 
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
+            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            color: var(--color-sidebar-primary); /* Warna ikon default */
+        }
         .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
+        
         /* Logo size/style from previous request */
         .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; border: none; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
 
-        /* [BARU] Profile Image Area Styles */
+        /* Profile Image Area Styles */
         .profile-image-area {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #ddd;
+            text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;
         }
         .profile-image-preview {
-            width: 120px;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 4px solid var(--color-sidebar-primary);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 120px; height: 120px; object-fit: cover; border-radius: 50%;
+            border: 4px solid var(--color-sidebar-primary); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             cursor: pointer;
         }
-        .btn-upload-trigger {
-            margin-top: 10px;
-        }
+        .btn-upload-trigger { margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -111,12 +133,30 @@
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
-                        <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
+                        @php
+                            // LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS
+                            // Catatan: Pastikan di Controller Anda memuat relasi 'role' dan 'faculty' (contoh: Auth::user()->load(['role', 'faculty']))
+                            $roleName = Auth::user()->role->name ?? 'N/A';
+                            // Mengakses code Fakultas (Jika relasi faculty ada)
+                            $facultyCode = Auth::user()->faculty->code ?? '';
+                            
+                            $displayRole = ucwords(str_replace('_', ' ', $roleName));
+                            // Format: (ROLE KODEFACULTY) atau (ROLE)
+                            $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
+                        @endphp
+
+                        {{-- CONTAINER NAMA & ROLE/FAKULTAS --}}
+                        <div class="user-identity">
+                            <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
+                            {{-- Tampilkan role dan fakultas --}}
+                            <span class="user-role-display d-none d-sm-block">{{ $fullTitle }}</span> 
+                        </div>
+
                         <div class="profile-icon">
                             @if (Auth::user()->profile_photo_url)
                                 <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="profile-img">
                             @else
-                                <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
+                                <div class="profile-img"><i class="bi bi-person-circle"></i></div>
                             @endif
                         </div>
                     @else
@@ -127,7 +167,15 @@
                 </div>
                 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                    <li class="dropdown-header">@auth {{ Auth::user()->name }} @else Guest @endauth</li>
+                    <li class="dropdown-header">
+                        @auth 
+                            {{ Auth::user()->name }} <br>
+                            {{-- Tampilkan role dan fakultas di header dropdown --}}
+                            <small class="text-muted">{{ $fullTitle }}</small> 
+                        @else 
+                            Guest 
+                        @endauth
+                    </li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{{ route('user.profile.edit') ?? '#' }}"><i class="bi bi-person-circle me-2"></i>User Profile</a></li>
                     <li><a class="dropdown-item" href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
@@ -162,7 +210,6 @@
 
         {{-- FORM UPDATE PROFIL --}}
         <div class="card-box-profile">
-            {{-- Tambahkan enctype untuk mendukung file upload --}}
             <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -206,6 +253,18 @@
                     <input type="text" class="form-control" id="no_hp" name="no_hp" value="{{ old('no_hp', $user->no_hp ?? '') }}">
                 </div>
 
+                {{-- [BARU] Tampilkan Role dan Fakultas (Read-only) --}}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Role Pengguna</label>
+                        <input type="text" class="form-control" value="{{ $displayRole }}" disabled readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Fakultas</label>
+                        <input type="text" class="form-control" value="{{ $facultyCode ?: 'Universitas/Pusat' }}" disabled readonly>
+                    </div>
+                </div>
+                
                 <hr>
                 
                 <p class="fw-bold">Ubah Password (Kosongkan jika tidak ingin mengubah)</p>
@@ -239,6 +298,26 @@
                 document.getElementById('profile_preview').src = e.target.result;
             }
             reader.readAsDataURL(file);
+        }
+    });
+
+    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup (dari kode sebelumnya)
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleButton = document.getElementById('daftarSuratDropdown');
+        const chevronIcon = toggleButton ? toggleButton.querySelector('.bi-chevron-down') : null;
+
+        if (chevronIcon) {
+            const collapseElement = document.getElementById('submenuDaftarSurat');
+
+            // listener untuk rotasi ikon
+            if (collapseElement) {
+                collapseElement.addEventListener('show.bs.collapse', () => {
+                    chevronIcon.style.transform = 'rotate(-180deg)';
+                });
+                collapseElement.addEventListener('hide.bs.collapse', () => {
+                    chevronIcon.style.transform = 'rotate(0deg)';
+                });
+            }
         }
     });
 </script>

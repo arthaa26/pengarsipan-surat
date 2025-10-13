@@ -68,8 +68,8 @@
 
         /* [BARU] ACTIVE SUBLINK STYLE untuk Surat Masuk */
         .sidebar-dropdown-menu li a.active-sublink-masuk {
-             background: var(--color-sidebar-primary) !important;
-             font-weight: bold;
+            background: var(--color-sidebar-primary) !important;
+            font-weight: bold;
         }
         /* --- END SIDEBAR DROPDOWN STYLES --- */
 
@@ -90,11 +90,39 @@
             width: 35px; height: 35px; display: inline-flex; align-items: center; 
             justify-content: center; border-radius: 6px; padding: 0; margin: 2px 0; 
         }
+        
         /* Profile Styles */
         .user-info { display: flex; align-items: center; cursor: pointer; }
-        .user-name { font-size: 1.1rem; font-weight: bold; margin-right: 10px; color: var(--color-text-white); display: none; }
-        @media (min-width: 576px) { .user-name { display: block; } }
-        .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: var(--color-text-white); border: 2px solid var(--color-text-white); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+
+        /* [BARU] Container untuk Nama dan Role/Fakultas */
+        .user-identity {
+            display: flex;
+            flex-direction: column; 
+            line-height: 1.2;
+            margin-right: 10px;
+            text-align: right; 
+        }
+        
+        .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
+        
+        /* [BARU] Gaya untuk Role dan Fakultas */
+        .user-role-display { 
+            font-size: 0.9rem; 
+            font-weight: normal; 
+            color: rgba(255, 255, 255, 0.8); /* Agak redup */
+            display: none; 
+        }
+        
+        @media (min-width: 576px) { 
+            .user-name, .user-role-display { display: block; } 
+        }
+        
+        .profile-img { 
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
+            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            color: var(--color-sidebar-primary);
+        }
         .action-buttons { display: flex; flex-direction: column; gap: 5px; align-items: center; }
         @media (min-width: 992px) { .action-buttons { flex-direction: row; } }
         /* Logo Styles */
@@ -162,12 +190,30 @@
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
-                        <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
+                        @php
+                            // LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS
+                            // Catatan: Pastikan di Controller Anda memuat relasi 'role' dan 'faculty' (contoh: Auth::user()->load(['role', 'faculty']))
+                            $roleName = Auth::user()->role->name ?? 'N/A';
+                            // Mengakses code Fakultas (Jika relasi faculty ada)
+                            $facultyCode = Auth::user()->faculty->code ?? '';
+                            
+                            $displayRole = ucwords(str_replace('_', ' ', $roleName));
+                            // Format: (ROLE KODEFACULTY) atau (ROLE)
+                            $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
+                        @endphp
+
+                        {{-- CONTAINER NAMA & ROLE/FAKULTAS --}}
+                        <div class="user-identity">
+                            <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
+                            {{-- Tampilkan role dan fakultas --}}
+                            <span class="user-role-display d-none d-sm-block">{{ $fullTitle }}</span> 
+                        </div>
+
                         <div class="profile-icon">
                             @if (Auth::user()->profile_photo_url)
                                 <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="profile-img">
                             @else
-                                <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
+                                <div class="profile-img"><i class="bi bi-person-circle"></i></div>
                             @endif
                         </div>
                     @else
@@ -179,7 +225,13 @@
 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li class="dropdown-header">
-                        @auth {{ Auth::user()->name }} @else Guest @endauth
+                        @auth 
+                            {{ Auth::user()->name }} <br>
+                            {{-- Tampilkan role dan fakultas di header dropdown --}}
+                            <small class="text-muted">{{ $fullTitle }}</small> 
+                        @else 
+                            Guest 
+                        @endauth
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{{ route('user.profile.edit') ?? '#' }}"><i class="bi bi-person-circle me-2"></i>User Profile</a></li>
@@ -279,7 +331,7 @@
                     </tbody>
                 </table>
             </div>
-             {{-- Link Pagination --}}
+            {{-- Link Pagination --}}
             <div class="d-flex justify-content-center p-3">
                 {{ $suratList->links() ?? '' }}
             </div>
@@ -298,6 +350,30 @@
             document.getElementById('delete-form-' + suratId).submit();
         }
     }
+
+    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup
+    document.addEventListener('DOMContentLoaded', function () {
+        const collapseElement = document.getElementById('submenuDaftarSurat');
+        const toggleButton = document.getElementById('daftarSuratDropdown');
+        const chevronIcon = toggleButton ? toggleButton.querySelector('.bi-chevron-down') : null;
+
+
+        if (collapseElement && toggleButton && chevronIcon) {
+            // Inisialisasi: Pastikan panah menghadap ke atas karena submenu 'show'
+            if (collapseElement.classList.contains('show')) {
+                 chevronIcon.style.transform = 'rotate(-180deg)';
+            }
+            
+            collapseElement.addEventListener('show.bs.collapse', function () {
+                toggleButton.setAttribute('aria-expanded', 'true');
+                chevronIcon.style.transform = 'rotate(-180deg)';
+            });
+            collapseElement.addEventListener('hide.bs.collapse', function () {
+                toggleButton.setAttribute('aria-expanded', 'false');
+                chevronIcon.style.transform = 'rotate(0deg)';
+            });
+        }
+    });
 </script>
 </body>
 </html>

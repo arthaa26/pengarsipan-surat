@@ -63,216 +63,97 @@
         }
         
         /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES --- */
-        .sidebar-dropdown-item {
-            margin: 8px 0;
-        }
+        .sidebar-dropdown-item { margin: 8px 0; }
         .sidebar-dropdown-toggle {
-            display: flex !important;
-            align-items: center;
-            justify-content: space-between; 
-            background: var(--color-sidebar-link);
-            color: var(--color-text-white);
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.2s;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-            border: none;
-            line-height: 1.2;
+            display: flex !important; align-items: center; justify-content: space-between; 
+            background: var(--color-sidebar-link); color: var(--color-text-white);
+            text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold; 
+            transition: background 0.2s; cursor: pointer; width: 100%; text-align: left; border: none; line-height: 1.2;
         }
-        .sidebar-dropdown-toggle:hover {
-            background: var(--color-sidebar-link-hover);
-            color: var(--color-text-white);
-        }
-        /* Style untuk toggle saat terbuka */
-        .sidebar-dropdown-toggle[aria-expanded="true"] {
-            background: var(--color-sidebar-link-hover);
-            border-radius: 5px 5px 0 0;
-        }
-        /* Rotasi ikon panah */
-        .sidebar-dropdown-toggle .bi-chevron-down {
-            transition: transform 0.3s;
-        }
-        .sidebar-dropdown-toggle[aria-expanded="true"] .bi-chevron-down {
-            transform: rotate(-180deg);
-        }
+        .sidebar-dropdown-toggle:hover { background: var(--color-sidebar-link-hover); color: var(--color-text-white); }
+        .sidebar-dropdown-toggle[aria-expanded="true"] { background: var(--color-sidebar-link-hover); border-radius: 5px 5px 0 0; }
+        .sidebar-dropdown-toggle .bi-chevron-down { transition: transform 0.3s; }
+        .sidebar-dropdown-toggle[aria-expanded="true"] .bi-chevron-down { transform: rotate(-180deg); }
         .sidebar-dropdown-menu {
-            list-style: none; 
-            padding-left: 0;
-            margin-bottom: 0; 
-            position: static; 
-            background-color: var(--color-sidebar-link-hover);
-            border: none;
-            padding: 0 10px 5px 10px;
-            border-radius: 0 0 5px 5px;
-            box-shadow: none; 
-            width: 100%;
-            margin-top: 0; 
+            list-style: none; padding-left: 0; margin-bottom: 0; position: static; 
+            background-color: var(--color-sidebar-link-hover); border: none; padding: 0 10px 5px 10px;
+            border-radius: 0 0 5px 5px; box-shadow: none; width: 100%; margin-top: 0; 
         }
-        .sidebar-dropdown-menu li {
-            margin: 0;
-        }
+        .sidebar-dropdown-menu li { margin: 0; }
         .sidebar-dropdown-menu li a {
-            display: flex;
-            align-items: center;
-            background: transparent !important; 
-            color: var(--color-text-white);
-            font-weight: normal;
-            padding: 8px 10px 8px 30px; 
-            margin: 2px 0;
-            border-radius: 3px;
-            text-decoration: none;
+            display: flex; align-items: center; background: transparent !important; 
+            color: var(--color-text-white); font-weight: normal; padding: 8px 10px 8px 30px; 
+            margin: 2px 0; border-radius: 3px; text-decoration: none;
         }
-        .sidebar-dropdown-menu li a:hover {
-            background: var(--color-sidebar-primary) !important;
-            color: var(--color-text-white) !important;
-        }
+        .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
         /* --- END SIDEBAR DROPDOWN STYLES --- */
 
-        .main-content-col {
-            flex-grow: 1;
-            padding: 20px;
-        }
+        .main-content-col { flex-grow: 1; padding: 20px; }
         .card-box {
-            border-radius: 10px;
-            padding: 20px;
-            color: var(--color-text-white);
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            min-height: 100px;
+            border-radius: 10px; padding: 20px; color: var(--color-text-white); font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center; min-height: 100px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .card-green {
-            background: var(--color-card-green);
-        }
-        .card-orange {
-            background: var(--color-card-orange); 
-        }
-        .card-box .number {
-            font-size: 2.5rem;
-            line-height: 1;
-        }
-        .card-box .icon {
-            font-size: 2.5rem;
-        }
-        .table-container {
-            background: var(--color-table-accent); 
-            border-radius: 10px;
-            padding: 0;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .table-header {
-            background: var(--color-table-accent);
-            color: var(--color-text-white);
-            padding: 15px 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .table th, .table td {
-            color: var(--color-text-dark); 
-            padding: 15px 10px;
-            vertical-align: middle;
-        }
-        .table thead tr {
-            color: var(--color-text-white);
-            font-weight: bold;
-            background-color: var(--color-table-accent);
-        }
-        .table-striped > tbody > tr:nth-of-type(odd) > * {
-            background-color: rgba(255, 255, 255, 0.7);
-        }
-        .table-striped > tbody > tr:nth-of-type(even) > * {
-            background-color: rgba(255, 255, 255, 0.9);
-        }
+        .card-green { background: var(--color-card-green); }
+        .card-orange { background: var(--color-card-orange); }
+        .card-box .number { font-size: 2.5rem; line-height: 1; }
+        .card-box .icon { font-size: 2.5rem; }
+        
+        .table-container { background: var(--color-table-accent); border-radius: 10px; padding: 0; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .table-header { background: var(--color-table-accent); color: var(--color-text-white); padding: 15px 20px; font-size: 1.2rem; font-weight: bold; }
+        .table th, .table td { color: var(--color-text-dark); padding: 15px 10px; vertical-align: middle; }
+        .table thead tr { color: var(--color-text-white); font-weight: bold; background-color: var(--color-table-accent); }
+        .table-striped > tbody > tr:nth-of-type(odd) > * { background-color: rgba(255, 255, 255, 0.7); }
+        .table-striped > tbody > tr:nth-of-type(even) > * { background-color: rgba(255, 255, 255, 0.9); }
+        
         .btn-action {
-            width: 35px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            padding: 0;
-            margin: 2px 0; /* Add margin for small screens */
+            width: 35px; height: 35px; display: inline-flex; align-items: center;
+            justify-content: center; border-radius: 6px; padding: 0; margin: 2px 0; 
         }
-        /* PROFILE STYLING */
-        .user-info { 
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        /* BARU: Container untuk Nama dan Role di Dropdown Profile */
+        
+        /* PROFILE STYLING - START */
+        .user-info { display: flex; align-items: center; cursor: pointer; }
+
+        /* [BARU] Container untuk Nama dan Role/Fakultas */
         .user-identity {
             display: flex;
             flex-direction: column; 
             line-height: 1.2;
-        }
-        .user-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--color-text-white);
-            display: none; 
-        }
-        .user-role-sidebar {
-            font-size: 0.9rem;
-            font-weight: normal;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 2px;
-        }
-        @media (min-width: 576px) {
-            .user-name, .user-role-sidebar {
-                display: block; 
-            }
-        }
-        .profile-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            background-color: var(--color-text-white);
-            border: 2px solid var(--color-text-white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem; 
-        }
-        .action-buttons {
-            display: flex;
-            flex-direction: column; /* Stack buttons vertically on small screens */
-            gap: 5px;
-            align-items: center;
-        }
-        @media (min-width: 992px) {
-             .action-buttons {
-                flex-direction: row; /* Horizontal layout on large screens */
-            }
-        }
-        /* [UPDATED] LOGO STYLING */
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px; 
-        }
-        .logo-img {
-            width: 85px; /* Ukuran logo */
-            height: 85px;
-            border-radius: 50%;
-            object-fit: cover;
             margin-right: 10px;
-            display: block; 
-            border: none; /* MENGHILANGKAN BORDER */
+            text-align: right; 
         }
-        .logo-text {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--color-text-white);
-            margin: 0;
+
+        .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
+        
+        /* [BARU] Gaya untuk Role dan Fakultas */
+        .user-role-display { 
+            font-size: 0.9rem; 
+            font-weight: normal; 
+            color: rgba(255, 255, 255, 0.8); /* Agak redup */
+            display: none; /* Default hidden on small screen */
         }
+        
+        @media (min-width: 576px) {
+            .user-name, .user-role-display { display: block; }
+        }
+        
+        .profile-img {
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+            background-color: var(--color-text-white); border: 2px solid var(--color-text-white);
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            color: var(--color-sidebar-primary);
+        }
+        /* PROFILE STYLING - END */
+
+        .action-buttons {
+            display: flex; flex-direction: column; gap: 5px; align-items: center;
+        }
+        @media (min-width: 992px) { .action-buttons { flex-direction: row; } }
+        
+        /* LOGO STYLING */
+        .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; }
+        .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
     </style>
 </head>
 <body>
@@ -285,7 +166,7 @@
                 alt="Logo Muhammadiyah" 
                 class="logo-img" 
                 title="Logo Muhammadiyah"
-                onerror="this.onerror=null; this.src='https://placehold.co/85x85/f7c948/0066cc?text=M';"
+                onerror="this.onerror=null; this.src='https://placehold.co/35x35/f7c948/0066cc?text=M';"
             >
             <p class="logo-text">E-ARSIP</p>
         </div>
@@ -295,9 +176,8 @@
             <a href="#"><i class="bi bi-list-task me-2"></i>MENU</a>
             <a href="{{ route('user.dashboard') ?? '#' }}" class="active-link"><i class="bi bi-speedometer2 me-2"></i>DASHBOARD</a>
             
-            {{-- DROPDOWN DAFTAR SURAT (Menggunakan Bootstrap Collapse untuk tampilan sidebar yang stabil) --}}
+            {{-- DROPDOWN DAFTAR SURAT --}}
             <div class="sidebar-dropdown-item">
-                {{-- Toggle Link --}}
                 <a class="sidebar-dropdown-toggle collapsed" id="daftarSuratDropdown" 
                     data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="false" 
                     aria-controls="submenuDaftarSurat">
@@ -305,17 +185,14 @@
                     <i class="bi bi-chevron-down" style="font-size: 1em;"></i>
                 </a>
 
-                {{-- Submenu yang akan di-collapse --}}
                 <div class="collapse" id="submenuDaftarSurat">
                     <ul class="sidebar-dropdown-menu">
                         <li>
-                            {{-- MENGGUNAKAN RUTE SPESIFIK --}}
                             <a href="{{ route('user.daftar_surat.masuk') ?? '#' }}">
                                 <i class="bi bi-envelope me-2"></i>Surat Masuk
                             </a>
                         </li>
                         <li>
-                            {{-- MENGGUNAKAN RUTE SPESIFIK --}}
                             <a href="{{ route('user.daftar_surat.keluar') ?? '#' }}">
                                 <i class="bi bi-envelope-open me-2"></i>Surat Keluar
                             </a>
@@ -336,31 +213,34 @@
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
-                        {{-- START: TAMPILAN NAMA DAN ROLE --}}
+                        {{-- START: LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS --}}
                         @php
-                            // Mengambil nama role dari relasi (asumsi Auth::user()->role tersedia)
-                            $currentRoleName = Auth::user()->role->name ?? 'N/A';
-                            $formattedRoleName = ucwords(str_replace('_', ' ', $currentRoleName));
+                            // Catatan: Pastikan di Controller Anda memuat relasi 'role' dan 'faculty' (contoh: Auth::user()->load(['role', 'faculty']))
+                            $roleName = Auth::user()->role->name ?? 'N/A';
+                            $facultyCode = Auth::user()->faculty->code ?? ''; 
+                            
+                            $displayRole = ucwords(str_replace('_', ' ', $roleName));
+                            // Format: (ROLE KODEFACULTY) atau (ROLE)
+                            $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
                         @endphp
 
+                        {{-- CONTAINER NAMA & ROLE/FAKULTAS --}}
                         <div class="user-identity">
                             <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
-                            {{-- Tampilkan role --}}
-                            <span class="user-role-sidebar d-none d-sm-block">({{ $formattedRoleName }})</span> 
+                            {{-- Tampilkan role dan fakultas --}}
+                            <span class="user-role-display d-none d-sm-block">{{ $fullTitle }}</span> 
                         </div>
-                        {{-- END: TAMPILAN NAMA DAN ROLE --}}
-                        
+
                         <div class="profile-icon">
-                            {{-- Menampilkan URL foto profil dari database atau placeholder ikon --}}
                             @if (Auth::user()->profile_photo_url)
                                 <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="profile-img">
                             @else
-                                <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
+                                <div class="profile-img"><i class="bi bi-person-circle"></i></div>
                             @endif
                         </div>
                     @else
                         <span class="user-name d-none d-sm-block">Guest User</span>
-                        <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
+                        <div class="profile-img"><i class="bi bi-person-circle"></i></div>
                     @endauth
                     <i class="bi bi-chevron-down ms-2 fs-5 text-white"></i>
                 </div>
@@ -368,21 +248,19 @@
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li class="dropdown-header">
                         @auth 
-                            {{ Auth::user()->name }} 
-                            {{-- Menggunakan variabel yang sama untuk konsistensi --}}
-                            <br><small class="text-muted">({{ $formattedRoleName }})</small>
+                            {{ Auth::user()->name }} <br>
+                            {{-- Tampilkan role dan fakultas di header dropdown --}}
+                            <small class="text-muted">{{ $fullTitle }}</small> 
                         @else 
                             Guest 
                         @endauth
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        {{-- Tautan ke halaman Edit Profil --}}
                         <a class="dropdown-item" href="{{ route('user.profile.edit') ?? '#' }}"><i class="bi bi-person-circle me-2"></i>User Profile</a>
                     </li>
                     <li><a class="dropdown-item" href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                     <li>
-                        {{-- Tautan Surat dialihkan ke Daftar Surat Masuk (sebagai default) --}}
                         <a class="dropdown-item" href="{{ route('user.daftar_surat.masuk') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>Surat</a>
                     </li>
                     <li><hr class="dropdown-divider"></li>
@@ -449,35 +327,25 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- LOOPING DATA SURAT MASUK dari Controller. --}}
+                        {{-- LOOPING DATA SURAT MASUK dari Controller. (Menggunakan data placeholder dari controller: $suratMasuk) --}}
                         @forelse ($suratMasuk ?? [] as $index => $surat)
                             <tr style="color: black;">
                                 <td>{{ $index + 1 }}</td>
-                                {{-- Tampilkan Tanggal Masuk --}}
                                 <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d M y H:i') }}</td>
-                                {{-- Menggunakan kode_surat dari Model/DB --}}
                                 <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
-                                {{-- Menggunakan title dari Model/DB --}}
                                 <td>{{ $surat->title ?? 'Judul Tidak Ada' }}</td>
-                                {{-- Memotong isi surat agar tabel rapi --}}
                                 <td>{{ Illuminate\Support\Str::limit($surat->isi ?? '', 50) }}</td>
                                 
                                 {{-- Kolom Lampiran (Menggunakan file_path) --}}
                                 <td>
                                     @if (!empty($surat->file_path))
                                         <div class="action-buttons">
-                                            
-                                            {{-- 1. Tombol Lihat/View File --}}
                                             <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Lampiran" target="_blank">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            
-                                            {{-- 2. Tombol Download --}}
                                             <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download Lampiran">
                                                 <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                             </a>
-
-                                            {{-- 3. Tombol Print --}}
                                             <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
                                                 <i class="bi bi-printer-fill"></i>
                                             </a>
@@ -489,10 +357,6 @@
                                 
                                 <td>
                                     <div class="d-flex flex-column align-items-center">
-                                        <button class="btn btn-action btn-primary" title="Lihat Detail Surat"
-                                            onclick="window.location.href='{{ route('surat.view', $surat->id) }}'">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
                                         {{-- Tombol Hapus --}}
                                         <button class="btn btn-action btn-danger mt-1" title="Hapus"
                                             onclick="confirmDelete('{{ $surat->id }}')">
@@ -522,26 +386,32 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     /**
-     * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
+     * Konfir penghapusan & submit form DELETE yang sesuai.
      */
     function confirmDelete(suratId) {
-        // PERHATIAN: DIsarankan menggunakan modal kustom daripada confirm() di aplikasi nyata
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
             document.getElementById('delete-form-' + suratId).submit();
         }
     }
 
-    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup (dari kode sebelumnya)
+    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup
     document.addEventListener('DOMContentLoaded', function () {
         const collapseElement = document.getElementById('submenuDaftarSurat');
         const toggleButton = document.getElementById('daftarSuratDropdown');
+        const chevronIcon = toggleButton ? toggleButton.querySelector('.bi-chevron-down') : null;
 
-        if (collapseElement && toggleButton) {
+
+        if (collapseElement && toggleButton && chevronIcon) {
+            // Inisialisasi: Pastikan panah menghadap ke bawah saat ditutup
+            chevronIcon.style.transform = 'rotate(0deg)';
+
             collapseElement.addEventListener('show.bs.collapse', function () {
                 toggleButton.setAttribute('aria-expanded', 'true');
+                chevronIcon.style.transform = 'rotate(-180deg)';
             });
             collapseElement.addEventListener('hide.bs.collapse', function () {
                 toggleButton.setAttribute('aria-expanded', 'false');
+                chevronIcon.style.transform = 'rotate(0deg)';
             });
         }
     });

@@ -27,7 +27,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
 // ---------------------------------------------------------------------
-//  Rute yang ade di dalam ini hanya dapat diakses same user yang udah login
+//  Rute yang ade di dalam ini hanya dapat diakses same user yang udah login
 // ---------------------------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
@@ -63,27 +63,34 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('user.dashboard');
     })->name('dashboard');
 
-    // 1. Daftar Surat Masuk (user.daftar_surat.masuk)
+    // --- RUTE DAFTAR SURAT TERPISAH (Sesuai Konvensi) ---
+    // 1. Daftar Surat Masuk
     Route::get('/dosen/surat/masuk', [UsersController::class, 'daftarSuratMasuk'])
         ->name('user.daftar_surat.masuk');
 
-    // 2. Daftar Surat Keluar (user.daftar_surat.keluar)
+    // 2. Daftar Surat Keluar
     Route::get('/dosen/surat/keluar', [UsersController::class, 'daftarSuratKeluar'])
         ->name('user.daftar_surat.keluar');
     
-    // 3. Daftar surat dosen (user.daftar_surat.index)
-    // Rute ini akan mengarahkan ke Controller yang melakukan redirect ke rute Masuk.
-    Route::get('/dosen/surat/daftar', [UsersController::class, 'daftarSurat'])->name('user.daftar_surat.index');
+    // 3. Rute Redirect Utama (user.daftar_surat.index)
+    // Diarahkan ke Controller yang melakukan redirect ke Masuk
+    Route::get('/dosen/surat/daftar', [UsersController::class, 'daftarSurat'])
+        ->name('user.daftar_surat.index');
     
-    // Rute untuk ke halaman edit profil
-    Route::get('/profile/edit', [UsersController::class, 'editProfile'])->name('user.profile.edit');
-    Route::put('/profile/update', [UsersController::class, 'updateProfile'])->name('user.profile.update');
+    // --- RUTE PROFIL & UPDATE ---
+    Route::get('/profile/edit', [UsersController::class, 'editProfile'])
+        ->name('user.profile.edit');
+    Route::put('/profile/update', [UsersController::class, 'updateProfile'])
+        ->name('user.profile.update');
 
-    // Rute untuk form kirim surat
-    Route::get('/dosen/surat/kirim', [UsersController::class, 'createSurat'])->name('user.kirim_surat.index');
-    Route::post('/kirim-surat', [KirimSuratController::class, 'store'])->name('user.kirim_surat.store');
+    // --- RUTE KIRIM SURAT ---
+    Route::get('/dosen/surat/kirim', [UsersController::class, 'createSurat'])
+        ->name('user.kirim_surat.index');
+    Route::post('/kirim-surat', [KirimSuratController::class, 'store'])
+        ->name('user.kirim_surat.store');
 
-    // Rute untuk lihat/download/print surat
+    // --- RUTE AKSI SURAT (Lihat/Download/Hapus) ---
+    // Rute harus menggunakan parameter {surat} (Model Binding) untuk Konsistensi
     Route::get('/surat/{surat}', [UsersController::class, 'viewSurat'])->name('surat.view');
     Route::delete('/surat/{surat}', [UsersController::class, 'deleteSurat'])->name('surat.delete');
     Route::get('/surat/view-file/{surat}', [UsersController::class, 'viewFileSurat'])->name('surat.view_file');
