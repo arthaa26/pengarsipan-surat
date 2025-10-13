@@ -42,7 +42,6 @@
         }
 
         /* DEFAULT MENU LINK STYLE */
-        /* Target HANYA link level atas, untuk menghindari konflik dengan submenu */
         .sidebar-menu > a { 
             display: flex; 
             align-items: center;
@@ -65,82 +64,34 @@
             color: var(--color-text-dark);
         }
 
-        /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES - PERBAIKAN FINAL --- */
-        .sidebar-dropdown-item {
-            margin: 8px 0;
-        }
+        /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES --- */
+        .sidebar-dropdown-item { margin: 8px 0; }
         
         .sidebar-dropdown-toggle {
-            /* Pastikan tampilannya sama persis dengan link menu level atas */
-            display: flex !important;
-            align-items: center;
-            justify-content: space-between; /* Menjaga panah di kanan */
-            background: var(--color-sidebar-link);
-            color: var(--color-text-white);
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.2s;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-            border: none;
-            line-height: 1.2;
+            display: flex !important; align-items: center; justify-content: space-between; 
+            background: var(--color-sidebar-link); color: var(--color-text-white);
+            text-decoration: none; padding: 10px; border-radius: 5px; font-weight: bold;
+            transition: background 0.2s; cursor: pointer; width: 100%; text-align: left;
+            border: none; line-height: 1.2;
         }
-        .sidebar-dropdown-toggle:hover {
-            background: var(--color-sidebar-link-hover);
-            color: var(--color-text-white);
-        }
-        /* Style untuk toggle saat terbuka (seperti di gambar) */
-        .sidebar-dropdown-toggle[aria-expanded="true"] {
-            background: var(--color-sidebar-link-hover);
-            border-radius: 5px 5px 0 0;
-        }
-        /* Rotasi ikon panah */
-        .sidebar-dropdown-toggle .bi-chevron-down {
-            transition: transform 0.3s;
-        }
-        .sidebar-dropdown-toggle[aria-expanded="true"] .bi-chevron-down {
-            transform: rotate(-180deg);
-        }
+        .sidebar-dropdown-toggle:hover { background: var(--color-sidebar-link-hover); color: var(--color-text-white); }
+        .sidebar-dropdown-toggle[aria-expanded="true"] { background: var(--color-sidebar-link-hover); border-radius: 5px 5px 0 0; }
+        .sidebar-dropdown-toggle .bi-chevron-down { transition: transform 0.3s; }
+        .sidebar-dropdown-toggle[aria-expanded="true"] .bi-chevron-down { transform: rotate(-180deg); }
 
         .sidebar-dropdown-menu {
-            /* Styling untuk Submenu */
-            /* Menggunakan list-unstyled agar tidak ada bullet point bawaan */
-            list-style: none; 
-            padding-left: 0;
-            margin-bottom: 0; /* Hapus margin bawah default */
-
-            position: static; 
-            background-color: var(--color-sidebar-link-hover);
-            border: none;
-            padding: 0 10px 5px 10px;
-            border-radius: 0 0 5px 5px;
-            box-shadow: none; 
-            width: 100%;
-            margin-top: 0; /* Dibuat rapat dengan toggle */
+            list-style: none; padding-left: 0; margin-bottom: 0; position: static; 
+            background-color: var(--color-sidebar-link-hover); border: none;
+            padding: 0 10px 5px 10px; border-radius: 0 0 5px 5px; box-shadow: none; 
+            width: 100%; margin-top: 0;
         }
-        .sidebar-dropdown-menu li {
-            /* Pastikan setiap item list submenu rapat */
-            margin: 0;
-        }
+        .sidebar-dropdown-menu li { margin: 0; }
         .sidebar-dropdown-menu li a {
-            /* Styling untuk setiap item submenu */
-            display: flex;
-            align-items: center;
-            background: transparent !important; 
-            color: var(--color-text-white);
-            font-weight: normal;
-            padding: 8px 10px 8px 30px; /* Indentasi submenu */
-            margin: 2px 0;
-            border-radius: 3px;
-            text-decoration: none;
+            display: flex; align-items: center; background: transparent !important; 
+            color: var(--color-text-white); font-weight: normal; 
+            padding: 8px 10px 8px 30px; margin: 2px 0; border-radius: 3px; text-decoration: none;
         }
-        .sidebar-dropdown-menu li a:hover {
-            background: var(--color-sidebar-primary) !important;
-            color: var(--color-text-white) !important;
-        }
+        .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
         /* --- END SIDEBAR DROPDOWN STYLES --- */
 
 
@@ -150,10 +101,10 @@
         @media (min-width: 576px) { .user-name { display: block; } }
         .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: var(--color-text-white); border: 2px solid var(--color-text-white); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
-        .logo-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; background-color: #b748f7ff; margin-right: 10px; display: block; border: 2px solid var(--color-text-white); }
+        .logo-img { width: 85px; height: 85px; object-fit: cover; margin-right: 10px; display: block; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
 
-        /* CUSTOM FORM STYLING for Kirim Surat (KEEP EXISTING) */
+        /* CUSTOM FORM STYLING for Kirim Surat */
         .main-content-col { flex-grow: 1; padding: 20px; }
         .kirim-surat-panel { background-color: var(--color-kirim-surat-bg); padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); margin-top: 20px; }
         .kirim-surat-panel h4 { color: var(--color-text-dark); font-weight: bold; margin-bottom: 25px; border-bottom: 3px solid var(--color-text-dark); padding-bottom: 10px; display: inline-block; }
@@ -168,6 +119,15 @@
         .btn-submit-custom { background-color: var(--color-sidebar-primary); color: var(--color-text-white); font-weight: bold; padding: 10px 30px; border-radius: 8px; border: none; margin-top: 20px; font-size: 1.2rem; transition: background-color 0.2s; }
         .btn-submit-custom:hover { background-color: var(--color-sidebar-link-hover); }
         .radio-group-container { margin-top: 15px; margin-bottom: 25px; }
+        /* Style untuk notifikasi pop-up */
+        .alert-fixed-top {
+            z-index: 1050; 
+            max-width: 400px; 
+            color: var(--color-text-dark);
+            position: fixed;
+            top: 20px; 
+            right: 20px;
+        }
     </style>
 </head>
 <body>
@@ -192,24 +152,24 @@
             
             {{-- DROPDOWN DAFTAR SURAT (Menggunakan Bootstrap Collapse) --}}
             <div class="sidebar-dropdown-item">
-                {{-- Toggle Link: Tambahkan class 'collapsed' untuk memastikan tertutup di awal --}}
                 <a class="sidebar-dropdown-toggle collapsed" id="daftarSuratDropdown" 
-                   data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="false" 
-                   aria-controls="submenuDaftarSurat">
+                    data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="false" 
+                    aria-controls="submenuDaftarSurat">
                     <i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT
                     <i class="bi bi-chevron-down" style="font-size: 1em;"></i>
                 </a>
 
-                {{-- Submenu yang akan di-collapse. Default tertutup. --}}
                 <div id="submenuDaftarSurat" class="collapse">
                     <ul class="sidebar-dropdown-menu">
                         <li>
-                            <a href="{{ route('user.daftar_surat.masuk', ['type' => 'masuk']) ?? '#' }}">
+                            {{-- FIX: Menggunakan rute spesifik --}}
+                            <a href="{{ route('user.daftar_surat.masuk') ?? '#' }}">
                                 <i class="bi bi-envelope me-2"></i>Surat Masuk
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('user.daftar_surat.keluar', ['type' => 'keluar']) ?? '#' }}">
+                            {{-- FIX: Menggunakan rute spesifik --}}
+                            <a href="{{ route('user.daftar_surat.keluar') ?? '#' }}">
                                 <i class="bi bi-envelope-open me-2"></i>Surat Keluar
                             </a>
                         </li>
@@ -228,7 +188,7 @@
             
             {{-- START: NOTIFIKASI SUKSES (Pop-up) --}}
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show w-100 position-absolute top-0 end-0 mt-2 me-4" role="alert" style="z-index: 1050; max-width: 400px; color: var(--color-text-dark);">
+                <div class="alert alert-success alert-dismissible fade show alert-fixed-top" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     <strong>Sukses!</strong> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -261,9 +221,15 @@
                         @auth {{ Auth::user()->name }} @else Guest @endauth
                     </li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle me-2"></i>User Profile</a></li>
+                    
+                    {{-- FIX: Tautan ke halaman EDIT PROFIL --}}
+                    <li><a class="dropdown-item" href="{{ route('user.profile.edit') ?? '#' }}"><i class="bi bi-person-circle me-2"></i>User Profile</a></li>
+                    
                     <li><a class="dropdown-item" href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                    <li><a class="dropdown-item" href="{{ route('user.daftar_surat.index') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>Surat</a></li>
+                    
+                    {{-- FIX: Tautan Surat dialihkan ke Daftar Surat Masuk (sebagai default) --}}
+                    <li><a class="dropdown-item" href="{{ route('user.daftar_surat.masuk') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>Surat</a></li>
+                    
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -280,6 +246,18 @@
 {{-- START: KIRIM SURAT FORM CONTENT --}}
         <div class="kirim-surat-panel">
             <h4 class="text-uppercase">Kirim Surat</h4>
+            
+            {{-- Tambahkan penanganan error validasi di sini jika Anda menggunakan validasi Laravel --}}
+            @if ($errors->any())
+                <div class="alert alert-danger" style="color: var(--color-text-dark);">
+                    <strong>Oops!</strong> Ada masalah dengan input Anda.<br><br>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             
             <form action="{{ route('user.kirim_surat.store') ?? '#' }}" method="POST" enctype="multipart/form-data">
                 @csrf 
@@ -301,13 +279,19 @@
                 {{-- TITLE Field --}}
                 <div class="mb-4">
                     <label for="title" class="form-label-custom">TITLE</label>
-                    <input type="text" class="form-control form-control-custom" id="title" name="title" placeholder="Masukkan Judul Surat" required>
+                    <input type="text" class="form-control form-control-custom @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" placeholder="Masukkan Judul Surat" required>
+                    @error('title')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 {{-- ISI (Content) Field --}}
                 <div class="mb-4">
                     <label for="isi" class="form-label-custom">ISI</label>
-                    <textarea class="form-control form-control-custom" style="height: 120px;" id="isi" name="isi" placeholder="Masukkan Isi Surat" required></textarea>
+                    <textarea class="form-control form-control-custom @error('isi') is-invalid @enderror" style="height: 120px;" id="isi" name="isi" placeholder="Masukkan Isi Surat" required>{{ old('isi') }}</textarea>
+                    @error('isi')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 {{-- UPLOAD FILE Field --}}
@@ -315,11 +299,14 @@
                     <label for="upload_file" class="form-label-custom">UPLOAD FILE</label>
                     <div class="input-group input-group-upload">
                         {{-- Actual file input (hidden) --}}
-                        <input type="file" class="form-control d-none" id="upload_file" name="file_surat" required>
+                        <input type="file" class="form-control d-none @error('file_surat') is-invalid @enderror" id="upload_file" name="file_surat" required>
                         {{-- Mock input for display --}}
                         <input type="text" class="form-control form-control-custom" id="file_display" placeholder="Pilih file..." readonly onclick="document.getElementById('upload_file').click();">
                         <span class="input-group-text" onclick="document.getElementById('upload_file').click();"><i class="bi bi-upload"></i></span>
                     </div>
+                    @error('file_surat')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                     <script>
                         // Script to update the display input with the selected file name
                         document.getElementById('upload_file').addEventListener('change', function() {
@@ -332,26 +319,33 @@
                 {{-- TUJUAN (Destination) Radio Buttons --}}
                 <div class="radio-group-container">
                     <p class="form-label-custom">TUJUAN</p>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_rektor" value="rektor" required>
-                        <label class="form-check-label radio-label-custom" for="tujuan_rektor">REKTOR</label>
+                    <div class="d-flex flex-wrap gap-3">
+                        @php $oldTujuan = old('tujuan'); @endphp
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_rektor" value="rektor" required {{ $oldTujuan == 'rektor' ? 'checked' : '' }}>
+                            <label class="form-check-label radio-label-custom" for="tujuan_rektor">REKTOR</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dekan" value="dekan" {{ $oldTujuan == 'dekan' ? 'checked' : '' }}>
+                            <label class="form-check-label radio-label-custom" for="tujuan_dekan">DEKAN</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen" value="dosen" {{ $oldTujuan == 'dosen' ? 'checked' : '' }}>
+                            <label class="form-check-label radio-label-custom" for="tujuan_dosen">DOSEN</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_tenaga_pendidik" value="tenaga_pendidik" {{ $oldTujuan == 'tenaga_pendidik' ? 'checked' : '' }}>
+                            <label class="form-check-label radio-label-custom" for="tujuan_tenaga_pendidik">TENAGA PENDIDIK</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen_tugas_khusus" value="dosen_tugas_khusus" {{ $oldTujuan == 'dosen_tugas_khusus' ? 'checked' : '' }}>
+                            <label class="form-check-label radio-label-custom" for="tujuan_dosen_tugas_khusus">DOSEN TUGAS KHUSUS</label>
+                        </div>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dekan" value="dekan">
-                        <label class="form-check-label radio-label-custom" for="tujuan_dekan">DEKAN</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen" value="dosen">
-                        <label class="form-check-label radio-label-custom" for="tujuan_dosen">DOSEN</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_tenaga_pendidik" value="tenaga_pendidik">
-                        <label class="form-check-label radio-label-custom" for="tujuan_tenaga_pendidik">TENAGA PENDIDIK</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen_tugas_khusus" value="dosen_tugas_khusus">
-                        <label class="form-check-label radio-label-custom" for="tujuan_dosen_tugas_khusus">DOSEN TUGAS KHUSUS</label>
-                    </div>
+                    @error('tujuan')
+                        <div class="text-danger mt-2">Pilih salah satu tujuan surat.</div>
+                    @enderror
                 </div>
 
                 {{-- Submit Button --}}
@@ -368,6 +362,22 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    // Rotasi ikon panah saat dropdown dibuka/ditutup (dari kode dashboard)
+    document.addEventListener('DOMContentLoaded', function () {
+        const collapseElement = document.getElementById('submenuDaftarSurat');
+        const toggleButton = document.getElementById('daftarSuratDropdown');
+
+        if (collapseElement && toggleButton) {
+            collapseElement.addEventListener('show.bs.collapse', function () {
+                toggleButton.setAttribute('aria-expanded', 'true');
+            });
+            collapseElement.addEventListener('hide.bs.collapse', function () {
+                toggleButton.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
+
+    // Script to update the display input with the selected file name (Diulang di sini untuk memastikan scope)
     document.getElementById('upload_file').addEventListener('change', function() {
         const fileName = this.files.length > 0 ? this.files[0].name : '';
         document.getElementById('file_display').value = fileName;

@@ -13,27 +13,27 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Di sini Anda dapat mendaftarkan rute web untuk aplikasi Anda.
+| Disinik buat atur rute web.
 |
 */
 
-// --- RUTE AUTENTIKASI ---
+// --- RUTE UNTUK AUTENTIKASI ---
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Form login
+// Form data buat login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
 // ---------------------------------------------------------------------
-// Semua rute di dalam ini hanya dapat diakses oleh user yang sudah login
+//  Rute yang ade di dalam ini hanya dapat diakses same user yang udah login
 // ---------------------------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // ==================== ADMIN ====================
+    // ================BAGIAN HALAMAN ADMIN ====================
 
     Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('manajemenuser', App\Http\Controllers\Admin\ManajemenUserController::class)
             ->names('manajemenuser');
         
-        // Rute tambahan admin untuk surat
+        // Rute buat admin akses untuk surat
         Route::get('/surat/{id}/detail', [App\Http\Controllers\Admin\DaftarSuratController::class, 'showDetail'])->name('surat.view');
         Route::get('/surat/{id}/view', [App\Http\Controllers\Admin\DaftarSuratController::class, 'previewFile'])->name('surat.view_file');
         Route::get('/surat/{id}/download', [App\Http\Controllers\Admin\DaftarSuratController::class, 'downloadFile'])->name('surat.download');
@@ -53,19 +53,17 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
-    // ==================== DOSEN / USER ====================
+    // ================ RUTE UNTUK DOSEN / USER ====================
 
-    // Dashboard dosen
+    // Dashboard tampilan dosen
     Route::get('/dosen/dashboard', [UsersController::class, 'index'])->name('user.dashboard');
 
-    // Dashboard umum → redirect ke dashboard dosen
+    // Dashboard tampilan umum → mengarah ke dashboard dosen
     Route::get('/dashboard', function () {
         return redirect()->route('user.dashboard');
     })->name('dashboard');
 
-    // --- PERBAIKAN DAN PENAMBAHAN RUTE DAFTAR SURAT ---
-    
-    // 1. Daftar Surat Masuk (Rute yang Hilang - user.daftar_surat.masuk)
+    // 1. Daftar Surat Masuk (user.daftar_surat.masuk)
     Route::get('/dosen/surat/masuk', [UsersController::class, 'daftarSuratMasuk'])
         ->name('user.daftar_surat.masuk');
 
@@ -73,20 +71,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dosen/surat/keluar', [UsersController::class, 'daftarSuratKeluar'])
         ->name('user.daftar_surat.keluar');
     
-    // 3. Daftar surat dosen (user.daftar_surat.index) - Dipertahankan untuk kompatibilitas
+    // 3. Daftar surat dosen (user.daftar_surat.index)
     // Rute ini akan mengarahkan ke Controller yang melakukan redirect ke rute Masuk.
     Route::get('/dosen/surat/daftar', [UsersController::class, 'daftarSurat'])->name('user.daftar_surat.index');
     
-    // --- PENAMBAHAN RUTE PROFIL (Sesuai diskusi sebelumnya) ---
+    // Rute untuk ke halaman edit profil
     Route::get('/profile/edit', [UsersController::class, 'editProfile'])->name('user.profile.edit');
     Route::put('/profile/update', [UsersController::class, 'updateProfile'])->name('user.profile.update');
-    // ---------------------------------------------------------
 
-    // Form kirim surat
+    // Rute untuk form kirim surat
     Route::get('/dosen/surat/kirim', [UsersController::class, 'createSurat'])->name('user.kirim_surat.index');
     Route::post('/kirim-surat', [KirimSuratController::class, 'store'])->name('user.kirim_surat.store');
 
-    // Aksi surat
+    // Rute untuk lihat/download/print surat
     Route::get('/surat/{surat}', [UsersController::class, 'viewSurat'])->name('surat.view');
     Route::delete('/surat/{surat}', [UsersController::class, 'deleteSurat'])->name('surat.delete');
     Route::get('/surat/view-file/{surat}', [UsersController::class, 'viewFileSurat'])->name('surat.view_file');

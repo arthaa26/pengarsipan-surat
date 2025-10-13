@@ -11,10 +11,6 @@ use Illuminate\Support\Facades\Storage;
 
 class SuratController extends Controller
 {
-    /**
-     * Menampilkan daftar surat yang relevan dengan user yang sedang login.
-     * (Dapat difilter berdasarkan 'masuk' atau 'keluar' dari Query String: ?type=...)
-     */
     public function index(Request $request)
     {
         $userId = Auth::id();
@@ -44,14 +40,11 @@ class SuratController extends Controller
         // Ambil data yang sudah difilter
         $surat = $query->orderBy('created_at', 'desc')->get();
 
-        // Ganti 'surat.index' dengan view yang menampilkan daftar surat
         // Kirim $title dan $type untuk digunakan di view
         return view('surat.index', compact('surat', 'title', 'type'));
     }
 
     // --- CRUD METHODS (CREATE, STORE, SHOW, EDIT, UPDATE, DESTROY) ---
-    // (Tidak ada perubahan signifikan pada logika, hanya dihilangkan untuk brevity)
-
     public function create()
     {
         $recipients = User::where('id', '!=', Auth::id())->get();
@@ -162,15 +155,9 @@ class SuratController extends Controller
         return redirect()->route('surat.index', ['type' => 'keluar'])->with('success', 'Surat berhasil dihapus.');
     }
     
-    // --- FILE UTILITIES ---
 
-    /**
-     * Menampilkan file lampiran di browser.
-     * Menggunakan model binding untuk mendapatkan objek Surat.
-     */
     public function viewSurat(Surat $surat)
     {
-         // Pengecekan izin (SAMA seperti di downloadSurat)
          if ($surat->to_user_id !== Auth::id() && $surat->from_user_id !== Auth::id()) {
             abort(403, 'Akses Ditolak. Anda tidak memiliki izin untuk melihat lampiran surat ini.');
         }
@@ -178,8 +165,6 @@ class SuratController extends Controller
         $filePath = $surat->file_path;
 
         if ($filePath && Storage::disk('public')->exists($filePath)) {
-            // response()->file() atau response()->make() dengan konten file
-            // response()->file() seringkali lebih mudah untuk dilihat langsung
             return response()->file(Storage::disk('public')->path($filePath));
         }
 

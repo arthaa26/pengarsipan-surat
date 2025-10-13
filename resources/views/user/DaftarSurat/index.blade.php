@@ -169,14 +169,12 @@
             margin-bottom: 20px;    
         }
         .logo-img {
-            width: 65px; /* Ukuran logo */
-            height: 65px;
+            width: 85px; 
+            height: 85px;
             border-radius: 50%;
-            object-fit: cover; /* Penting untuk gambar */
-            background-color: #b748f7ff; /* Warna latar belakang logo jika gambar gagal dimuat */
+            object-fit: cover; 
             margin-right: 10px;
-            display: block; /* Agar img bisa diatur dimensinya */
-            border: 2px solid var(--color-text-white);
+            display: block; 
         }
         .logo-text {
             font-size: 1.4rem;
@@ -260,11 +258,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    /**
-     * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
-     * Catatan: Kami menggunakan confirm() sesuai dengan kode yang Anda berikan,
-     * tetapi disarankan menggunakan modal kustom di aplikasi nyata.
-     */
     function confirmDelete(suratId) {
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
             document.getElementById('delete-form-' + suratId).submit();

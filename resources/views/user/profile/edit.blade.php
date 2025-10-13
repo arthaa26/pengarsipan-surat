@@ -8,85 +8,59 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* BASE STYLES */
         :root {
-            --color-bg-body: #4db8ff;
-            --color-sidebar-primary: #0066cc;
-            --color-sidebar-link: #0080ff;
-            --color-sidebar-link-hover: #0059b3;
-            --color-card-green: #22c55e;
-            --color-card-orange: #f59e42;
-            --color-table-accent: #f7c948;
-            --color-text-white: #fff;
-            --color-text-dark: #000000;
+            --color-bg-body: #4db8ff; --color-sidebar-primary: #0066cc;
+            --color-sidebar-link: #0080ff; --color-sidebar-link-hover: #0059b3;
+            --color-text-white: #fff; --color-text-dark: #000000;
         }
 
-        body {
-            background: var(--color-bg-body);
-            font-family: 'Arial', sans-serif;
-            color: var(--color-text-white);
-        }
-
-        /* LAYOUT & SIDEBAR */
+        body { background: var(--color-bg-body); font-family: 'Arial', sans-serif; color: var(--color-text-white); }
         .app-layout { display: flex; min-height: 100vh; }
         .sidebar { background: var(--color-sidebar-primary); padding: 20px 10px; width: 250px; flex-shrink: 0; }
-
-        /* DEFAULT MENU LINK STYLE */
-        .sidebar-menu > a {
-            display: flex; align-items: center; background: var(--color-sidebar-link);
-            color: var(--color-text-white); text-decoration: none; margin: 8px 0;
-            padding: 10px; border-radius: 5px; font-weight: bold; transition: background 0.2s;
-        }
+        .sidebar-menu > a { display: flex; align-items: center; background: var(--color-sidebar-link); color: var(--color-text-white); text-decoration: none; margin: 8px 0; padding: 10px; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
         .sidebar-menu > a:hover { background: var(--color-sidebar-link-hover); }
         .sidebar-menu a.active-link { background: var(--color-text-white); color: var(--color-text-dark); }
-
         /* DROPDOWN STYLES */
         .sidebar-dropdown-item { margin: 8px 0; }
-        .sidebar-dropdown-toggle {
-            display: flex !important; align-items: center; justify-content: space-between;
-            background: var(--color-sidebar-link); color: var(--color-text-white);
-            padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%;
-            text-align: left; border: none; line-height: 1.2; transition: background 0.2s;
-        }
+        .sidebar-dropdown-toggle { display: flex !important; align-items: center; justify-content: space-between; background: var(--color-sidebar-link); color: var(--color-text-white); padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; text-align: left; border: none; line-height: 1.2; transition: background 0.2s; }
         .sidebar-dropdown-toggle:hover { background: var(--color-sidebar-link-hover); }
         .sidebar-dropdown-toggle[aria-expanded="true"] { background: var(--color-sidebar-link-hover); border-radius: 5px 5px 0 0; }
-        .sidebar-dropdown-toggle .bi-chevron-down { transition: transform 0.3s; }
-        .sidebar-dropdown-toggle[aria-expanded="true"] .bi-chevron-down { transform: rotate(-180deg); }
-        .sidebar-dropdown-menu {
-            list-style: none; padding-left: 0; margin-bottom: 0; position: static;
-            background-color: var(--color-sidebar-link-hover); border: none;
-            padding: 0 10px 5px 10px; border-radius: 0 0 5px 5px; box-shadow: none; width: 100%; margin-top: 0;
-        }
-        .sidebar-dropdown-menu li a {
-            display: flex; align-items: center; background: transparent !important;
-            color: var(--color-text-white); font-weight: normal; padding: 8px 10px 8px 30px;
-            margin: 2px 0; border-radius: 3px; text-decoration: none;
-        }
+        .sidebar-dropdown-menu { list-style: none; padding-left: 0; margin-bottom: 0; position: static; background-color: var(--color-sidebar-link-hover); border: none; padding: 0 10px 5px 10px; border-radius: 0 0 5px 5px; box-shadow: none; width: 100%; margin-top: 0; }
+        .sidebar-dropdown-menu li a { display: flex; align-items: center; background: transparent !important; color: var(--color-text-white); font-weight: normal; padding: 8px 10px 8px 30px; margin: 2px 0; border-radius: 3px; text-decoration: none; }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
-        
+        /* MAIN CONTENT & FORM */
         .main-content-col { flex-grow: 1; padding: 20px; }
-        
-        /* Card box custom untuk Form Profil */
-        .card-box-profile {
-            border-radius: 10px;
-            padding: 30px; 
-            background: var(--color-text-white); 
-            color: var(--color-text-dark);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .form-label {
-            font-weight: bold;
-        }
-        
-        /* Profile & Logo Styles (disalin untuk konsistensi) */
+        .card-box-profile { border-radius: 10px; padding: 30px; background: var(--color-text-white); color: var(--color-text-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .form-label { font-weight: bold; }
+        /* Logo Styles */
         .user-info { display: flex; align-items: center; cursor: pointer; }
         .user-name { font-size: 1.1rem; font-weight: bold; margin-right: 10px; color: var(--color-text-white); display: none; }
         @media (min-width: 576px) { .user-name { display: block; } }
         .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: var(--color-text-white); border: 2px solid var(--color-text-white); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
-        .logo-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; background-color: #b748f7ff; margin-right: 10px; display: block; border: 2px solid var(--color-text-white); }
+        /* Logo size/style from previous request */
+        .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; border: none; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
 
+        /* [BARU] Profile Image Area Styles */
+        .profile-image-area {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .profile-image-preview {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--color-sidebar-primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .btn-upload-trigger {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -100,7 +74,7 @@
                 alt="Logo Muhammadiyah" 
                 class="logo-img" 
                 title="Logo Muhammadiyah"
-                onerror="this.onerror=null; this.src='https://placehold.co/35x35/f7c948/0066cc?text=M';"
+                onerror="this.onerror=null; this.src='https://placehold.co/85x85/f7c948/0066cc?text=M';"
             >
             <p class="logo-text">E-ARSIP</p>
         </div>
@@ -188,9 +162,34 @@
 
         {{-- FORM UPDATE PROFIL --}}
         <div class="card-box-profile">
-            <form action="{{ route('user.profile.update') }}" method="POST">
+            {{-- Tambahkan enctype untuk mendukung file upload --}}
+            <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+
+                {{-- AREA FOTO PROFIL BARU --}}
+                <div class="profile-image-area">
+                    <img 
+                        src="{{ Auth::user()->profile_photo_url ?? 'https://placehold.co/120x120/0066cc/ffffff?text=User' }}" 
+                        alt="Foto Profil" 
+                        id="profile_preview"
+                        class="profile-image-preview" 
+                        onclick="document.getElementById('profile_photo').click();"
+                    >
+                    
+                    {{-- Input file tersembunyi --}}
+                    <input type="file" name="profile_photo" id="profile_photo" class="d-none" accept="image/*">
+                    
+                    <button type="button" class="btn btn-sm btn-upload-trigger btn-primary" onclick="document.getElementById('profile_photo').click();">
+                        <i class="bi bi-camera me-1"></i> Ganti Foto
+                    </button>
+                    @error('profile_photo')
+                        <div class="text-danger mt-1">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+                {{-- END AREA FOTO PROFIL --}}
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Lengkap</label>
@@ -202,13 +201,10 @@
                     <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" required>
                 </div>
                 
-                {{-- START: FIELD BARU UNTUK NO. HP --}}
                 <div class="mb-3">
                     <label for="no_hp" class="form-label">Nomor HP</label>
-                    {{-- Asumsi data 'no_hp' ada di objek $user --}}
                     <input type="text" class="form-control" id="no_hp" name="no_hp" value="{{ old('no_hp', $user->no_hp ?? '') }}">
                 </div>
-                {{-- END: FIELD BARU UNTUK NO. HP --}}
 
                 <hr>
                 
@@ -234,7 +230,17 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Tidak ada script khusus untuk halaman ini, tapi tetap menyertakan bootstrap bundle
+    // Preview gambar baru sebelum diupload
+    document.getElementById('profile_photo').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profile_preview').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
 </script>
 </body>
 </html>

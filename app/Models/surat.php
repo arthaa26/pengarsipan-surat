@@ -18,20 +18,16 @@ class Surat extends Model
         'to_user_id', 
         'from_user_id', 
         'status', 
-        'file_path', // <--- PENTING: Untuk aksi Preview/Download
+        'file_path', 
     ];
 
-    // Relasi: Surat ditujukan ke (penerima)
     public function receiver()
     {
-        // PERBAIKAN: Ganti 'User::class' menjadi 'Users::class' (sesuai Model jamak Anda)
         return $this->belongsTo(\App\Models\Users::class, 'to_user_id'); 
     }
 
-    // Relasi: Surat dikirim dari (pengirim)
     public function sender()
     {
-        // PERBAIKAN: Ganti 'User::class' menjadi 'Users::class'
         return $this->belongsTo(\App\Models\Users::class, 'from_user_id');
     }
 }

@@ -66,7 +66,7 @@
         }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
 
-        /* [BARU] ACTIVE SUBLINK STYLE */
+        /* [BARU] ACTIVE SUBLINK STYLE untuk Surat Masuk */
         .sidebar-dropdown-menu li a.active-sublink-masuk {
              background: var(--color-sidebar-primary) !important;
              font-weight: bold;
@@ -74,11 +74,6 @@
         /* --- END SIDEBAR DROPDOWN STYLES --- */
 
         .main-content-col { flex-grow: 1; padding: 20px; }
-        .card-box {
-            border-radius: 10px; padding: 20px; color: var(--color-text-white); 
-            font-weight: bold; display: flex; justify-content: space-between; 
-            align-items: center; min-height: 100px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-        }
         .table-container { 
             background: var(--color-table-accent); border-radius: 10px; padding: 0; 
             overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
@@ -95,14 +90,16 @@
             width: 35px; height: 35px; display: inline-flex; align-items: center; 
             justify-content: center; border-radius: 6px; padding: 0; margin: 2px 0; 
         }
+        /* Profile Styles */
         .user-info { display: flex; align-items: center; cursor: pointer; }
         .user-name { font-size: 1.1rem; font-weight: bold; margin-right: 10px; color: var(--color-text-white); display: none; }
         @media (min-width: 576px) { .user-name { display: block; } }
         .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: var(--color-text-white); border: 2px solid var(--color-text-white); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .action-buttons { display: flex; flex-direction: column; gap: 5px; align-items: center; }
         @media (min-width: 992px) { .action-buttons { flex-direction: row; } }
+        /* Logo Styles */
         .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
-        .logo-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; background-color: #b748f7ff; margin-right: 10px; display: block; border: 2px solid var(--color-text-white); }
+        .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
     </style>
 </head>
@@ -220,11 +217,13 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
+                            {{-- [BARU] Tambah kolom Tanggal Masuk --}}
+                            <th style="width: 15%;">Tgl. Masuk</th> 
                             <th style="width: 15%;">Kode Surat</th>
-                            <th style="width: 30%;">Title</th>
-                            <th style="width: 30%;">Isi</th>
-                            <th style="width: 15%;">Lampiran</th>
-                            <th style="width: 5%;">Aksi</th>
+                            <th style="width: 25%;">Title</th>
+                            <th style="width: 25%;">Isi</th>
+                            <th style="width: 10%;">Lampiran</th> 
+                            <th style="width: 5%;">Aksi</th> 
                         </tr>
                     </thead>
                     <tbody>
@@ -233,6 +232,8 @@
                             <tr style="color: black;">
                                 {{-- Penomoran yang benar dengan pagination --}}
                                 <td>{{ ($suratList->firstItem() ?? 0) + $index }}</td>
+                                {{-- [BARU] Tampilkan Tanggal Masuk (asumsi kolom 'created_at' ada dan berupa instance Carbon) --}}
+                                <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d M y H:i') }}</td>
                                 <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
                                 <td>{{ $surat->title ?? 'Judul Tidak Ada' }}</td>
                                 <td>{{ Illuminate\Support\Str::limit($surat->isi ?? '', 50) }}</td>
@@ -276,7 +277,7 @@
                             </tr>
                         @empty
                             <tr style="color: black;">
-                                <td colspan="6" class="text-center">Tidak ada surat masuk yang ditemukan.</td>
+                                <td colspan="7" class="text-center">Tidak ada surat masuk yang ditemukan.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -294,7 +295,7 @@
 
 <script>
     /**
-     * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
+     * Konfir hapus & submit form DELETE yang sesuai.
      */
     function confirmDelete(suratId) {
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {

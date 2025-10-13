@@ -12,22 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('surat_masuk', function (Blueprint $table) {
-            
-            // ✅ PERBAIKAN: Gunakan bigIncrements untuk Primary Key dan Auto-Increment
             $table->bigIncrements('id_surat_masuk'); 
-            
             $table->string("kode_surat", 255)->unique(); // Tambah batas panjang
             $table->string("title", 255);
-            
-            // ✅ PERBAIKAN: Gunakan TEXT karena isi surat bisa panjang
             $table->text("isi_surat");
-            
             $table->string("lampiran", 255)->nullable(); // Lampiran mungkin kosong (nullable)
-            
-            // Kolom Foreign Key yang benar
             $table->foreignId('user_id_1')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_id_2')->constrained('users')->onDelete('cascade');
-            
             $table->timestamps();
         });
     }

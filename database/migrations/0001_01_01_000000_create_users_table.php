@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('username')->nullable();
             $table->string('name');
             $table->string('no_hp')->nullable();
+            $table->string('profile_photo_url', 2048)->nullable(); 
+            $table->unsignedBigInteger('role_id')->nullable(); 
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
@@ -39,9 +41,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('users');

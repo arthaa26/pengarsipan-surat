@@ -66,7 +66,7 @@
         }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
         
-        /* [BARU] ACTIVE SUBLINK STYLE */
+        /* [BARU] ACTIVE SUBLINK STYLE untuk Surat Keluar */
         .sidebar-dropdown-menu li a.active-sublink { 
              background: var(--color-sidebar-primary) !important; 
              font-weight: bold;
@@ -74,7 +74,6 @@
         /* --- END SIDEBAR DROPDOWN STYLES --- */
 
         .main-content-col { flex-grow: 1; padding: 20px; }
-        /* Hapus Card Box di halaman ini karena ini bukan dashboard */
         .table-container { 
             background: var(--color-table-accent); border-radius: 10px; padding: 0; 
             overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
@@ -100,7 +99,7 @@
         @media (min-width: 992px) { .action-buttons { flex-direction: row; } }
         /* Logo Styles */
         .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
-        .logo-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; background-color: #b748f7ff; margin-right: 10px; display: block; border: 2px solid var(--color-text-white); }
+        .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
     </style>
 </head>
@@ -218,10 +217,12 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
+                            {{-- [BARU] Tambah kolom Tanggal Keluar --}}
+                            <th style="width: 15%;">Tgl. Keluar</th> 
                             <th style="width: 15%;">Kode Surat</th>
-                            <th style="width: 30%;">Title</th>
-                            <th style="width: 30%;">Isi</th>
-                            <th style="width: 15%;">Lampiran</th>
+                            <th style="width: 25%;">Title</th>
+                            <th style="width: 25%;">Isi</th>
+                            <th style="width: 10%;">Lampiran</th>
                             <th style="width: 5%;">Aksi</th>
                         </tr>
                     </thead>
@@ -231,6 +232,8 @@
                             <tr style="color: black;">
                                 {{-- Penomoran yang benar dengan pagination --}}
                                 <td>{{ ($suratList->firstItem() ?? 0) + $index }}</td>
+                                {{-- [BARU] Tampilkan Tanggal Keluar --}}
+                                <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d M y H:i') }}</td>
                                 <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
                                 <td>{{ $surat->title ?? 'Judul Tidak Ada' }}</td>
                                 <td>{{ Illuminate\Support\Str::limit($surat->isi ?? '', 50) }}</td>
@@ -274,7 +277,7 @@
                             </tr>
                         @empty
                             <tr style="color: black;">
-                                <td colspan="6" class="text-center">Tidak ada surat keluar yang ditemukan.</td>
+                                <td colspan="7" class="text-center">Tidak ada surat keluar yang ditemukan.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -292,7 +295,7 @@
 
 <script>
     /**
-     * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
+     * Konfir penghapusan & submit form DELETE yang sesuai.
      */
     function confirmDelete(suratId) {
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {

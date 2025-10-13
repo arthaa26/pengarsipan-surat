@@ -10,13 +10,13 @@ class Surat_masuk extends Model
     use HasFactory;
     
     protected $table = 'surat_masuk';
-    protected $primaryKey = 'id_surat_keluar'; // PENTING: ID utama di tabel ini
+    protected $primaryKey = 'id_surat_keluar';
     
     protected $fillable = [
         'id_surat_keluar',
         'kode_surat',
-        'tittle',       // Nama kolom di DB Anda
-        'isi_surat',    // Nama kolom di DB Anda
+        'tittle',      
+        'isi_surat',    
         'lampiran',
         'file_surat',
     ];

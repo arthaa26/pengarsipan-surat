@@ -248,14 +248,12 @@
             margin-bottom: 20px; 
         }
         .logo-img {
-            width: 65px; /* Ukuran logo */
-            height: 65px;
+            width: 85px; 
+            height: 85px;
             border-radius: 50%;
-            object-fit: cover; /* Penting untuk gambar */
-            background-color: #b748f7ff; 
+            object-fit: cover;
             margin-right: 10px;
             display: block; 
-            border: 2px solid var(--color-text-white);
         }
         .logo-text {
             font-size: 1.4rem;
@@ -412,10 +410,12 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
+                            {{-- [BARU] Tambah kolom Tanggal Masuk --}}
+                            <th style="width: 15%;">Tgl. Masuk</th> 
                             <th style="width: 15%;">Kode Surat</th>
-                            <th style="width: 30%;">Title</th>
-                            <th style="width: 30%;">Isi</th>
-                            <th style="width: 15%;">Lampiran</th> 
+                            <th style="width: 25%;">Title</th>
+                            <th style="width: 25%;">Isi</th>
+                            <th style="width: 10%;">Lampiran</th> 
                             <th style="width: 5%;">Aksi</th> 
                         </tr>
                     </thead>
@@ -424,6 +424,8 @@
                         @forelse ($suratMasuk ?? [] as $index => $surat)
                             <tr style="color: black;">
                                 <td>{{ $index + 1 }}</td>
+                                {{-- [BARU] Tampilkan Tanggal Masuk (asumsi kolom 'created_at' ada dan berupa instance Carbon) --}}
+                                <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d M y H:i') }}</td>
                                 {{-- Menggunakan kode_surat dari Model/DB --}}
                                 <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
                                 {{-- Menggunakan title dari Model/DB --}}
@@ -479,7 +481,7 @@
                             </tr>
                         @empty
                             <tr style="color: black;">
-                                <td colspan="6" class="text-center">Tidak ada surat masuk yang ditemukan.</td> 
+                                <td colspan="7" class="text-center">Tidak ada surat masuk yang ditemukan.</td> 
                             </tr>
                         @endforelse
                     </tbody>
@@ -490,17 +492,31 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
     /**
-     * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
+     * Peringatan hapus / simpan
      */
     function confirmDelete(suratId) {
-        // PERHATIAN: DIsarankan menggunakan modal kustom daripada confirm() di aplikasi nyata
+        // Alert simpan / hapus / tidak
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
             document.getElementById('delete-form-' + suratId).submit();
         }
     }
+
+    // Untuk biar ndak loop icon panah pas ditutup/buka
+    document.addEventListener('DOMContentLoaded', function () {
+        const collapseElement = document.getElementById('submenuDaftarSurat');
+        const toggleButton = document.getElementById('daftarSuratDropdown');
+
+        if (collapseElement && toggleButton) {
+            collapseElement.addEventListener('show.bs.collapse', function () {
+                toggleButton.setAttribute('aria-expanded', 'true');
+            });
+            collapseElement.addEventListener('hide.bs.collapse', function () {
+                toggleButton.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
 </script>
 </body>
 </html>
