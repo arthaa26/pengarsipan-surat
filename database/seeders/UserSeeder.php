@@ -16,25 +16,43 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Fungsi pembantu untuk mendapatkan atau membuat Role ID (untuk ketahanan)
-        $getRoleId = function ($name) {
-            $role = Role::firstOrCreate(
-                ['name' => strtolower($name)], 
-                ['display_name' => ucwords(str_replace('_', ' ', $name))]
-            );
-            return $role->id;
-        };
+        // --- LANGKAH 1: HAPUS SEMUA DATA ROLE DAN RESET AUTO INCREMENT ---
+        // Ini memastikan Role dibuat ulang dengan ID 1, 2, 3...
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;'); // Nonaktifkan FK checks sementara
+        DB::table('roles')->truncate(); // Kosongkan tabel roles
+        DB::statement('ALTER TABLE roles AUTO_INCREMENT = 1;'); // Reset auto increment
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;'); // Aktifkan kembali FK checks
+
+        // --- LANGKAH 2: BUAT ROLE DENGAN ID BERURUTAN (1-7) ---
+        // Karena kita me-reset auto increment, ID akan berurutan secara otomatis.
+        // Kita hanya perlu menyimpan hasilnya ke variabel untuk digunakan nanti.
+        
+        $rolesData = [
+            'admin' => ['display_name' => 'Admin'],
+            'rektor' => ['display_name' => 'Rektor'],
+            'dekan' => ['display_name' => 'Dekan'],
+            'dosen' => ['display_name' => 'Dosen'],
+            'kaprodi' => ['display_name' => 'Kaprodi'],
+            'tenaga_pendidik' => ['display_name' => 'Tenaga Pendidik'],
+            'dosen_tugas_khusus' => ['display_name' => 'Dosen Tugas Khusus'],
+        ];
+
+        $rolesMap = [];
+        foreach ($rolesData as $name => $data) {
+            $role = Role::create(['name' => $name, 'display_name' => $data['display_name']]);
+            $rolesMap[$name] = $role->id;
+        }
 
         // Ambil semua ID role yang diperlukan
-        $adminId            = $getRoleId('admin');
-        $rektorId           = $getRoleId('rektor');
-        $dekanId            = $getRoleId('dekan');
-        $kaprodiId          = $getRoleId('kaprodi');
-        $dosenId            = $getRoleId('dosen');
-        $tenagaPendidikId   = $getRoleId('tenaga_pendidik');
-        $dosenTugasKhususId = $getRoleId('dosen_tugas_khusus');
+        $adminId            = $rolesMap['admin']; // ID 1
+        $rektorId           = $rolesMap['rektor']; // ID 2
+        $dekanId            = $rolesMap['dekan']; // ID 3
+        $kaprodiId          = $rolesMap['kaprodi']; // ID 5
+        $dosenId            = $rolesMap['dosen']; // ID 4
+        $tenagaPendidikId   = $rolesMap['tenaga_pendidik']; // ID 6
+        $dosenTugasKhususId = $rolesMap['dosen_tugas_khusus']; // ID 7
 
-        // DAFTAR FAKULTAS (Untuk referensi cepat)
+        // DAFTAR FAKULTAS (ID harus cocok dengan tabel 'faculties')
         $faculties = [
             1 => 'Fakultas Ekonomi dan Bisnis',
             2 => 'Fakultas Ilmu Kesehatan',

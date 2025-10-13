@@ -11,6 +11,7 @@
         /* CSS DARI DASHBOARD UTAMA */
         :root {
             --color-bg-body: #4db8ff;
+            --color-sidebar-primary: #0066cc;
             --color-table-accent: #f7c948;
             --color-text-white: #fff;
             --color-text-dark: #000000;
@@ -19,6 +20,19 @@
             background: var(--color-bg-body);
             font-family: 'Arial', sans-serif;
             color: var(--color-text-white);
+        }
+        
+        /* Tambahan Styling Form */
+        .card {
+            border: 3px solid var(--color-sidebar-primary) !important;
+        }
+        .form-label-dark {
+             color: var(--color-text-dark) !important; 
+             font-weight: bold;
+        }
+        .form-control, .form-select {
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            color: var(--color-text-dark); /* Agar teks input terlihat jelas */
         }
     </style>
 </head>
@@ -38,7 +52,7 @@
                 @method('PUT') {{-- Wajib menggunakan method spoofing untuk HTTP PUT/PATCH --}}
 
                 @if ($errors->any())
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger" style="color: var(--color-text-dark);">
                         <ul class="mb-0">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -75,23 +89,57 @@
                     <div class="form-text text-muted">Opsional.</div>
                 </div>
 
+                {{-- FIELD: ROLE --}}
                 <div class="mb-3">
-                    <label for="password" class="form-label text-dark fw-bold">Password Baru (Kosongkan jika tidak diubah)</label>
-                    <input type="password" class="form-control" id="password" name="password">
-                    <div class="form-text text-muted">Hanya isi jika Anda ingin mengganti password. Minimal 8 karakter.</div>
-                </div>
-
-                <div class="mb-4">
                     <label for="role_id" class="form-label text-dark fw-bold">Role</label>
                     <select class="form-select" id="role_id" name="role_id" required>
                         <option value="">Pilih Role</option>
-                        {{-- Logika Role: Memilih nilai lama dari DB atau input lama --}}
-                        <option value="1" {{ old('role_id', $user->role_id) == 1 ? 'selected' : '' }}>Admin</option>
-                        <option value="2" {{ old('role_id', $user->role_id) == 2 ? 'selected' : '' }}>Dosen</option>
-                        <option value="3" {{ old('role_id', $user->role_id) == 3 ? 'selected' : '' }}>Rektor</option>
-                        <option value="4" {{ old('role_id', $user->role_id) == 4 ? 'selected' : '' }}>Dekan</option>
-                        <option value="5" {{ old('role_id', $user->role_id) == 5 ? 'selected' : '' }}>Kaprodi</option>
+                        {{-- Logika untuk menampilkan daftar Role dari $roles --}}
+                        @if (isset($roles) && is_iterable($roles))
+                            @foreach ($roles as $role)
+                                <option value="{{ $role->id }}" 
+                                    {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
+                                    {{ $role->name }}
+                                </option>
+                            @endforeach
+                        @else
+                             {{-- Fallback jika $roles tidak dimuat --}}
+                            <option value="{{ old('role_id', $user->role_id) }}" selected disabled>
+                                {{ $user->role->name ?? 'Role tidak dimuat' }}
+                            </option>
+                        @endif
                     </select>
+                </div>
+                
+                {{-- START: FIELD BARU UNTUK FAKULTAS --}}
+                <div class="mb-4">
+                    <label for="faculty_id" class="form-label form-label-dark">Fakultas</label>
+                    <select class="form-select" id="faculty_id" name="faculty_id">
+                        <option value="">Pilih Fakultas (Opsional)</option>
+
+                        @forelse ($faculties as $faculty)
+                            <option value="{{ $faculty->id }}" 
+                                {{ old('faculty_id', $user->faculty_id) == $faculty->id ? 'selected' : '' }}>
+                                {{ $faculty->name }} ({{ $faculty->code }})
+                            </option>
+                        @empty
+                            <option value="" disabled>-- Data Fakultas tidak tersedia --</option>
+                        @endforelse
+                    </select>
+                    <div class="form-text text-muted">
+                        Hanya diisi jika pengguna berafiliasi dengan Fakultas tertentu.
+                    </div>
+                </div>
+                {{-- END: FIELD BARU UNTUK FAKULTAS --}}
+
+                <div class="mb-3 border-top pt-3">
+                    <label for="password" class="form-label text-dark fw-bold">
+                        Password Baru (Kosongkan jika tidak diubah)
+                    </label>
+                    <input type="password" class="form-control" id="password" name="password">
+                    <div class="form-text text-muted">
+                        Hanya isi jika Anda ingin mengganti password. Minimal 8 karakter.
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-between">

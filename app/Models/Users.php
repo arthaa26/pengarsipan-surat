@@ -21,10 +21,11 @@ class Users extends Authenticatable
         'username',
         'name',
         'no_hp',
-        'profile_photo_url', // <--- BARU DITAMBAHKAN
+        'profile_photo_url', 
         'email',
         'password',
-        'role_id'
+        'role_id',
+        'faculty_id' // WAJIB ADA untuk menyimpan ID Fakultas
     ];
 
     /**
@@ -50,8 +51,19 @@ class Users extends Authenticatable
         ];
     }
     
+    /**
+     * WAJIB: Relasi ke Model Role (Satu User memiliki Satu Role).
+     */
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+    
+    /**
+     * WAJIB: Relasi ke Model Faculty (Satu User memiliki Satu Fakultas).
+     */
+    public function faculty()
+    {
+        return $this->belongsTo(Faculty::class);
     }
 }

@@ -8,17 +8,72 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* CSS DARI DASHBOARD UTAMA */
+        /* === WARNA UTAMA === */
         :root {
             --color-bg-body: #4db8ff;
-            --color-table-accent: #f7c948;
+            --color-sidebar-primary: #0066cc; /* Biru gelap untuk tombol utama */
+            --color-sidebar-link-hover: #0059b3;
+            --color-table-accent: #f7c948; /* Kuning cerah untuk card */
             --color-text-white: #fff;
             --color-text-dark: #000000;
         }
         body {
-            background: var(--color-bg-body);
+            background-color: var(--color-bg-body);
             font-family: 'Arial', sans-serif;
             color: var(--color-text-white);
+        }
+        
+        /* Tambahan Styling Form yang Disederhanakan */
+        .card {
+            border: none !important; /* Hapus border 3px */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Tambah bayangan */
+            background-color: var(--color-table-accent) !important;
+        }
+        .form-label, .form-label-dark { /* Menggunakan form-label-dark untuk semua label */
+            color: var(--color-text-dark) !important; 
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-control, .form-select {
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            color: var(--color-text-dark); /* Teks input harus gelap */
+            background-color: var(--color-text-white);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--color-sidebar-primary);
+            box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.25);
+        }
+        .form-text.text-muted {
+            color: rgba(0, 0, 0, 0.6) !important; /* Agar terbaca di background kuning */
+            font-size: 0.85rem;
+        }
+        /* Styling Tombol Simpan (Success/Primary) */
+        .btn-success {
+            background-color: var(--color-sidebar-primary); /* Ubah Simpan ke warna Primary (Biru) */
+            border-color: var(--color-sidebar-primary);
+            color: var(--color-text-white);
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .btn-success:hover {
+            background-color: var(--color-sidebar-link-hover);
+            border-color: var(--color-sidebar-link-hover);
+        }
+        .btn-secondary {
+            color: var(--color-text-white);
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        /* Alert untuk Error */
+        .alert-danger {
+            color: var(--color-text-dark) !important;
+            background-color: rgba(255, 200, 200, 0.9);
+            border-color: #dc3545;
+        }
+        .alert-danger ul li {
+            color: var(--color-text-dark);
         }
     </style>
 </head>
@@ -27,15 +82,12 @@
 <div class="container mt-5">
     <h2 class="fw-bold text-white mb-4">Tambah Pengguna Baru</h2>
 
-    {{-- Kartu Form dengan Styling Admin yang Konsisten --}}
-    <div class="card shadow mx-auto" style="background-color: var(--color-table-accent); border: none; max-width: 600px;">
+    <div class="card shadow mx-auto" style="max-width: 600px;">
         <div class="card-body">
             
-            {{-- Form mengirim data ke route: admin.manajemenuser.store --}}
             <form action="{{ route('admin.manajemenuser.store') }}" method="POST">
                 @csrf
 
-                {{-- Alert untuk menampilkan error validasi --}}
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">
@@ -47,51 +99,71 @@
                 @endif
 
                 <div class="mb-3">
-                    <label for="name" class="form-label text-dark fw-bold">Nama Lengkap</label>
+                    <label for="name" class="form-label form-label-dark">Nama Lengkap</label>
                     <input type="text" class="form-control" id="name" name="name" 
-                           value="{{ old('name') }}" required>
+                            value="{{ old('name') }}" required>
                 </div>
                 
-                {{-- FIELD: Username --}}
                 <div class="mb-3">
-                    <label for="username" class="form-label text-dark fw-bold">Username</label>
+                    <label for="username" class="form-label form-label-dark">Username</label>
                     <input type="text" class="form-control" id="username" name="username" 
-                           value="{{ old('username') }}">
+                            value="{{ old('username') }}">
                     <div class="form-text text-muted">Opsional, harus unik.</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="email" class="form-label text-dark fw-bold">Email</label>
+                    <label for="email" class="form-label form-label-dark">Email</label>
                     <input type="email" class="form-control" id="email" name="email" 
-                           value="{{ old('email') }}" required>
+                            value="{{ old('email') }}" required>
                 </div>
                 
-                {{-- FIELD: No. HP --}}
                 <div class="mb-3">
-                    <label for="no_hp" class="form-label text-dark fw-bold">No. HP</label>
+                    <label for="no_hp" class="form-label form-label-dark">No. HP</label>
                     <input type="text" class="form-control" id="no_hp" name="no_hp" 
-                           value="{{ old('no_hp') }}">
+                            value="{{ old('no_hp') }}">
                     <div class="form-text text-muted">Opsional.</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="password" class="form-label text-dark fw-bold">Password</label>
+                    <label for="password" class="form-label form-label-dark">Password</label>
                     <input type="password" class="form-control" id="password" name="password" 
-                           required>
+                            required>
                     <div class="form-text text-muted">Minimal 8 karakter.</div>
                 </div>
 
-                <div class="mb-4">
-                    <label for="role_id" class="form-label text-dark fw-bold">Role</label>
+                <div class="mb-3">
+                    <label for="role_id" class="form-label form-label-dark">Role</label>
                     <select class="form-select" id="role_id" name="role_id" required>
                         <option value="">Pilih Role</option>
+                        {{-- Nilai disesuaikan dengan ID dari tabel 'roles' di screenshot (1-7) --}}
                         <option value="1" {{ old('role_id') == 1 ? 'selected' : '' }}>Admin</option>
-                        <option value="2" {{ old('role_id') == 2 || old('role_id') === null ? 'selected' : '' }}>Dosen</option>
-                        <option value="3" {{ old('role_id') == 3 || old('role_id') === null ? 'selected' : '' }}>Rektor</option>
-                        <option value="4" {{ old('role_id') == 4 || old('role_id') === null ? 'selected' : '' }}>Dekan</option>
-                        <option value="5" {{ old('role_id') == 5 || old('role_id') === null ? 'selected' : '' }}>Kaprodi</option>
+                        <option value="2" {{ old('role_id') == 2 ? 'selected' : '' }}>Rektor</option>
+                        <option value="3" {{ old('role_id') == 3 ? 'selected' : '' }}>Dekan</option>
+                        <option value="4" {{ old('role_id') == 4 ? 'selected' : '' }}>Dosen</option>
+                        <option value="5" {{ old('role_id') == 5 ? 'selected' : '' }}>Kaprodi</option>
+                        <option value="6" {{ old('role_id') == 6 ? 'selected' : '' }}>Tenaga Pendidik</option>
+                        <option value="7" {{ old('role_id') == 7 ? 'selected' : '' }}>Dosen Tugas Khusus</option>
                     </select>
                 </div>
+
+                {{--- FIELD BARU UNTUK FAKULTAS ---}}
+                <div class="mb-4">
+                    <label for="faculty_id" class="form-label form-label-dark">Fakultas</label>
+                    <select class="form-select" id="faculty_id" name="faculty_id">
+                        <option value="">Pilih Fakultas (Opsional)</option>
+                        
+                        {{-- ASUMSI: Variabel $faculties berisi data fakultas yang dikirim dari Controller --}}
+                        @forelse ($faculties ?? [] as $faculty)
+                            <option value="{{ $faculty->id }}" {{ old('faculty_id') == $faculty->id ? 'selected' : '' }}>
+                                {{ $faculty->name }} ({{ $faculty->code }})
+                            </option>
+                        @empty
+                            <option value="" disabled>-- Data Fakultas tidak tersedia --</option>
+                        @endforelse
+                    </select>
+                    <div class="form-text text-muted">Hanya diisi jika pengguna berafiliasi dengan Fakultas tertentu.</div>
+                </div>
+                {{--- END: FIELD BARU UNTUK FAKULTAS ---}}
 
                 <div class="d-flex justify-content-between">
                     <a href="{{ route('admin.manajemenuser.index') }}" class="btn btn-secondary">

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\KirimSurat;
 use App\Models\Role;
-use App\Models\Faculty; // Diperlukan untuk relasi Faculty
+use App\Models\Faculty; // PENTING: Diperlukan untuk relasi Faculty
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -67,7 +67,6 @@ class UsersController extends Controller
         }
         
         // Wajib eager load relasi agar Blade tidak N/A
-        // PENTING: Jika model User Anda bernama Users, ganti Model::find(Auth::id())
         $user->load(['role', 'faculty']); 
 
         $userId = $user->id;
@@ -77,7 +76,6 @@ class UsersController extends Controller
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
         // QUERY SURAT MASUK
-        // Baris 81 di sini memanggil getSuratMasukQuery, yang menyebabkan error.
         $suratMasukQuery = $this->getSuratMasukQuery($user); 
         $suratMasukCount = $suratMasukQuery->count();
         $suratMasuk = $suratMasukQuery->orderBy('created_at', 'desc')->limit(10)->get();
@@ -120,16 +118,33 @@ class UsersController extends Controller
         
         $userId = $user->id;
         $suratList = KirimSurat::where('user_id_1', $userId)
-                                ->with('user2')
-                                ->orderBy('created_at', 'desc')
-                                ->paginate(15);
-                                
+                                 ->with('user2')
+                                 ->orderBy('created_at', 'desc')
+                                 ->paginate(15);
+                                 
         $rawRoleName = $user->role->name ?? 'N/A';
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
         return view('user.DaftarSurat.keluar', compact('suratList', 'formattedRoleName'));
     }
 
+    // --- METODE PENGIRIMAN SURAT (FIXED) ---
+
+    public function createSurat()
+    {
+        $allFaculties = collect([]); // Default ke koleksi kosong
+
+        try {
+            // Mengambil semua data Fakultas dari database untuk dropdown tujuan
+            $allFaculties = Faculty::all();
+        } catch (\Exception $e) {
+            \Log::error("Failed to load faculties for Kirim Surat: " . $e->getMessage());
+        }
+        
+        // Asumsi nama view yang benar adalah 'user.kirimsurat.index' (sesuai kode lama)
+        return view('user.kirimsurat.index', compact('allFaculties'));
+    }
+    
     // --- METODE PROFIL ---
 
     public function editProfile()
@@ -187,10 +202,8 @@ class UsersController extends Controller
         return redirect()->route('user.daftar_surat.masuk');
     }
 
-    public function createSurat()
-    {
-        return view('user.kirimsurat.index');
-    }
+    // public function createSurat() (Sudah dipindahkan ke atas dan diperbaiki)
+    // ...
 
     public function viewSurat(KirimSurat $surat)
     {
@@ -221,13 +234,13 @@ class UsersController extends Controller
         $surat->delete();
         
         $redirectRoute = ($surat->user_id_1 == Auth::id()) 
-                            ? 'user.daftar_surat.keluar' 
-                            : 'user.daftar_surat.masuk';
-                            
+                             ? 'user.daftar_surat.keluar' 
+                             : 'user.daftar_surat.masuk';
+                             
         return redirect()->route($redirectRoute)->with('success', 'Surat berhasil dihapus.');
     }
 
-    // crud user
+    // crud user (Hapus/perbaiki duplikasi fungsi)
     public function create() { return view('users.create'); }
     public function store(Request $request) { /* ... */ }
     public function show($id) { $user = User::findOrFail($id); return view('users.show', compact('user')); }
