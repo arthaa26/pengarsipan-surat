@@ -11,12 +11,17 @@ return new class extends Migration
     {
         Schema::create('kirim_surat', function (Blueprint $table) {
             $table->id(); 
+            // Kolom User ID
             $table->foreignId('user_id_1')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_id_2')->nullable()->constrained('users')->onDelete('cascade');
-            $table->string('no_surat')->unique();
-            $table->date('tanggal_surat');
+            
+            // Kolom Baru Sesuai Model KirimSurat:
+            $table->string('kode_surat')->unique()->nullable(); // Dibuat nullable agar bisa di-generate setelah record dibuat, tapi unik
+            $table->string('title');
             $table->text('isi');
-            $table->string('lampiran')->nullable(); 
+            $table->string('tujuan');
+            $table->string('file_path')->nullable(); 
+            
             $table->timestamps();
         });
     }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class LoginController extends Controller
+class AuthController extends Controller // Changed class name from LoginController to AuthController
 {
     /**
      * Menampilkan halaman login.
@@ -61,6 +61,7 @@ class LoginController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/'); // Redirect ke halaman utama setelah logout
+        // Mengalihkan pengguna ke halaman /login
+        return redirect('/login'); 
     }
 }

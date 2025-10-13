@@ -29,7 +29,7 @@
             color: var(--color-text-white);
         }
 
-        /* LAYOUT */
+        /* LAYOUT & SIDEBAR */
         .app-layout {
             display: flex;
             min-height: 100vh;
@@ -40,7 +40,10 @@
             width: 250px; 
             flex-shrink: 0;
         }
-        .sidebar-menu a {
+
+        /* DEFAULT MENU LINK STYLE */
+        /* Target HANYA link level atas, untuk menghindari konflik dengan submenu */
+        .sidebar-menu > a { 
             display: flex; 
             align-items: center;
             background: var(--color-sidebar-link);
@@ -52,230 +55,119 @@
             font-weight: bold;
             transition: background 0.2s;
         }
-        .sidebar-menu a:hover {
+        .sidebar-menu > a:hover {
             background: var(--color-sidebar-link-hover);
         }
-        /* Highlight the active link for 'KIRIM SURAT' as per the image */
-        .sidebar-menu a[href*="kirim_surat"] {
-            background: var(--color-text-white); /* White background for active link */
-            color: var(--color-text-dark); /* Dark text for active link */
+
+        /* ACTIVE LINK STYLE (KIRIM SURAT) */
+        .sidebar-menu a.active-link { 
+            background: var(--color-text-white);
+            color: var(--color-text-dark);
         }
 
-        .main-content-col {
-            flex-grow: 1;
-            padding: 20px;
+        /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES - PERBAIKAN FINAL --- */
+        .sidebar-dropdown-item {
+            margin: 8px 0;
         }
-        .card-box {
-            border-radius: 10px;
-            padding: 20px;
-            color: var(--color-text-white);
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
+        
+        .sidebar-dropdown-toggle {
+            /* Pastikan tampilannya sama persis dengan link menu level atas */
+            display: flex !important;
             align-items: center;
-            min-height: 100px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .card-green {
-            background: var(--color-card-green);
-        }
-        .card-orange {
-            background: var(--color-card-orange); 
-        }
-        .card-box .number {
-            font-size: 2.5rem;
-            line-height: 1;
-        }
-        .card-box .icon {
-            font-size: 2.5rem;
-        }
-        .table-container {
-            background: var(--color-table-accent); 
-            border-radius: 10px;
-            padding: 0;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .table-header {
-            background: var(--color-table-accent);
+            justify-content: space-between; /* Menjaga panah di kanan */
+            background: var(--color-sidebar-link);
             color: var(--color-text-white);
-            padding: 15px 20px;
-            font-size: 1.2rem;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
             font-weight: bold;
-        }
-        .table th, .table td {
-            color: var(--color-text-dark); 
-            padding: 15px 10px;
-            vertical-align: middle;
-        }
-        .table thead tr {
-            color: var(--color-text-white);
-            font-weight: bold;
-            background-color: var(--color-table-accent);
-        }
-        .table-striped > tbody > tr:nth-of-type(odd) > * {
-            background-color: rgba(255, 255, 255, 0.7);
-        }
-        .table-striped > tbody > tr:nth-of-type(even) > * {
-            background-color: rgba(255, 255, 255, 0.9);
-        }
-        .btn-action {
-            width: 35px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            padding: 0;
-            margin: 2px 0; /* Add margin for small screens */
-        }
-        /* PROFILE STYLING */
-        .user-info { 
-            display: flex;
-            align-items: center;
+            transition: background 0.2s;
             cursor: pointer;
+            width: 100%;
+            text-align: left;
+            border: none;
+            line-height: 1.2;
         }
-        .user-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-right: 10px;
+        .sidebar-dropdown-toggle:hover {
+            background: var(--color-sidebar-link-hover);
             color: var(--color-text-white);
-            display: none; 
         }
-        @media (min-width: 576px) {
-            .user-name {
-                display: block; 
-            }
+        /* Style untuk toggle saat terbuka (seperti di gambar) */
+        .sidebar-dropdown-toggle[aria-expanded="true"] {
+            background: var(--color-sidebar-link-hover);
+            border-radius: 5px 5px 0 0;
         }
-        .profile-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            background-color: var(--color-text-white);
-            border: 2px solid var(--color-text-white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem; 
+        /* Rotasi ikon panah */
+        .sidebar-dropdown-toggle .bi-chevron-down {
+            transition: transform 0.3s;
         }
-        .action-buttons {
-            display: flex;
-            flex-direction: column; /* Stack buttons vertically on small screens */
-            gap: 5px;
-            align-items: center;
+        .sidebar-dropdown-toggle[aria-expanded="true"] .bi-chevron-down {
+            transform: rotate(-180deg);
         }
-        @media (min-width: 992px) {
-            .action-buttons {
-                flex-direction: row; /* Horizontal layout on large screens */
-            }
+
+        .sidebar-dropdown-menu {
+            /* Styling untuk Submenu */
+            /* Menggunakan list-unstyled agar tidak ada bullet point bawaan */
+            list-style: none; 
+            padding-left: 0;
+            margin-bottom: 0; /* Hapus margin bawah default */
+
+            position: static; 
+            background-color: var(--color-sidebar-link-hover);
+            border: none;
+            padding: 0 10px 5px 10px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: none; 
+            width: 100%;
+            margin-top: 0; /* Dibuat rapat dengan toggle */
         }
-        /* [UPDATED] LOGO STYLING */
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;    
-        }
-        .logo-img {
-            width: 65px; /* Ukuran logo */
-            height: 65px;
-            border-radius: 50%;
-            object-fit: cover; /* Penting untuk gambar */
-            background-color: #b748f7ff; /* Warna latar belakang logo jika gambar gagal dimuat */
-            margin-right: 10px;
-            display: block; /* Agar img bisa diatur dimensinya */
-            border: 2px solid var(--color-text-white);
-        }
-        .logo-text {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--color-text-white);
+        .sidebar-dropdown-menu li {
+            /* Pastikan setiap item list submenu rapat */
             margin: 0;
         }
-
-        /* CUSTOM FORM STYLING for Kirim Surat */
-        .kirim-surat-panel {
-            background-color: var(--color-kirim-surat-bg); /* Yellow background */
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            margin-top: 20px;
-        }
-        .kirim-surat-panel h4 {
-            color: var(--color-text-dark);
-            font-weight: bold;
-            margin-bottom: 25px;
-            border-bottom: 3px solid var(--color-text-dark);
-            padding-bottom: 10px;
-            display: inline-block;
-        }
-        .form-control-custom {
-            height: 50px; /* Adjust height to match the image */
-            border-radius: 10px;
-            border: 2px solid var(--color-text-dark);
-            font-weight: bold;
-            font-size: 1rem;
-            box-shadow: none !important; /* Remove default bootstrap shadow on focus */
-        }
-        /* Style for disabled/readonly fields */
-        .form-control-custom:disabled, .form-control-custom[readonly] {
-            background-color: #fff; /* White background for disabled field */
-            color: var(--color-sidebar-primary); /* Use a distinct color for the auto-generated code */
-            opacity: 1; /* Ensure text is fully visible */
-        }
-        .form-label-custom {
-            color: var(--color-text-dark);
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-        .radio-label-custom {
-            color: var(--color-text-dark);
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-right: 20px;
-        }
-        .form-check-input:checked {
-            background-color: var(--color-sidebar-primary); 
-            border-color: var(--color-sidebar-primary);
-        }
-        .form-check-input {
-            width: 1.3em;
-            height: 1.3em;
-        }
-        /* Style for the Upload File input to look like the image */
-        .input-group-upload .form-control-custom {
-            border-right: none;
-            flex-grow: 1;
-        }
-        .input-group-upload .input-group-text {
-            background-color: var(--color-text-white);
-            color: var(--color-text-dark);
-            border: 2px solid var(--color-text-dark);
-            border-left: none;
-            height: 50px;
-            border-radius: 0 10px 10px 0;
-            font-size: 1.5rem;
-            padding: 0 15px;
-        }
-        .btn-submit-custom {
-            background-color: var(--color-sidebar-primary);
+        .sidebar-dropdown-menu li a {
+            /* Styling untuk setiap item submenu */
+            display: flex;
+            align-items: center;
+            background: transparent !important; 
             color: var(--color-text-white);
-            font-weight: bold;
-            padding: 10px 30px;
-            border-radius: 8px;
-            border: none;
-            margin-top: 20px;
-            font-size: 1.2rem;
-            transition: background-color 0.2s;
+            font-weight: normal;
+            padding: 8px 10px 8px 30px; /* Indentasi submenu */
+            margin: 2px 0;
+            border-radius: 3px;
+            text-decoration: none;
         }
-        .btn-submit-custom:hover {
-            background-color: var(--color-sidebar-link-hover);
+        .sidebar-dropdown-menu li a:hover {
+            background: var(--color-sidebar-primary) !important;
+            color: var(--color-text-white) !important;
         }
-        .radio-group-container {
-            margin-top: 15px;
-            margin-bottom: 25px;
-        }
+        /* --- END SIDEBAR DROPDOWN STYLES --- */
+
+
+        /* PROFILE STYLING & LOGO (KEEP EXISTING) */
+        .user-info { display: flex; align-items: center; cursor: pointer; }
+        .user-name { font-size: 1.1rem; font-weight: bold; margin-right: 10px; color: var(--color-text-white); display: none; }
+        @media (min-width: 576px) { .user-name { display: block; } }
+        .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: var(--color-text-white); border: 2px solid var(--color-text-white); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .logo-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; background-color: #b748f7ff; margin-right: 10px; display: block; border: 2px solid var(--color-text-white); }
+        .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
+
+        /* CUSTOM FORM STYLING for Kirim Surat (KEEP EXISTING) */
+        .main-content-col { flex-grow: 1; padding: 20px; }
+        .kirim-surat-panel { background-color: var(--color-kirim-surat-bg); padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); margin-top: 20px; }
+        .kirim-surat-panel h4 { color: var(--color-text-dark); font-weight: bold; margin-bottom: 25px; border-bottom: 3px solid var(--color-text-dark); padding-bottom: 10px; display: inline-block; }
+        .form-control-custom { height: 50px; border-radius: 10px; border: 2px solid var(--color-text-dark); font-weight: bold; font-size: 1rem; box-shadow: none !important; }
+        .form-control-custom:disabled, .form-control-custom[readonly] { background-color: #fff; color: var(--color-sidebar-primary); opacity: 1; }
+        .form-label-custom { color: var(--color-text-dark); font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
+        .radio-label-custom { color: var(--color-text-dark); font-weight: bold; font-size: 1.1rem; margin-right: 20px; }
+        .form-check-input:checked { background-color: var(--color-sidebar-primary); border-color: var(--color-sidebar-primary); }
+        .form-check-input { width: 1.3em; height: 1.3em; }
+        .input-group-upload .form-control-custom { border-right: none; flex-grow: 1; }
+        .input-group-upload .input-group-text { background-color: var(--color-text-white); color: var(--color-text-dark); border: 2px solid var(--color-text-dark); border-left: none; height: 50px; border-radius: 0 10px 10px 0; font-size: 1.5rem; padding: 0 15px; }
+        .btn-submit-custom { background-color: var(--color-sidebar-primary); color: var(--color-text-white); font-weight: bold; padding: 10px 30px; border-radius: 8px; border: none; margin-top: 20px; font-size: 1.2rem; transition: background-color 0.2s; }
+        .btn-submit-custom:hover { background-color: var(--color-sidebar-link-hover); }
+        .radio-group-container { margin-top: 15px; margin-bottom: 25px; }
     </style>
 </head>
 <body>
@@ -294,17 +186,55 @@
         </div>
         
         <div class="sidebar-menu">
-            {{-- Menggunakan rute yang didefinisikan --}}
-            <a href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>DASHBOARD</a>
+            {{-- MENU LEVEL ATAS --}}
             <a href="#"><i class="bi bi-list-task me-2"></i>MENU</a>
-            <a href="{{ route('user.daftar_surat.index') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT</a>
-            <a href="{{ route('user.kirim_surat.index') ?? '#' }}"><i class="bi bi-send-fill me-2"></i>KIRIM SURAT</a>
+            <a href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>DASHBOARD</a>
+            
+            {{-- DROPDOWN DAFTAR SURAT (Menggunakan Bootstrap Collapse) --}}
+            <div class="sidebar-dropdown-item">
+                {{-- Toggle Link: Tambahkan class 'collapsed' untuk memastikan tertutup di awal --}}
+                <a class="sidebar-dropdown-toggle collapsed" id="daftarSuratDropdown" 
+                   data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="false" 
+                   aria-controls="submenuDaftarSurat">
+                    <i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT
+                    <i class="bi bi-chevron-down" style="font-size: 1em;"></i>
+                </a>
+
+                {{-- Submenu yang akan di-collapse. Default tertutup. --}}
+                <div id="submenuDaftarSurat" class="collapse">
+                    <ul class="sidebar-dropdown-menu">
+                        <li>
+                            <a href="{{ route('user.daftar_surat.index', ['type' => 'masuk']) ?? '#' }}">
+                                <i class="bi bi-envelope me-2"></i>Surat Masuk
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('user.daftar_surat.index', ['type' => 'keluar']) ?? '#' }}">
+                                <i class="bi bi-envelope-open me-2"></i>Surat Keluar
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            {{-- Tautan KIRIM SURAT (Link aktif untuk halaman ini) --}}
+            <a href="{{ route('user.kirim_surat.index') ?? '#' }}" class="active-link"><i class="bi bi-send-fill me-2"></i>KIRIM SURAT</a>
         </div>
     </div>
 
     <div class="main-content-col">
         <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
             <h2 class="fw-bold text-white">KIRIM SURAT</h2>
+            
+            {{-- START: NOTIFIKASI SUKSES (Pop-up) --}}
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show w-100 position-absolute top-0 end-0 mt-2 me-4" role="alert" style="z-index: 1050; max-width: 400px; color: var(--color-text-dark);">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>Sukses!</strong> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+            {{-- END: NOTIFIKASI SUKSES --}}
             
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -351,7 +281,6 @@
         <div class="kirim-surat-panel">
             <h4 class="text-uppercase">Kirim Surat</h4>
             
-            {{-- The form itself --}}
             <form action="{{ route('user.kirim_surat.store') ?? '#' }}" method="POST" enctype="multipart/form-data">
                 @csrf 
                 
@@ -439,13 +368,13 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    /**
-     * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
-     */
+    document.getElementById('upload_file').addEventListener('change', function() {
+        const fileName = this.files.length > 0 ? this.files[0].name : '';
+        document.getElementById('file_display').value = fileName;
+    });
+
     function confirmDelete(suratId) {
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
-            // This function is included in the template but not directly used 
-            // in the 'Kirim Surat' view. It's safe to keep.
             document.getElementById('delete-form-' + suratId).submit();
         }
     }

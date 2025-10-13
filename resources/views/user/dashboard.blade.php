@@ -27,7 +27,7 @@
             color: var(--color-text-white);
         }
 
-        /* LAYOUT */
+        /* LAYOUT & SIDEBAR */
         .app-layout {
             display: flex;
             min-height: 100vh;
@@ -38,7 +38,9 @@
             width: 250px; 
             flex-shrink: 0;
         }
-        .sidebar-menu a {
+
+        /* DEFAULT MENU LINK STYLE */
+        .sidebar-menu > a { /* Target HANYA link level atas */
             display: flex; 
             align-items: center;
             background: var(--color-sidebar-link);
@@ -50,9 +52,89 @@
             font-weight: bold;
             transition: background 0.2s;
         }
-        .sidebar-menu a:hover {
+        .sidebar-menu > a:hover {
             background: var(--color-sidebar-link-hover);
         }
+        
+        /* ACTIVE LINK STYLE (DASHBOARD) */
+        .sidebar-menu a.active-link { 
+            background: var(--color-text-white);
+            color: var(--color-text-dark);
+        }
+        
+        /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES --- */
+        .sidebar-dropdown-item {
+            margin: 8px 0;
+        }
+        .sidebar-dropdown-toggle {
+            /* Menyesuaikan toggle agar terlihat seperti link menu biasa */
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between; 
+            background: var(--color-sidebar-link);
+            color: var(--color-text-white);
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.2s;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            border: none;
+            line-height: 1.2;
+        }
+        .sidebar-dropdown-toggle:hover {
+            background: var(--color-sidebar-link-hover);
+            color: var(--color-text-white);
+        }
+        /* Style untuk toggle saat terbuka */
+        .sidebar-dropdown-toggle[aria-expanded="true"] {
+            background: var(--color-sidebar-link-hover);
+            border-radius: 5px 5px 0 0;
+        }
+        /* Rotasi ikon panah */
+        .sidebar-dropdown-toggle .bi-chevron-down {
+            transition: transform 0.3s;
+        }
+        .sidebar-dropdown-toggle[aria-expanded="true"] .bi-chevron-down {
+            transform: rotate(-180deg);
+        }
+        .sidebar-dropdown-menu {
+            /* Styling untuk Submenu */
+            list-style: none; 
+            padding-left: 0;
+            margin-bottom: 0; 
+            position: static; 
+            background-color: var(--color-sidebar-link-hover);
+            border: none;
+            padding: 0 10px 5px 10px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: none; 
+            width: 100%;
+            margin-top: 0; 
+        }
+        .sidebar-dropdown-menu li {
+            margin: 0;
+        }
+        .sidebar-dropdown-menu li a {
+            /* Style untuk setiap item submenu */
+            display: flex;
+            align-items: center;
+            background: transparent !important; 
+            color: var(--color-text-white);
+            font-weight: normal;
+            padding: 8px 10px 8px 30px; 
+            margin: 2px 0;
+            border-radius: 3px;
+            text-decoration: none;
+        }
+        .sidebar-dropdown-menu li a:hover {
+            background: var(--color-sidebar-primary) !important;
+            color: var(--color-text-white) !important;
+        }
+        /* --- END SIDEBAR DROPDOWN STYLES --- */
+
         .main-content-col {
             flex-grow: 1;
             padding: 20px;
@@ -166,16 +248,16 @@
         .sidebar-header {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;    
+            margin-bottom: 20px; 
         }
         .logo-img {
             width: 65px; /* Ukuran logo */
             height: 65px;
             border-radius: 50%;
             object-fit: cover; /* Penting untuk gambar */
-            background-color: #b748f7ff; /* Warna latar belakang logo jika gambar gagal dimuat */
+            background-color: #b748f7ff; 
             margin-right: 10px;
-            display: block; /* Agar img bisa diatur dimensinya */
+            display: block; 
             border: 2px solid var(--color-text-white);
         }
         .logo-text {
@@ -202,10 +284,38 @@
         </div>
         
         <div class="sidebar-menu">
-            {{-- Menggunakan rute yang didefinisikan --}}
-            <a href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>DASHBOARD</a>
+            {{-- MENU LEVEL ATAS --}}
             <a href="#"><i class="bi bi-list-task me-2"></i>MENU</a>
-            <a href="{{ route('user.daftar_surat.index') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT</a>
+            <a href="{{ route('user.dashboard') ?? '#' }}" class="active-link"><i class="bi bi-speedometer2 me-2"></i>DASHBOARD</a>
+            
+            {{-- DROPDOWN DAFTAR SURAT (Menggunakan Bootstrap Collapse untuk tampilan sidebar yang stabil) --}}
+            <div class="sidebar-dropdown-item">
+                {{-- Toggle Link --}}
+                <a class="sidebar-dropdown-toggle collapsed" id="daftarSuratDropdown" 
+                   data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="false" 
+                   aria-controls="submenuDaftarSurat">
+                    <i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT
+                    <i class="bi bi-chevron-down" style="font-size: 1em;"></i>
+                </a>
+
+                {{-- Submenu yang akan di-collapse --}}
+                <div class="collapse" id="submenuDaftarSurat">
+                    <ul class="sidebar-dropdown-menu">
+                        <li>
+                            <a href="{{ route('user.daftar_surat.index', ['type' => 'masuk']) ?? '#' }}">
+                                <i class="bi bi-envelope me-2"></i>Surat Masuk
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('user.daftar_surat.index', ['type' => 'keluar']) ?? '#' }}">
+                                <i class="bi bi-envelope-open me-2"></i>Surat Keluar
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            {{-- Tautan KIRIM SURAT --}}
             <a href="{{ route('user.kirim_surat.index') ?? '#' }}"><i class="bi bi-send-fill me-2"></i>KIRIM SURAT</a>
         </div>
     </div>
@@ -254,6 +364,16 @@
                 </ul>
             </div>
         </div>
+        
+        {{-- START: NOTIFIKASI SUKSES (Jika di-redirect dari halaman lain) --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show w-100 mb-4" role="alert" style="color: var(--color-text-dark);">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        {{-- END: NOTIFIKASI SUKSES --}}
 
         {{-- CARD COUNT: Menampilkan data dari Controller --}}
         <div class="row g-4 mt-2">
@@ -261,7 +381,7 @@
                 <div class="card-box card-green">
                     <div>
                         <div class="text-uppercase" style="font-size: 0.9rem;">SURAT MASUK</div>
-                        {{-- Data jumlah surat masuk --}}
+                        {{-- Data jumlah surat masuk dari Controller --}}
                         <div class="number">{{ $suratMasukCount ?? 0 }}</div>
                     </div>
                     <i class="bi bi-envelope-fill icon"></i>
@@ -271,7 +391,7 @@
                 <div class="card-box card-orange">
                     <div>
                         <div class="text-uppercase" style="font-size: 0.9rem;">SURAT KELUAR</div>
-                        {{-- Data jumlah surat keluar --}}
+                        {{-- Data jumlah surat keluar dari Controller --}}
                         <div class="number">{{ $suratKeluarCount ?? 0 }}</div>
                     </div>
                     <i class="bi bi-envelope-open-fill icon"></i>
@@ -287,12 +407,11 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
-                            {{-- [UPDATED] Kolom 'Nomor Surat' dihapus --}}
                             <th style="width: 15%;">Kode Surat</th>
                             <th style="width: 30%;">Title</th>
                             <th style="width: 30%;">Isi</th>
-                            <th style="width: 15%;">Lampiran</th> {{-- Lebar disesuaikan untuk 3 tombol --}}
-                            <th style="width: 5%;">Aksi</th> {{-- Lebar disesuaikan --}}
+                            <th style="width: 15%;">Lampiran</th> 
+                            <th style="width: 5%;">Aksi</th> 
                         </tr>
                     </thead>
                     <tbody>
@@ -300,18 +419,20 @@
                         @forelse ($suratMasuk ?? [] as $index => $surat)
                             <tr style="color: black;">
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $surat->kode_surat }}</td>
-                                <td>{{ $surat->title }}</td>
+                                {{-- Menggunakan kode_surat dari Model/DB --}}
+                                <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
+                                {{-- Menggunakan title dari Model/DB --}}
+                                <td>{{ $surat->title ?? 'Judul Tidak Ada' }}</td>
                                 {{-- Memotong isi surat agar tabel rapi --}}
-                                <td>{{ Illuminate\Support\Str::limit($surat->isi, 50) }}</td>
+                                <td>{{ Illuminate\Support\Str::limit($surat->isi ?? '', 50) }}</td>
                                 
-                                {{-- [UPDATED] Kolom Lampiran dengan 3 Opsi Aksi --}}
+                                {{-- Kolom Lampiran (Menggunakan file_path) --}}
                                 <td>
                                     {{-- Menggunakan 'file_path' sesuai Controller --}}
                                     @if (!empty($surat->file_path))
                                         <div class="action-buttons">
                                             
-                                            {{-- 1. Tombol Lihat/View File (target="_blank" untuk membuka di tab baru) --}}
+                                            {{-- 1. Tombol Lihat/View File --}}
                                             <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Lampiran" target="_blank">
                                                 <i class="bi bi-eye"></i>
                                             </a>
@@ -321,7 +442,7 @@
                                                 <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                             </a>
 
-                                            {{-- 3. Tombol Print (Menggunakan rute view_file dan memanggil window.print() di tab baru) --}}
+                                            {{-- 3. Tombol Print --}}
                                             <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
                                                 <i class="bi bi-printer-fill"></i>
                                             </a>
@@ -354,7 +475,6 @@
                             </tr>
                         @empty
                             <tr style="color: black;">
-                                {{-- Colspan disesuaikan menjadi 6 (5 kolom th + 1 untuk No) --}}
                                 <td colspan="6" class="text-center">Tidak ada surat masuk yang ditemukan.</td> 
                             </tr>
                         @endforelse
@@ -370,10 +490,9 @@
 <script>
     /**
      * Mengkonfirmasi penghapusan dan submit form DELETE yang sesuai.
-     * Catatan: Kami menggunakan confirm() sesuai dengan kode yang Anda berikan,
-     * tetapi disarankan menggunakan modal kustom di aplikasi nyata.
      */
     function confirmDelete(suratId) {
+        // PERHATIAN: DIsarankan menggunakan modal kustom daripada confirm() di aplikasi nyata
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
             document.getElementById('delete-form-' + suratId).submit();
         }

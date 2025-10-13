@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Surat; 
+use App\Models\KirimSurat; // Menggunakan model KirimSurat yang benar
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage; // Tambahkan import Storage
 
 class UsersController extends Controller
 {
@@ -20,24 +21,27 @@ class UsersController extends Controller
         $user = Auth::user();
         $userId = $user->id;
 
-        // 1. Hitung Surat Masuk (sesuai nama variabel di view: $suratMasukCount)
-        $suratMasukCount = Surat::where('to_user_id', $userId)->count();
+        // --- MENGHITUNG DAN MENGAMBIL DATA DARI TABEL kirim_surat ---
+        
+        // 1. Hitung Surat Masuk (Surat yang DITUJUKAN kepada user ini: user_id_2)
+        $suratMasukQuery = KirimSurat::where('user_id_2', $userId);
+        $suratMasukCount = $suratMasukQuery->count();
 
-        // 2. Hitung Surat Keluar (sesuai nama variabel di view: $suratKeluarCount)
-        $suratKeluarCount = Surat::where('from_user_id', $userId)->count();
+        // 2. Hitung Surat Keluar (Surat yang DIKIRIM dari user ini: user_id_1)
+        $suratKeluarQuery = KirimSurat::where('user_id_1', $userId);
+        $suratKeluarCount = $suratKeluarQuery->count();
 
-        // 3. Ambil Detail Data Surat Masuk untuk Tabel (sesuai nama variabel di view: $suratMasuk)
-        // Kita hanya mengambil surat yang ditujukan kepada user ini
-        $suratMasuk = Surat::where('to_user_id', $userId)
-                             ->orderBy('created_at', 'desc') 
-                             ->limit(10) // Batasi 10 surat terbaru
-                             ->get();
+        // 3. Ambil Detail Data Surat Masuk untuk Tabel (dibatasi 10)
+        $suratMasuk = $suratMasukQuery->orderBy('created_at', 'desc') 
+                                     ->limit(10)
+                                     ->get();
         
         // 4. Mengarahkan ke view dashboard user
+        // Pastikan nama view yang dikembalikan adalah 'user.dashboard' (sesuai rute Anda)
         return view('user.dashboard', [ 
-            'suratMasukCount' => $suratMasukCount, // Diperbaiki: count_masuk -> suratMasukCount
-            'suratKeluarCount' => $suratKeluarCount, // Diperbaiki: count_keluar -> suratKeluarCount
-            'suratMasuk' => $suratMasuk, // Diperbaiki: history_surat -> suratMasuk
+            'suratMasukCount' => $suratMasukCount,
+            'suratKeluarCount' => $suratKeluarCount,
+            'suratMasuk' => $suratMasuk,
         ]);
     }
 
@@ -64,7 +68,7 @@ class UsersController extends Controller
     /**
      * Method untuk melihat detail surat. Dipanggil oleh rute surat.view
      */
-    public function viewSurat(Surat $surat)
+    public function viewSurat(KirimSurat $surat)
     {
         // Logika untuk menampilkan detail surat
         // ...
@@ -72,10 +76,43 @@ class UsersController extends Controller
     }
 
     /**
+     * METHOD BARU: Menampilkan file lampiran di browser.
+     */
+    public function viewFileSurat(KirimSurat $surat)
+    {
+        if (Storage::disk('public')->exists($surat->file_path)) {
+            // Menggunakan response() untuk menampilkan file (misalnya PDF) di browser
+            return Storage::disk('public')->response($surat->file_path);
+        }
+        
+        // Jika file tidak ditemukan
+        abort(404, 'File lampiran tidak ditemukan.');
+    }
+    
+    /**
+     * METHOD BARU: Mendownload file lampiran.
+     */
+    public function downloadSurat(KirimSurat $surat)
+    {
+        if (Storage::disk('public')->exists($surat->file_path)) {
+            // Menggunakan download() untuk memaksa download file
+            return Storage::disk('public')->download($surat->file_path);
+        }
+        
+        // Jika file tidak ditemukan
+        abort(404, 'File lampiran tidak ditemukan.');
+    }
+
+    /**
      * Method untuk menghapus surat. Dipanggil oleh rute surat.delete
      */
-    public function deleteSurat(Surat $surat)
+    public function deleteSurat(KirimSurat $surat)
     {
+        // Hapus file terkait dari storage sebelum menghapus record
+        if ($surat->file_path) {
+            Storage::disk('public')->delete($surat->file_path);
+        }
+        
         // Hapus surat
         $surat->delete();
         

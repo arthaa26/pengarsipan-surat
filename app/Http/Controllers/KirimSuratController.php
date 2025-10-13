@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kirim_surat;
+use App\Models\KirimSurat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str; 
-use Illuminate\Support\Facades\Storage; // Penting untuk penanganan file
+use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Facades\Auth; // Import Auth
 
 class KirimSuratController extends Controller
 {
@@ -37,9 +38,9 @@ class KirimSuratController extends Controller
         $currentMonthRoman = $this->convertToRoman(Carbon::now()->month);
 
         // Ambil surat terakhir yang dibuat di tahun ini
-        $lastSurat = Kirim_surat::whereYear('created_at', $currentYear)
-                                ->orderBy('id', 'desc')
-                                ->first();
+        $lastSurat = KirimSurat::whereYear('created_at', $currentYear)
+                                 ->orderBy('id', 'desc')
+                                 ->first();
 
         $newSequence = 1;
 
@@ -65,7 +66,7 @@ class KirimSuratController extends Controller
     public function index()
     {
         // Mendapatkan semua surat keluar
-        $kirimSurat = Kirim_surat::all();
+        $kirimSurat = KirimSurat::all();
         // Anda mungkin perlu menyesuaikan view ini jika rutenya berbeda
         return view('surats.index', compact('kirimSurat'));
     }
@@ -99,6 +100,9 @@ class KirimSuratController extends Controller
         }
 
         // 3. Generate Kode Unik dan Kompilasi Data
+        // Mengatasi error 'user_id_1' doesn't have a default value
+        $validatedData['user_id_1'] = Auth::id(); // <--- BARIS PENTING: Mengambil ID user yang login
+        
         $validatedData['kode_surat'] = $this->generateSuratCode();
         // Petakan path file ke kolom database 'file_path'
         $validatedData['file_path'] = $filePath; 
@@ -107,27 +111,28 @@ class KirimSuratController extends Controller
         unset($validatedData['file_surat']); 
 
         // 4. Simpan Record ke Database
-        Kirim_surat::create($validatedData); 
+        KirimSurat::create($validatedData); 
         
         // 5. Redirect dan berikan pesan sukses
-        return redirect()->route('kirim-surat.index')->with('success', 'Surat berhasil dikirim dengan kode: ' . $validatedData['kode_surat']);
+        // Mengubah redirect ke rute yang sama (agar notifikasi muncul di halaman Kirim Surat)
+        return redirect()->route('user.kirim_surat.index')->with('success', 'Surat berhasil dikirim dengan kode: ' . $validatedData['kode_surat']);
     }
 
     public function show($id)
     {
-        $surat = Kirim_surat::findOrFail($id);
+        $surat = KirimSurat::findOrFail($id);
         return view('surats.show', compact('surat'));
     }
 
     public function edit($id)
     {
-        $surat = Kirim_surat::findOrFail($id);
+        $surat = KirimSurat::findOrFail($id);
         return view('surats.edit', compact('surat'));
     }
 
     public function update(Request $request, $id)
     {
-        $surat = Kirim_surat::findOrFail($id);
+        $surat = KirimSurat::findOrFail($id);
         
         // 1. Validasi Data (File bersifat 'nullable' karena tidak wajib di-upload ulang)
         $validationRules = [
@@ -158,12 +163,13 @@ class KirimSuratController extends Controller
         unset($validatedData['file_surat']); 
         $surat->update($validatedData); 
 
-        return redirect()->route('kirim-surat.index')->with('success', 'Surat berhasil diperbarui.');
+        // Redirect ke halaman Kirim Surat dengan pesan sukses
+        return redirect()->route('user.kirim_surat.index')->with('success', 'Surat berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        $surat = Kirim_surat::findOrFail($id);
+        $surat = KirimSurat::findOrFail($id);
 
         // Hapus file terkait dari storage sebelum menghapus record
         if ($surat->file_path) {
@@ -172,6 +178,7 @@ class KirimSuratController extends Controller
 
         $surat->delete(); 
         
-        return redirect()->route('kirim-surat.index')->with('success', 'Surat berhasil dihapus.');
+        // Redirect ke halaman Kirim Surat dengan pesan sukses
+        return redirect()->route('user.kirim_surat.index')->with('success', 'Surat berhasil dihapus.');
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Import Fasad Auth untuk proses login
-use Illuminate\Support\Facades\Hash; // Import Fasad Hash (jika diperlukan untuk registrasi)
-use App\Models\User; // Import Model User (jika diperlukan untuk registrasi)
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash; 
+use App\Models\User; 
 
 class AuthController extends Controller
 {
@@ -20,12 +20,16 @@ class AuthController extends Controller
     /**
      * Memproses permintaan login dan memverifikasi kredensial.
      */
-    public function login(Request $request)
+    public function login(Request $request) 
     {
         // 1. Validasi Input
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+        ], [
+            'email.required' => 'Kolom email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Kolom kata sandi wajib diisi.',
         ]);
 
         $remember = $request->filled('remember');
@@ -37,35 +41,40 @@ class AuthController extends Controller
             
             // 3. Pengecekan Peran (Role) dan Redirect
             $user = Auth::user();
+            $roleId = $user->role_id;
             
-            // ASUMSI:
-            // role_id == 1 adalah Admin
-            // role_id == 2 adalah Dosen
-            
-            // Mengarahkan user berdasarkan role_id
-            if ($user->role_id == 1) { 
-                // Jika User adalah Admin, arahkan ke dashboard admin
+            // Mengarahkan user berdasarkan role_id (sesuai tabel roles)
+            if ($roleId == 1) { 
+                // ID 1: Admin
                 return redirect()->intended('/admin/dashboard'); 
-            } elseif ($user->role_id == 2) { 
-                // Jika User adalah Dosen, arahkan ke dashboard dosen
+            } elseif ($roleId >= 2 && $roleId <= 6) { 
+                // ID 2 (Rektor), 3 (Dekan), 4 (Dosen), 5 (Tenaga Pendidik), 6 (Dosen Tugas Khusus)
+                // Semua peran ini diarahkan ke Dashboard Dosen/User (/dosen/dashboard)
                 return redirect()->intended('/dosen/dashboard'); 
             } else {
-                // Untuk role lain, arahkan ke dashboard umum atau berikan pesan error
+                // Fallback untuk role ID yang tidak teridentifikasi
                 return redirect()->intended('/dashboard'); 
             }
-            
         }
 
         // 4. Login GAGAL
-        // Kembalikan ke halaman login dengan pesan error
         return back()->withErrors([
             'email' => 'Email atau kata sandi yang Anda masukkan salah atau tidak terdaftar.',
         ])->onlyInput('email');
     }
     
-    // Metode registrasi dan logout harusnya juga ada di sini untuk kelengkapan
+    /**
+     * Menangani permintaan logout user.
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
 
-    // public function showRegistrationForm() { ... }
-    // public function register(Request $request) { ... }
-    // public function logout(Request $request) { ... }
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        // Mengalihkan pengguna kembali ke halaman login menggunakan rute bernama
+        return redirect()->route('login'); 
+    }
 }
