@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-ARSIP - Dashboard User</title>
+    <title>E-ARSIP - Daftar Surat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -212,7 +212,7 @@
 
     <div class="main-content-col">
         <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
-            <h2 class="fw-bold text-white">DASHBOARD USER</h2>
+            <h2 class="fw-bold text-white">DAFTAR SURAT</h2>
             
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -255,115 +255,7 @@
             </div>
         </div>
 
-        {{-- CARD COUNT: Menampilkan data dari Controller --}}
-        <div class="row g-4 mt-2">
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="card-box card-green">
-                    <div>
-                        <div class="text-uppercase" style="font-size: 0.9rem;">SURAT MASUK</div>
-                        {{-- Data jumlah surat masuk --}}
-                        <div class="number">{{ $suratMasukCount ?? 0 }}</div>
-                    </div>
-                    <i class="bi bi-envelope-fill icon"></i>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="card-box card-orange">
-                    <div>
-                        <div class="text-uppercase" style="font-size: 0.9rem;">SURAT KELUAR</div>
-                        {{-- Data jumlah surat keluar --}}
-                        <div class="number">{{ $suratKeluarCount ?? 0 }}</div>
-                    </div>
-                    <i class="bi bi-envelope-open-fill icon"></i>
-                </div>
-            </div>
-        </div>
 
-        {{-- TABLE: SURAT MASUK --}}
-        <div class="table-container mt-5">
-            <div class="table-header">SURAT MASUK</div>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mt-0">
-                    <thead>
-                        <tr>
-                            <th style="width: 5%;">No</th>
-                            {{-- [UPDATED] Kolom 'Nomor Surat' dihapus --}}
-                            <th style="width: 15%;">Kode Surat</th>
-                            <th style="width: 30%;">Title</th>
-                            <th style="width: 30%;">Isi</th>
-                            <th style="width: 15%;">Lampiran</th> {{-- Lebar disesuaikan untuk 3 tombol --}}
-                            <th style="width: 5%;">Aksi</th> {{-- Lebar disesuaikan --}}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{-- LOOPING DATA SURAT MASUK dari Controller. --}}
-                        @forelse ($suratMasuk ?? [] as $index => $surat)
-                            <tr style="color: black;">
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $surat->kode_surat }}</td>
-                                <td>{{ $surat->title }}</td>
-                                {{-- Memotong isi surat agar tabel rapi --}}
-                                <td>{{ Illuminate\Support\Str::limit($surat->isi, 50) }}</td>
-                                
-                                {{-- [UPDATED] Kolom Lampiran dengan 3 Opsi Aksi --}}
-                                <td>
-                                    {{-- Menggunakan 'file_path' sesuai Controller --}}
-                                    @if (!empty($surat->file_path))
-                                        <div class="action-buttons">
-                                            
-                                            {{-- 1. Tombol Lihat/View File (target="_blank" untuk membuka di tab baru) --}}
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Lampiran" target="_blank">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            
-                                            {{-- 2. Tombol Download --}}
-                                            <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download Lampiran">
-                                                <i class="bi bi-file-earmark-arrow-down-fill"></i>
-                                            </a>
-
-                                            {{-- 3. Tombol Print (Menggunakan rute view_file dan memanggil window.print() di tab baru) --}}
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
-                                                <i class="bi bi-printer-fill"></i>
-                                            </a>
-                                        </div>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                
-                                <td>
-                                    <div class="d-flex flex-column align-items-center">
-                                        {{-- Tombol Lihat Detail Surat --}}
-                                        <button class="btn btn-action btn-primary" title="Lihat Detail Surat"
-                                            onclick="window.location.href='{{ route('surat.view', $surat->id) }}'">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        {{-- Tombol Hapus --}}
-                                        <button class="btn btn-action btn-danger mt-1" title="Hapus"
-                                            onclick="confirmDelete('{{ $surat->id }}')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-
-                                    {{-- Form Hapus tersembunyi untuk method DELETE --}}
-                                    <form id="delete-form-{{ $surat->id }}" method="POST" action="{{ route('surat.delete', $surat->id) }}" style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr style="color: black;">
-                                {{-- Colspan disesuaikan menjadi 6 (5 kolom th + 1 untuk No) --}}
-                                <td colspan="6" class="text-center">Tidak ada surat masuk yang ditemukan.</td> 
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

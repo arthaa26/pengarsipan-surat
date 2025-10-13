@@ -66,7 +66,7 @@
         .sidebar-header {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;    
+            margin-bottom: 20px;     
         }
         .logo-img {
             width: 65px; 
@@ -236,8 +236,8 @@
                                 <td class="text-center">
                                     <div class="action-buttons justify-content-center">
                                         
-                                        {{-- 1. Tombol LIHAT DETAIL (Mata Biru) --}}
-                                        <a href="{{ route('surat.show_detail', $surat->id) ?? '#' }}" 
+                                        {{-- 1. Tombol LIHAT DETAIL (Mata Biru) - PERBAIKAN RUTE --}}
+                                        <a href="{{ route('admin.surat.view', $surat->id) }}" 
                                            class="btn btn-action btn-primary" title="Lihat Detail Surat">
                                             <i class="bi bi-eye"></i>
                                         </a>
@@ -248,8 +248,8 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                         
-                                        {{-- Form Hapus tersembunyi untuk method DELETE --}}
-                                        <form id="delete-form-{{ $surat->id }}" method="POST" action="{{ route('surat.delete', $surat->id) }}" style="display: none;">
+                                        {{-- Form Hapus tersembunyi untuk method DELETE - PERBAIKAN RUTE --}}
+                                        <form id="delete-form-{{ $surat->id }}" method="POST" action="{{ route('admin.surat.delete', $surat->id) }}" style="display: none;">
                                             @csrf
                                             @method('DELETE')
                                         </form>
