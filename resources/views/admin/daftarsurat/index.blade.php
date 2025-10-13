@@ -215,7 +215,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- ⚠️ PENTING: Menggunakan data dummy sementara agar tombol muncul --}}
                         {{-- Ganti $suratHistory menjadi data dari Controller Anda yang sudah terkoneksi DB --}}
                         @php
                             $suratHistory = $suratHistory ?? collect([

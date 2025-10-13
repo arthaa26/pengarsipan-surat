@@ -67,7 +67,6 @@
             margin: 8px 0;
         }
         .sidebar-dropdown-toggle {
-            /* Menyesuaikan toggle agar terlihat seperti link menu biasa */
             display: flex !important;
             align-items: center;
             justify-content: space-between; 
@@ -101,7 +100,6 @@
             transform: rotate(-180deg);
         }
         .sidebar-dropdown-menu {
-            /* Styling untuk Submenu */
             list-style: none; 
             padding-left: 0;
             margin-bottom: 0; 
@@ -118,7 +116,6 @@
             margin: 0;
         }
         .sidebar-dropdown-menu li a {
-            /* Style untuk setiap item submenu */
             display: flex;
             align-items: center;
             background: transparent !important; 
@@ -292,8 +289,8 @@
             <div class="sidebar-dropdown-item">
                 {{-- Toggle Link --}}
                 <a class="sidebar-dropdown-toggle collapsed" id="daftarSuratDropdown" 
-                   data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="false" 
-                   aria-controls="submenuDaftarSurat">
+                    data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="false" 
+                    aria-controls="submenuDaftarSurat">
                     <i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT
                     <i class="bi bi-chevron-down" style="font-size: 1em;"></i>
                 </a>
@@ -302,12 +299,14 @@
                 <div class="collapse" id="submenuDaftarSurat">
                     <ul class="sidebar-dropdown-menu">
                         <li>
-                            <a href="{{ route('user.daftar_surat.index', ['type' => 'masuk']) ?? '#' }}">
+                            {{-- MENGGUNAKAN RUTE SPESIFIK --}}
+                            <a href="{{ route('user.daftar_surat.masuk') ?? '#' }}">
                                 <i class="bi bi-envelope me-2"></i>Surat Masuk
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('user.daftar_surat.index', ['type' => 'keluar']) ?? '#' }}">
+                            {{-- MENGGUNAKAN RUTE SPESIFIK --}}
+                            <a href="{{ route('user.daftar_surat.keluar') ?? '#' }}">
                                 <i class="bi bi-envelope-open me-2"></i>Surat Keluar
                             </a>
                         </li>
@@ -349,9 +348,15 @@
                         @auth {{ Auth::user()->name }} @else Guest @endauth
                     </li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle me-2"></i>User Profile</a></li>
+                    <li>
+                        {{-- FIX: Tautan ke halaman Edit Profil --}}
+                        <a class="dropdown-item" href="{{ route('user.profile.edit') ?? '#' }}"><i class="bi bi-person-circle me-2"></i>User Profile</a>
+                    </li>
                     <li><a class="dropdown-item" href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                    <li><a class="dropdown-item" href="{{ route('user.daftar_surat.index') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>Surat</a></li>
+                    <li>
+                        {{-- FIX: Tautan Surat dialihkan ke Daftar Surat Masuk (sebagai default) --}}
+                        <a class="dropdown-item" href="{{ route('user.daftar_surat.masuk') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>Surat</a>
+                    </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -399,7 +404,7 @@
             </div>
         </div>
 
-        {{-- TABLE: SURAT MASUK --}}
+        {{-- TABLE: SURAT MASUK (Ringkasan 10 Data Terbaru) --}}
         <div class="table-container mt-5">
             <div class="table-header">SURAT MASUK</div>
             <div class="table-responsive">
@@ -428,7 +433,6 @@
                                 
                                 {{-- Kolom Lampiran (Menggunakan file_path) --}}
                                 <td>
-                                    {{-- Menggunakan 'file_path' sesuai Controller --}}
                                     @if (!empty($surat->file_path))
                                         <div class="action-buttons">
                                             

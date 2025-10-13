@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-ARSIP - Daftar Surat Masuk</title>
+    <title>E-ARSIP - Daftar Surat Keluar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -65,20 +65,16 @@
             margin: 2px 0; border-radius: 3px; text-decoration: none;
         }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
-
+        
         /* [BARU] ACTIVE SUBLINK STYLE */
-        .sidebar-dropdown-menu li a.active-sublink-masuk {
-             background: var(--color-sidebar-primary) !important;
+        .sidebar-dropdown-menu li a.active-sublink { 
+             background: var(--color-sidebar-primary) !important; 
              font-weight: bold;
         }
         /* --- END SIDEBAR DROPDOWN STYLES --- */
 
         .main-content-col { flex-grow: 1; padding: 20px; }
-        .card-box {
-            border-radius: 10px; padding: 20px; color: var(--color-text-white); 
-            font-weight: bold; display: flex; justify-content: space-between; 
-            align-items: center; min-height: 100px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-        }
+        /* Hapus Card Box di halaman ini karena ini bukan dashboard */
         .table-container { 
             background: var(--color-table-accent); border-radius: 10px; padding: 0; 
             overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
@@ -95,12 +91,14 @@
             width: 35px; height: 35px; display: inline-flex; align-items: center; 
             justify-content: center; border-radius: 6px; padding: 0; margin: 2px 0; 
         }
+        /* Profile Styles */
         .user-info { display: flex; align-items: center; cursor: pointer; }
         .user-name { font-size: 1.1rem; font-weight: bold; margin-right: 10px; color: var(--color-text-white); display: none; }
         @media (min-width: 576px) { .user-name { display: block; } }
         .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: var(--color-text-white); border: 2px solid var(--color-text-white); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .action-buttons { display: flex; flex-direction: column; gap: 5px; align-items: center; }
         @media (min-width: 992px) { .action-buttons { flex-direction: row; } }
+        /* Logo Styles */
         .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
         .logo-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; background-color: #b748f7ff; margin-right: 10px; display: block; border: 2px solid var(--color-text-white); }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
@@ -139,13 +137,13 @@
                 <div class="collapse show" id="submenuDaftarSurat">
                     <ul class="sidebar-dropdown-menu">
                         <li>
-                            {{-- Tautan aktif untuk halaman ini --}}
-                            <a href="{{ route('user.daftar_surat.masuk') ?? '#' }}" class="active-sublink-masuk">
+                            <a href="{{ route('user.daftar_surat.masuk') ?? '#' }}">
                                 <i class="bi bi-envelope me-2"></i>Surat Masuk
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('user.daftar_surat.keluar') ?? '#' }}">
+                            {{-- Tautan aktif untuk halaman ini --}}
+                            <a href="{{ route('user.daftar_surat.keluar') ?? '#' }}" class="active-sublink">
                                 <i class="bi bi-envelope-open me-2"></i>Surat Keluar
                             </a>
                         </li>
@@ -160,7 +158,7 @@
 
     <div class="main-content-col">
         <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
-            <h2 class="fw-bold text-white">DAFTAR SURAT MASUK</h2>
+            <h2 class="fw-bold text-white">DAFTAR SURAT KELUAR</h2>
 
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -211,10 +209,10 @@
         @endif
         {{-- END: NOTIFIKASI SUKSES --}}
 
-        {{-- TABLE: SURAT MASUK --}}
-        {{-- Mengambil data dari variabel $suratList yang dikirim oleh UsersController@daftarSuratMasuk --}}
+        {{-- TABLE: SURAT KELUAR --}}
+        {{-- Mengambil data dari variabel $suratList yang dikirim oleh UsersController@daftarSuratKeluar --}}
         <div class="table-container mt-5">
-            <div class="table-header">SURAT MASUK (Total: {{ $suratList->total() ?? 0 }})</div>
+            <div class="table-header">SURAT KELUAR (Total: {{ $suratList->total() ?? 0 }})</div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover mt-0">
                     <thead>
@@ -228,7 +226,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- LOOPING DATA SURAT MASUK dari Controller. --}}
+                        {{-- LOOPING DATA SURAT KELUAR dari Controller. --}}
                         @forelse ($suratList ?? [] as $index => $surat)
                             <tr style="color: black;">
                                 {{-- Penomoran yang benar dengan pagination --}}
@@ -276,7 +274,7 @@
                             </tr>
                         @empty
                             <tr style="color: black;">
-                                <td colspan="6" class="text-center">Tidak ada surat masuk yang ditemukan.</td>
+                                <td colspan="6" class="text-center">Tidak ada surat keluar yang ditemukan.</td>
                             </tr>
                         @endforelse
                     </tbody>

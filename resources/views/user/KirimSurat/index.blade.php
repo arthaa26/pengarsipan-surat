@@ -204,12 +204,12 @@
                 <div id="submenuDaftarSurat" class="collapse">
                     <ul class="sidebar-dropdown-menu">
                         <li>
-                            <a href="{{ route('user.daftar_surat.index', ['type' => 'masuk']) ?? '#' }}">
+                            <a href="{{ route('user.daftar_surat.masuk', ['type' => 'masuk']) ?? '#' }}">
                                 <i class="bi bi-envelope me-2"></i>Surat Masuk
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('user.daftar_surat.index', ['type' => 'keluar']) ?? '#' }}">
+                            <a href="{{ route('user.daftar_surat.keluar', ['type' => 'keluar']) ?? '#' }}">
                                 <i class="bi bi-envelope-open me-2"></i>Surat Keluar
                             </a>
                         </li>

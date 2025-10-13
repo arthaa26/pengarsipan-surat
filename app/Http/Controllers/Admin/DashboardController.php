@@ -4,44 +4,43 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-// use App\Models\Surat; // Pastikan Anda mengimpor model Surat Anda
-use Illuminate\Support\Facades\DB; // Hanya jika Anda menggunakan DB facade untuk query
+use App\Models\KirimSurat; // Model yang benar untuk data surat
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     /**
-     * Menampilkan dashboard admin dengan data summary.
+     * Menampilkan Dashboard Admin.
+     * Mengambil semua data surat dari tabel kirim_surat secara global.
      */
     public function index()
     {
-        // --- LOGIKA PENGAMBILAN DATA (Contoh) ---
+        // --- 1. MENGAMBIL SEMUA DATA (GLOBAL) ---
         
-        // Asumsi model Surat ada dan memiliki scope 'masuk' atau 'jenis_surat' = 'masuk'
-        // Anda perlu menyesuaikan ini dengan model dan database Anda yang sebenarnya.
+        // Ambil semua surat (History Surat) tanpa filter user ID
+        $allSurat = KirimSurat::orderBy('created_at', 'desc')->get();
         
-        try {
-            // Contoh 1: Menghitung jumlah surat masuk (Asumsi ada model Surat)
-            // $suratMasukCount = Surat::where('jenis_surat', 'masuk')->count();
-            
-            // Contoh 2: Menggunakan DB facade jika model tidak tersedia (ganti 'nama_tabel_surat')
-            $suratMasukCount = DB::table('surat')->where('jenis_surat', 'masuk')->count();
-
-            // Mengambil 5 surat masuk terbaru untuk ditampilkan di tabel
-            // $suratMasuk = Surat::where('jenis_surat', 'masuk')->latest()->limit(5)->get();
-            $suratMasuk = DB::table('surat')
-                            ->where('jenis_surat', 'masuk')
-                            ->orderBy('created_at', 'desc')
-                            ->limit(5)
-                            ->get();
-
-
-        } catch (\Exception $e) {
-            // Jika ada masalah database atau tabel belum ada
-            $suratMasukCount = 0;
-            $suratMasuk = collect(); // Membuat koleksi kosong agar @forelse tidak error
-        }
+        // --- 2. MENGHITUNG STATISTIK GLOBAL ---
         
-        // Memuat View: resources/views/admin/dashboard.blade.php
-        return view('admin.dashboard', compact('suratMasukCount', 'suratMasuk')); 
+        // Jumlah total semua baris di tabel kirim_surat
+        $totalSuratCount = $allSurat->count();
+        
+        // Surat Masuk Global: Semua surat yang memiliki tujuan (user_id_2 atau tujuan diisi)
+        // Kita menggunakan whereNotNull('user_id_2') sebagai proxy utama,
+        // karena ini menunjukkan adanya penerima atau tujuan yang spesifik.
+        $suratMasukCount = KirimSurat::whereNotNull('user_id_2')->count();
+        
+        // Surat Keluar Global: Semua surat yang memiliki pengirim (user_id_1 diisi)
+        $suratKeluarCount = KirimSurat::whereNotNull('user_id_1')->count();
+        
+        // --- 3. MEMUAT VIEW ---
+        
+        // Variabel $suratMasuk digunakan untuk looping tabel History Surat
+        return view('admin.dashboard', [
+            'totalSuratCount' => $totalSuratCount,
+            'suratMasukCount' => $suratMasukCount,
+            'suratKeluarCount' => $suratKeluarCount,
+            'suratMasuk' => $allSurat, 
+        ]);
     }
 }

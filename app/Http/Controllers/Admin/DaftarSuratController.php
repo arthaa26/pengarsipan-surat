@@ -9,6 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\surat; 
 use App\Models\Surat_keluar; 
 use App\Models\Surat_masuk;  
+use App\Models\KirimSurat;
 
 class DaftarSuratController extends Controller
 {
@@ -20,7 +21,7 @@ class DaftarSuratController extends Controller
     {
         try {
             // 1. Ambil data dari Surat Masuk (Menggunakan aliasing yang akurat)
-            $dataMasuk = Surat_masuk::select(
+            $dataMasuk = KirimSurat::select(
                 'id_surat_keluar as id', // Alias ID dari kolom id_surat_keluar
                 'kode_surat', 
                 'tittle as title',      // Alias tittle (salah ketik di DB) menjadi title (di View)
@@ -28,7 +29,7 @@ class DaftarSuratController extends Controller
                 'created_at as tanggal_surat'
             )->get();
             
-            $dataKeluar = Surat_keluar::select(
+            $dataKeluar = KirimSurat::select(
                 'id as id',            
                 'kode_surat', 
                 'title',                
