@@ -95,45 +95,36 @@
             justify-content: center;
         }
         
-        /* === PERBAIKAN PROFIL START === */
         .user-info { 
             display: flex; 
             align-items: center; 
             cursor: pointer; 
-            /* Hapus: direction: rtl; */ 
         }
 
-        /* Container Nama/Role */
         .user-identity {
-            /* Hapus: direction: ltr; */
             display: flex; 
             flex-direction: column; 
             line-height: 1.2; 
-            margin-left: 0; /* Hapus margin kiri lama */
-            margin-right: 10px; /* Tambah margin kanan agar terpisah dari ikon */
-            text-align: right; /* Nama dan Role rata kanan */
-            order: -1; /* Pindah ke paling kiri di dalam user-info */
+            margin-left: 0;
+            margin-right: 10px; 
+            text-align: right; 
+            order: -1; 
         }
         .profile-icon {
-            order: 0; /* Tetap di tengah */
+            order: 0;
         }
-        /* Ikon Profil */
         .profile-img { 
-            /* Hapus: direction: ltr; */
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
             background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
             display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
             color: var(--color-sidebar-primary);
         }
-        /* Sembunyikan chevron bawaan bootstrap */
         .user-info .dropdown-toggle::after {
             display: none;
         }
-        /* Atur order untuk chevron kustom (jika ada) */
         .user-info .bi-chevron-down.ms-2 {
-            order: 1; /* Pindah ke paling kanan di dalam user-info */
+            order: 1; 
         }
-        /* === PERBAIKAN PROFIL END === */
 
         .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
         .user-role-display { 

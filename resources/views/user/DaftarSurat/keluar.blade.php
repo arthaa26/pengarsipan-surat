@@ -88,14 +88,12 @@
             display: flex; flex-direction: row; gap: 5px; align-items: center; justify-content: center; 
         }
         
-        /* === PERBAIKAN PROFIL START === */
         .user-info { 
             display: flex; 
             align-items: center; 
             cursor: pointer; 
         }
         
-        /* Container Nama/Role */
         .user-identity {
             display: flex; 
             flex-direction: column; 
@@ -105,12 +103,10 @@
             order: -1; 
         }
         
-        /* Container Ikon Profil */
         .profile-icon {
             order: 0; 
         }
         
-        /* Ikon Profil */
         .profile-img { 
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
             background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
@@ -118,13 +114,11 @@
             color: var(--color-sidebar-primary);
         }
         
-        /* Chevron Dropdown Bootstrap (yang ada di dalam user-info) */
         .user-info .dropdown-toggle::after {
             /* Pastikan chevron bawaan Bootstrap Sembunyi */
             display: none; 
         }
         
-        /* PENTING: Tambahkan styling untuk pagination agar terlihat bagus */
         .pagination-container {
             background-color: rgba(255, 255, 255, 0.9);
             border-top: 1px solid #dee2e6;

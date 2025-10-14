@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-ARSIP - Daftar Semua Surat (Admin)</title>
+    {{-- Memuat Bootstrap dan Bootstrap Icons dari CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -129,11 +130,29 @@
             .sidebar-menu > a { flex-basis: 48%; }
             .profile-img { width: 30px; height: 30px; font-size: 1.5rem; }
         }
+        
+        /* FIX PAGINATION STYLES (Agar terlihat di tema) */
+        .pagination .page-item .page-link {
+            color: var(--color-sidebar-primary); 
+            border: 1px solid var(--color-sidebar-link);
+            background-color: var(--color-text-white);
+        }
+        .pagination .page-item.active .page-link {
+            background-color: var(--color-sidebar-primary);
+            border-color: var(--color-sidebar-primary);
+            color: var(--color-text-white);
+        }
+        .pagination .page-item:not(.active) .page-link:hover {
+             background-color: var(--color-sidebar-link-hover);
+             color: var(--color-text-white);
+             border-color: var(--color-sidebar-link-hover);
+        }
     </style>
 </head>
 <body>
 
 <div class="app-layout">
+    {{-- SIDEBAR --}}
     <div class="sidebar">
         <div class="sidebar-header">
             <img
@@ -161,13 +180,15 @@
             </a>
         </div>
     </div>
+    {{-- END SIDEBAR --}}
 
+    {{-- MAIN CONTENT --}}
     <div class="main-content-col">
         <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
             <h2 class="fw-bold text-white">DAFTAR SEMUA SURAT</h2>
 
+            {{-- DROPDOWN PROFILE --}}
             <div class="dropdown">
-                {{-- FIX: Tata Letak Profile --}}
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
                         @php
@@ -230,9 +251,10 @@
                     </li>
                 </ul>
             </div>
+            {{-- END DROPDOWN PROFILE --}}
         </div>
 
-        {{-- START: NOTIFIKASI SUKSES --}}
+        {{-- START: NOTIFIKASI SUKSES/ERROR --}}
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show w-100 mb-4" role="alert" style="color: var(--color-text-dark);">
                 <i class="bi bi-check-circle-fill me-2"></i>
@@ -246,7 +268,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        {{-- END: NOTIFIKASI SUKSES --}}
+        {{-- END: NOTIFIKASI SUKSES/ERROR --}}
 
         {{-- TABLE: SURAT MASUK --}}
         <div class="table-container mt-5">
@@ -257,8 +279,8 @@
                         <tr>
                             <th style="width: 5%;">No</th>
                             <th style="width: 10%;">Tgl. Masuk</th> 
-                            <th style="width: 15%;">Pengirim</th>      
-                            <th style="width: 15%;">Fakultas</th>      
+                            <th style="width: 15%;">Pengirim</th> 
+                            <th style="width: 15%;">Fakultas</th> 
                             <th style="width: 10%;">Kode Surat</th>
                             <th style="width: 25%;">Title</th>
                             <th style="width: 15%;">Lampiran</th> 
@@ -331,24 +353,39 @@
                 </table>
             </div>
             
-            {{-- Link Pagination --}}
-            @if ($suratList ?? false)
-                <div class="d-flex justify-content-center p-3">
-                    {{ $suratList->links() }}
+            {{-- Pagination (mempertahankan query search) --}}
+            {{-- Perhatikan bahwa variabel yang dipaginate di sini adalah $users, tetapi di tabel menggunakan $suratList --}}
+            {{-- Asumsi Anda seharusnya menggunakan $suratList untuk pagination --}}
+            @if(is_object($suratList) && method_exists($suratList, 'links'))
+                <div class="d-flex justify-content-end p-3">
+                    {{ $suratList->onEachSide(1)->appends(request()->query())->links('pagination::bootstrap-5') }}
                 </div>
             @endif
+            {{-- Jika Anda benar-benar ingin menggunakan $users: --}}
+            {{--
+            @if(is_object($users) && method_exists($users, 'links'))
+                <div class="d-flex justify-content-end p-3">
+                    {{ $users->onEachSide(1)->appends(request()->query())->links('pagination::bootstrap-5') }}
+                </div>
+            @endif
+            --}}
         </div>
+        {{-- END TABLE --}}
+
         {{-- START: FOOTER HAK CIPTA --}}
+        {{-- Asumsi partials.footer ada dan berfungsi --}}
         @include('partials.footer')
         {{-- END: FOOTER HAK CIPTA --}}
     </div>
+    {{-- END MAIN CONTENT --}}
 </div>
 
+{{-- SCRIPT LENGKAP --}}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     /**
-     * Script untuk confir hapus surat
+     * Script untuk konfirmasi hapus surat
      */
     function confirmDelete(suratId) {
         if (confirm("Apakah Anda yakin ingin menghapus surat ini? (Aksi Admin)")) {
