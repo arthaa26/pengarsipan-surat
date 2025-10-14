@@ -5,105 +5,73 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Users; 
+use App\Models\User; 
 use App\Models\Role;
 use App\Models\Faculty; 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 class ManajemenUserController extends Controller
 {
-    /**
-     * Menyimpan pengguna baru ke database (admin.manajemenuser.store).
-     */
-    public function store(Request $request) 
-    { 
-        // NOTE: Type casting dihapus karena validasi Laravel sudah menangani tipe integer
-        
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role_id' => 'required|integer|exists:roles,id',
-            'faculty_id' => 'nullable|integer|exists:faculties,id',
-            'username' => 'nullable|string|max:255|unique:users',
-            'no_hp' => 'nullable|string|max:15',
-        ]);
-        
-        $validatedData['password'] = Hash::make($validatedData['password']);
-        
-        // Simpan data
-        Users::create($validatedData); 
+    public function index(Request $request) // <-- Menerima Request
+    {
+        // Ambil string pencarian dari request
+        $search = $request->query('search');
 
-        return redirect()->route('admin.manajemenuser.index')->with('success', 'Pengguna berhasil ditambahkan.');
-    }
+        try {
+            // 1. Inisialisasi query dengan eager loading untuk Faculty dan Role
+            $query = User::with(['role', 'faculty']); 
 
-    /**
-     * Memperbarui pengguna di database (admin.manajemenuser.update).
-     */
-    public function update(Request $request, $id) 
-    { 
-        $user = Users::findOrFail($id);
+            // 2.  logika pencarian jika ada pencarian
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    // Cari berdasarkan Nama atau Email
+                    $q->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('email', 'like', '%' . $search . '%');
+                })
+                // Untuk mencari berdasarkan nama Fakultas pake relasi (orWhereHas)
+                ->orWhereHas('faculty', function ($q) use ($search) {
+                    // Note: Asumsi nama kolom di tabel faculties adalah 'name'
+                    $q->where('name', 'like', '%' . $search . '%');
+                });
+            }
+            $users = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        // Validasi data
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id, 
-            'password' => 'nullable|string|min:8', // Password nullable
-            'role_id' => 'required|integer|exists:roles,id',
-            'faculty_id' => 'nullable|integer|exists:faculties,id', 
-            'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
-            'no_hp' => 'nullable|string|max:15',
-        ]);
-
-        // Hapus password dari data jika input kosong, agar password lama tetap utuh
-        if ($request->filled('password')) {
-            // Hash password baru jika diisi
-            $validatedData['password'] = Hash::make($request->input('password'));
-        } else {
-            // Hapus kunci password dari array update
-            unset($validatedData['password']); 
+        } catch (\Exception $e) {
+            Log::error("Error memuat data pengguna: " . $e->getMessage());
+            $users = User::paginate(10)->setCollection(collect());
+            return redirect()->route('admin.manajemenuser.index')->with('error', 'Gagal memuat data pengguna. Lihat log server.');
         }
 
-        // Update pengguna
-        $user->update($validatedData);
-
-        return redirect()->route('admin.manajemenuser.index')->with('success', 'Data pengguna berhasil diperbarui.');
-    }
-    
-    // NOTE: Fungsi index, create, edit, destroy, dan show harus berada di sini
-    // Saya asumsikan Anda telah menggabungkannya ke dalam Canvas Anda
-    public function index()
-    {
-        $users = Users::with(['role', 'faculty'])->latest()->paginate(10);
+        // Untuk mengirim variabel $users ke view
         return view('admin.manajemenuser.index', compact('users'));
     }
-
+    
     public function create()
     {
-        // Mengasumsikan Anda memiliki logic aman untuk memuat roles/faculties di sini
-        $roles = \App\Models\Role::all();
-        $faculties = \App\Models\Faculty::all();
+        $roles = Role::all();
+        $faculties = Faculty::all();
         return view('admin.manajemenuser.create', compact('roles', 'faculties'));
     }
     
     public function edit($id)
     {
-        $user = Users::with(['role', 'faculty'])->findOrFail($id);
-        $roles = \App\Models\Role::all();
-        $faculties = \App\Models\Faculty::all();
-        // Pastikan nama view yang benar adalah 'edit' jika Anda menggunakan file terpisah.
+        $user = User::with(['role', 'faculty'])->findOrFail($id);
+        $roles = Role::all();
+        $faculties = Faculty::all();
         return view('admin.manajemenuser.edit', compact('user', 'roles', 'faculties')); 
     }
 
     public function destroy($id)
     {
-        Users::destroy($id);
+        User::destroy($id);
         return redirect()->route('admin.manajemenuser.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 
     public function show($id)
     {
-        $user = Users::with(['role', 'faculty'])->findOrFail($id);
+        $user = User::with(['role', 'faculty'])->findOrFail($id);
         return view('admin.manajemenuser.show', compact('user'));
     }
+    
 }

@@ -20,8 +20,6 @@
         .sidebar-menu > a { display: flex; align-items: center; background: var(--color-sidebar-link); color: var(--color-text-white); text-decoration: none; margin: 8px 0; padding: 10px; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
         .sidebar-menu > a:hover { background: var(--color-sidebar-link-hover); }
         .sidebar-menu a.active-link { background: var(--color-text-white); color: var(--color-text-dark); }
-        
-        /* DROPDOWN & SIDEBAR STYLES */
         .sidebar-dropdown-item { margin: 8px 0; }
         .sidebar-dropdown-toggle { display: flex !important; align-items: center; justify-content: space-between; background: var(--color-sidebar-link); color: var(--color-text-white); padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; text-align: left; border: none; line-height: 1.2; transition: background 0.2s; }
         .sidebar-dropdown-toggle:hover { background: var(--color-sidebar-link-hover); }
@@ -30,15 +28,12 @@
         .sidebar-dropdown-menu li a { display: flex; align-items: center; background: transparent !important; color: var(--color-text-white); font-weight: normal; padding: 8px 10px 8px 30px; margin: 2px 0; border-radius: 3px; text-decoration: none; }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
 
-        /* MAIN CONTENT & FORM */
         .main-content-col { flex-grow: 1; padding: 20px; }
         .card-box-profile { border-radius: 10px; padding: 30px; background: var(--color-text-white); color: var(--color-text-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .form-label { font-weight: bold; }
         
-        /* Profile & Logo Styles */
         .user-info { display: flex; align-items: center; cursor: pointer; }
         
-        /* [BARU] Container untuk Nama dan Role/Fakultas */
         .user-identity {
             display: flex;
             flex-direction: column; 
@@ -49,15 +44,10 @@
 
         .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
         
-        /* [BARU] Gaya untuk Role dan Fakultas */
         .user-role-display { 
             font-size: 0.9rem; 
             font-weight: normal; 
-            color: rgba(255, 255, 255, 0.8); /* Agak redup */
             display: none; 
-        }
-        
-        @media (min-width: 576px) { 
             .user-name, .user-role-display { display: block; } 
         }
 
@@ -65,15 +55,13 @@
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
             background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
             display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
-            color: var(--color-sidebar-primary); /* Warna ikon default */
+            color: var(--color-sidebar-primary); 
         }
         .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
         
-        /* Logo size/style from previous request */
         .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; border: none; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
 
-        /* Profile Image Area Styles */
         .profile-image-area {
             text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;
         }
@@ -289,7 +277,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Preview gambar baru sebelum diupload
     document.getElementById('profile_photo').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {

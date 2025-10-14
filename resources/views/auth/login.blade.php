@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk</title>
-    <!-- Asumsikan Anda menggunakan link styling dan CSS yang sama di sini -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ... CSS Anda sebelumnya di sini ... */
         .error-message {
-            color: #f87171; /* Warna merah Tailwind: text-red-400 */
+            color: #f87171;
             margin-bottom: 15px;
             font-size: 0.9rem;
             font-weight: 600;
@@ -65,7 +63,7 @@
             margin-bottom: 20px;
             font-size: 1.1rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-            text-indent: 15px; /* Tambahkan indentasi agar teks tidak menempel ke kiri */
+            text-indent: 15px;
         }
         .login-input::placeholder {
             color: #888;
@@ -82,7 +80,7 @@
             align-items: center;
             margin-bottom: 14px;
             width: 100%;
-            color: #fff; /* Warna label */
+            color: #fff;
         }
         .login-btn {
             width: 100%;

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('faculties', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // Nama Fakultas (Fakultas Ekonomi dan Bisnis)
+            $table->string('name')->unique();
             $table->string('code', 10)->nullable()->unique(); // Kode singkat (FEB, FIKES, dll)
             $table->timestamps();
         });

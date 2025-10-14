@@ -27,11 +27,9 @@
             color: var(--color-text-white);
         }
 
-        /* LAYOUT & SIDEBAR */
         .app-layout { display: flex; min-height: 100vh; }
         .sidebar { background: var(--color-sidebar-primary); padding: 20px 10px; width: 250px; flex-shrink: 0; }
 
-        /* DEFAULT MENU LINK STYLE */
         .sidebar-menu > a {
             display: flex; align-items: center; background: var(--color-sidebar-link);
             color: var(--color-text-white); text-decoration: none; margin: 8px 0;
@@ -40,7 +38,6 @@
         .sidebar-menu > a:hover { background: var(--color-sidebar-link-hover); }
         .sidebar-menu a.active-link { background: var(--color-text-white); color: var(--color-text-dark); }
 
-        /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES --- */
         .sidebar-dropdown-item { margin: 8px 0; }
         .sidebar-dropdown-toggle {
             display: flex !important; align-items: center; justify-content: space-between;
@@ -66,18 +63,15 @@
         }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
 
-        /* ACTIVE SUBLINK STYLE untuk Surat Masuk */
         .sidebar-dropdown-menu li a.active-sublink-masuk {
             background: var(--color-sidebar-primary) !important;
             font-weight: bold;
         }
-        /* --- END SIDEBAR DROPDOWN STYLES --- */
-
         .main-content-col { flex-grow: 1; padding: 20px; }
         .table-container { 
             background: var(--color-table-accent); border-radius: 10px; padding: 0; 
             overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-            overflow-x: auto; /* Memastikan responsif */
+            overflow-x: auto; 
         }
         .table-header { 
             background: var(--color-table-accent); color: var(--color-text-dark); /* Mengubah header text agar kontras */
@@ -101,16 +95,14 @@
             justify-content: center;
         }
         
-        /* Profile Styles */
         .user-info { 
             display: flex; 
             align-items: center; 
             cursor: pointer; 
-            /* PENTING: Untuk memastikan identitas di kiri ikon */
-            direction: rtl; /* Membalik urutan flex, tapi item-content tetap LTR */
+            direction: rtl; 
         }
         .user-identity {
-            direction: ltr; /* Memastikan teks nama tetap LTR */
+            direction: ltr;
             display: flex; flex-direction: column; line-height: 1.2; margin-left: 10px; /* Diubah dari margin-right */
             text-align: right; 
         }
@@ -123,23 +115,21 @@
         }
         
         .profile-img { 
-            direction: ltr; /* Mengembalikan ikon profil ke LTR */
+            direction: ltr;
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
             background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
             display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
             color: var(--color-sidebar-primary);
         }
         
-        /* Logo Styles */
         .sidebar-header { 
             display: flex; 
-            align-items: center; /* PENTING: Menyusun item vertikal di tengah */
+            align-items: center; 
             margin-bottom: 20px; 
         }
         .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
 
-        /* Media Query untuk Sidebar Responsif */
         @media (max-width: 768px) {
             .app-layout { flex-direction: column; }
             .sidebar { width: 100%; position: static; padding: 15px 10px; }
@@ -375,7 +365,6 @@
         }
     }
 
-    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup
     document.addEventListener('DOMContentLoaded', function () {
         const collapseElement = document.getElementById('submenuDaftarSurat');
         const toggleButton = document.getElementById('daftarSuratDropdown');
@@ -383,7 +372,6 @@
 
 
         if (collapseElement && toggleButton && chevronIcon) {
-            // Inisialisasi: Pastikan panah menghadap ke atas karena submenu 'show'
             if (collapseElement.classList.contains('show')) {
                  chevronIcon.style.transform = 'rotate(-180deg)';
             }

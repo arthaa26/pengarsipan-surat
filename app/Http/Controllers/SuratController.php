@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Surat; // Model untuk data arsip surat
-use App\Models\User; // Model untuk memilih penerima surat
+use App\Models\Surat;
+use App\Models\User; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -14,37 +14,28 @@ class SuratController extends Controller
     public function index(Request $request)
     {
         $userId = Auth::id();
-        
-        // Ambil parameter 'type' dari URL query string
         $type = $request->query('type'); 
         $query = Surat::query();
-        $title = "Daftar Semua Surat"; // Default title
+        $title = "Daftar Semua Surat";
 
-        // Logika Filter
         if ($type === 'masuk') {
-            // Surat Masuk adalah surat di mana user yang login adalah penerima (to_user_id)
             $query->where('to_user_id', $userId);
             $title = "Daftar Surat Masuk";
 
         } elseif ($type === 'keluar') {
-            // Surat Keluar adalah surat di mana user yang login adalah pengirim (from_user_id)
             $query->where('from_user_id', $userId);
             $title = "Daftar Surat Keluar";
             
         } else {
-            // Default: Tampilkan semua surat (masuk & keluar)
             $query->where('to_user_id', $userId)
                   ->orWhere('from_user_id', $userId);
         }
 
-        // Ambil data yang sudah difilter
         $surat = $query->orderBy('created_at', 'desc')->get();
 
-        // Kirim $title dan $type untuk digunakan di view
         return view('surat.index', compact('surat', 'title', 'type'));
     }
 
-    // --- CRUD METHODS (CREATE, STORE, SHOW, EDIT, UPDATE, DESTROY) ---
     public function create()
     {
         $recipients = User::where('id', '!=', Auth::id())->get();
@@ -53,7 +44,6 @@ class SuratController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi Input, termasuk validasi untuk file lampiran
         $validatedData = $request->validate([
             'kode_surat' => 'required|string|max:50|unique:surat,kode_surat',
             'title' => 'required|string|max:255',
@@ -62,17 +52,13 @@ class SuratController extends Controller
             'attachment_file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ]);
 
-        // 2. Upload File Lampiran jika ada
         if ($request->hasFile('attachment_file')) {
             $filePath = $request->file('attachment_file')->store('attachments', 'public');
             $validatedData['file_path'] = $filePath;
         }
 
-        // 3. Tambahkan informasi pengirim
         $validatedData['from_user_id'] = Auth::id();
         $validatedData['status'] = 'Sent';
-
-        // 4. Simpan ke database
         Surat::create($validatedData);
 
         return redirect()->route('surat.index', ['type' => 'keluar'])->with('success', 'Surat berhasil dikirim!');
@@ -113,7 +99,6 @@ class SuratController extends Controller
             abort(403, 'Akses Ditolak.');
         }
 
-        // 1. Validasi Input
         $validatedData = $request->validate([
             'kode_surat' => ['required', 'string', 'max:50', 
                               Rule::unique('surat', 'kode_surat')->ignore($surat->id)],
@@ -123,7 +108,6 @@ class SuratController extends Controller
             'attachment_file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', 
         ]);
         
-        // 2. Handle File Update
         if ($request->hasFile('attachment_file')) {
             if ($surat->file_path) {
                 Storage::disk('public')->delete($surat->file_path);
@@ -132,7 +116,6 @@ class SuratController extends Controller
             $validatedData['file_path'] = $filePath;
         }
 
-        // 3. Perbarui data
         $surat->update($validatedData);
 
         return redirect()->route('surat.index', ['type' => 'keluar'])->with('success', 'Surat berhasil diperbarui.');
@@ -151,7 +134,6 @@ class SuratController extends Controller
         }
 
         $surat->delete();
-        // Redirect ke daftar surat keluar setelah menghapus
         return redirect()->route('surat.index', ['type' => 'keluar'])->with('success', 'Surat berhasil dihapus.');
     }
     
@@ -171,13 +153,9 @@ class SuratController extends Controller
         return back()->with('error', 'File lampiran tidak ditemukan.');
     }
 
-
-    /**
-     * Mengunduh file lampiran surat.
-     */
     public function downloadSurat(Surat $surat)
     {
-        // Pengecekan izin: hanya pengirim atau penerima yang boleh mengunduh
+        // Permisionn izin: untuk pengirim atau penerima yang boleh mengunduh
         if ($surat->to_user_id !== Auth::id() && $surat->from_user_id !== Auth::id()) {
             abort(403, 'Akses Ditolak. Anda tidak memiliki izin untuk mengunduh lampiran surat ini.');
         }

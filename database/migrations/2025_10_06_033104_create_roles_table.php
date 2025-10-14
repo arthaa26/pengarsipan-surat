@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique(); 
-            // Kolom baru untuk nama yang lebih ramah pengguna
             $table->string('display_name')->nullable(); 
             $table->string('description')->nullable(); 
             $table->timestamps();
@@ -23,7 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // ✅ Gunakan nama tabel jamak 'roles'
         Schema::dropIfExists('roles');
     }
 };

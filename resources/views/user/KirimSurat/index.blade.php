@@ -30,11 +30,9 @@
             color: var(--color-text-white);
         }
 
-        /* LAYOUT & SIDEBAR */
         .app-layout { display: flex; min-height: 100vh; }
         .sidebar { background: var(--color-sidebar-primary); padding: 20px 10px; width: 250px; flex-shrink: 0; }
 
-        /* DEFAULT MENU LINK STYLE */
         .sidebar-menu > a { 
             display: flex; align-items: center; background: var(--color-sidebar-link); 
             color: var(--color-text-white); text-decoration: none; margin: 8px 0; padding: 10px; 
@@ -43,7 +41,6 @@
         .sidebar-menu > a:hover { background: var(--color-sidebar-link-hover); }
         .sidebar-menu a.active-link { background: var(--color-text-white); color: var(--color-text-dark); }
 
-        /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES --- */
         .sidebar-dropdown-item { margin: 8px 0; }
         .sidebar-dropdown-toggle { 
             display: flex !important; align-items: center; justify-content: space-between; 
@@ -53,12 +50,7 @@
         .sidebar-dropdown-menu { list-style: none; padding-left: 0; margin-bottom: 0; position: static; background-color: var(--color-sidebar-link-hover); border: none; padding: 0 10px 5px 10px; border-radius: 0 0 5px 5px; box-shadow: none; width: 100%; margin-top: 0; }
         .sidebar-dropdown-menu li a { display: flex; align-items: center; background: transparent !important; color: var(--color-text-white); font-weight: normal; padding: 8px 10px 8px 30px; margin: 2px 0; border-radius: 3px; text-decoration: none; }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
-        /* --- END SIDEBAR DROPDOWN STYLES --- */
-
-
-        /* PROFILE STYLING & LOGO (KEEP EXISTING) */
         .user-info { display: flex; align-items: center; cursor: pointer; }
-        
         .user-identity {
             display: flex; flex-direction: column; line-height: 1.2;
             margin-right: 10px; text-align: right; 
@@ -73,7 +65,6 @@
         .logo-img { width: 85px; height: 85px; object-fit: cover; margin-right: 10px; display: block; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
 
-        /* CUSTOM FORM STYLING for Kirim Surat */
         .main-content-col { flex-grow: 1; padding: 20px; }
         .kirim-surat-panel { background-color: var(--color-kirim-surat-bg); padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); margin-top: 20px; }
         .kirim-surat-panel h4 { color: var(--color-text-dark); font-weight: bold; margin-bottom: 25px; border-bottom: 3px solid var(--color-text-dark); padding-bottom: 10px; display: inline-block; }
@@ -82,7 +73,6 @@
         .radio-label-custom { color: var(--color-text-dark); font-weight: bold; font-size: 1.1rem; margin-right: 20px; }
         .alert-fixed-top { z-index: 1050; max-width: 400px; color: var(--color-text-dark); position: fixed; top: 20px; right: 20px; }
         
-        /* New Styles for Submit Button */
         .btn-kirim-override {
             background-color: var(--color-button-kirim);
             color: var(--color-text-white);
@@ -356,31 +346,23 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Rotasi ikon panah saat dropdown dibuka/ditutup (dari kode dashboard)
     document.addEventListener('DOMContentLoaded', function () {
         const currentUserFacultyId = '{{ Auth::user()->faculty_id ?? '' }}';
         const hiddenFacultyInput = document.getElementById('tujuan_faculty_id_input');
         const purposeRadios = document.querySelectorAll('input[name="tujuan"]');
-        
-        // New elements for the target faculty selection
         const targetTypeRadios = document.querySelectorAll('input[name="target_type"]');
         const facultyDropdownContainer = document.getElementById('faculty_dropdown_container');
         const targetFacultyIdInput = document.getElementById('target_faculty_id'); // Select dropdown
-        
         const collapseElement = document.getElementById('submenuDaftarSurat');
         const toggleButton = document.getElementById('daftarSuratDropdown');
         
-        // --- LOGIC FOR DYNAMIC FACULTY DROPDOWN VISIBILITY ---
         function toggleFacultyDropdown() {
-            // Cek apakah ada radio target_type yang dicentang
             const checkedTargetType = document.querySelector('input[name="target_type"]:checked');
-            
-            // Default ke 'universitas' jika tidak ada yang dicentang (misal, pertama kali load)
             const selectedTargetType = checkedTargetType ? checkedTargetType.value : 'universitas'; 
 
             if (selectedTargetType === 'spesifik') {
                 facultyDropdownContainer.style.display = 'block';
-                targetFacultyIdInput.setAttribute('required', 'required'); // Wajib isi jika spesifik
+                targetFacultyIdInput.setAttribute('required', 'required'); 
                 hiddenFacultyInput.value = ''; 
             } else {
                 facultyDropdownContainer.style.display = 'none';
@@ -390,10 +372,7 @@
             }
         }
 
-        // --- LOGIC FOR HIDDEN INPUT (Hanya untuk keperluan legacy, diabaikan karena ada target_type) ---
         function updateHiddenFacultyId() {
-            // Logika ini sekarang tidak relevan untuk menentukan tujuan, 
-            // tetapi dipertahankan agar tidak ada script error jika ada form validation yang masih bergantung padanya.
             const checkedRadio = document.querySelector('input[name="tujuan"]:checked');
             if (!checkedRadio) {
                 hiddenFacultyInput.value = '';
@@ -401,27 +380,22 @@
             }
         }
 
-        // Event Listeners
         targetTypeRadios.forEach(radio => {
             radio.addEventListener('change', toggleFacultyDropdown);
         });
 
-        // Initialize on load
         toggleFacultyDropdown();
         
-        // Old listeners kept for reference:
         purposeRadios.forEach(radio => {
             radio.addEventListener('change', updateHiddenFacultyId);
         });
         updateHiddenFacultyId(); 
 
-        // Listener untuk file upload display
         document.getElementById('upload_file').addEventListener('change', function() {
             const fileName = this.files.length > 0 ? this.files[0].name : '';
             document.getElementById('file_display').value = fileName;
         });
         
-        // Listener untuk collapse (sidebar)
         const chevronIcon = toggleButton ? toggleButton.querySelector('.bi-chevron-down') : null;
         if (collapseElement && toggleButton && chevronIcon) {
             collapseElement.addEventListener('show.bs.collapse', function () {

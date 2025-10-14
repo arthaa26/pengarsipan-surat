@@ -9,10 +9,10 @@ class Role extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'display_name']; // PERBAIKAN: Menambahkan 'display_name' agar bisa diisi oleh Seeder
+    protected $fillable = ['name', 'display_name']; 
 
     public function users()
     {
-        return $this->hasMany(Users::class, 'role_id'); // PERBAIKAN: Menggunakan Users::class agar konsisten dengan Model User Anda
+        return $this->hasMany(Users::class, 'role_id');
     }
 }

@@ -87,7 +87,6 @@
             margin: 2px 0; border-radius: 3px; text-decoration: none;
         }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
-        /* --- END SIDEBAR DROPDOWN STYLES --- */
 
         .main-content-col { flex-grow: 1; padding: 20px; }
         .card-box {
@@ -100,18 +99,17 @@
         .card-box .number { font-size: 2.5rem; line-height: 1; }
         .card-box .icon { font-size: 2.5rem; }
         
-        /* TABLE STYLES */
         .table-container { 
             background: var(--color-table-accent); 
             border-radius: 10px; 
             padding: 0; 
             overflow: hidden; 
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-            overflow-x: auto; /* Penting untuk tabel yang lebar */
+            overflow-x: auto; 
         }
         .table-header { 
             background: var(--color-table-accent); 
-            color: var(--color-text-dark); /* Ubah ke dark agar kontras dengan accent */
+            color: var(--color-text-dark); 
             padding: 15px 20px; 
             font-size: 1.2rem; 
             font-weight: bold; 
@@ -122,32 +120,27 @@
         .table-striped > tbody > tr:nth-of-type(even) > * { background-color: #f8f9fa; }
         .table-striped > tbody > tr:hover > * { background-color: #e9ecef; }
         
-        /* ACTION BUTTONS & ICONS */
         .btn-action {
             width: 30px; height: 30px; display: inline-flex; align-items: center;
             justify-content: center; border-radius: 5px; padding: 0; margin: 2px 0; 
         }
-        /* Mengubah flex-direction pada action-buttons di tabel agar horizontal */
         .table .action-buttons { 
             display: flex; 
-            flex-direction: row !important; /* Paksa horizontal di dalam tabel */
+            flex-direction: row !important; 
             gap: 5px; 
             align-items: center;
             justify-content: center;
         }
-        
-        /* === PERBAIKAN TATA LETAK PROFILE START === */
         .user-info { 
             display: flex; 
             align-items: center; 
             cursor: pointer; 
-            direction: rtl; /* PENTING: Membalik urutan elemen: Ikon, lalu Nama */
+            direction: rtl; 
         }
-        
         .user-identity {
-            direction: ltr; /* Mengembalikan arah teks dan elemen internal ke normal (LTR) */
+            direction: ltr; 
             display: flex; flex-direction: column; line-height: 1.2; 
-            margin-left: 10px; /* Memberi jarak ke ikon profil */
+            margin-left: 10px; 
             margin-right: 0; 
             text-align: right; 
         }
@@ -163,18 +156,15 @@
         }
         
         .profile-img { 
-            direction: ltr; /* Mengembalikan ikon profil ke LTR */
+            direction: ltr; 
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
             background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
             display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
             color: var(--color-sidebar-primary);
         }
-        /* === PERBAIKAN TATA LETAK PROFILE END === */
-        
-        /* LOGO STYLING */
         .sidebar-header { 
             display: flex; 
-            align-items: center; /* PENTING: Menyusun item vertikal di tengah */
+            align-items: center;
             margin-bottom: 20px; 
         }
         .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; }
@@ -437,14 +427,12 @@
         }
     }
 
-    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup
     document.addEventListener('DOMContentLoaded', function () {
         const collapseElement = document.getElementById('submenuDaftarSurat');
         const toggleButton = document.getElementById('daftarSuratDropdown');
         const chevronIcon = toggleButton ? toggleButton.querySelector('.bi-chevron-down') : null;
 
         if (collapseElement && toggleButton && chevronIcon) {
-            // Inisialisasi: Pastikan panah menghadap ke bawah saat ditutup
             chevronIcon.style.transform = 'rotate(0deg)';
 
             collapseElement.addEventListener('show.bs.collapse', function () {

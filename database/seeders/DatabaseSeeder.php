@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // --- 1. MATIKAN FOREIGN KEY CHECKS (Wajib untuk Seeder/FK Konflik) ---
+        // --- 1. UNTUK MATIKAN FOREIGN KEY CHECKS BIAR GAK BENTROK
         DB::statement('SET FOREIGN_KEY_CHECKS=0;'); 
         
-        // --- 2. RESET TABEL BERURUTAN (Dari Anak ke Induk) ---
+        // --- 2. UNTUK RESET TABLE
         DB::table('surat_masuk')->truncate();
         DB::table('surat_keluar')->truncate();
         DB::table('kirim_surat')->truncate();
@@ -31,16 +31,15 @@ class DatabaseSeeder extends Seeder
         DB::table('roles')->truncate();
         DB::table('faculties')->truncate(); 
 
-        // PENTING: Reset auto increment
         DB::statement('ALTER TABLE users AUTO_INCREMENT = 1;');
         DB::statement('ALTER TABLE roles AUTO_INCREMENT = 1;');
         DB::statement('ALTER TABLE faculties AUTO_INCREMENT = 1;');
 
-        // --- 3. PENGISIAN DATA MASTER (FACULTIES & ROLES) ---
+        // --- 3. UNTUK MENENTUKAN ROLE DAN FAKULTAS
         
         $now = Carbon::now();
         
-        // PENGISIAN FACULTIES (Manual Insert)
+        // UNTUK ISI FAKULTAS SECARA MANUAL DI ADMIN
         DB::table('faculties')->insert([
             [ 'id' => 1, 'name' => 'Fakultas Ekonomi dan Bisnis', 'code' => 'FEB', 'created_at' => $now, 'updated_at' => $now, ],
             [ 'id' => 2, 'name' => 'Fakultas Ilmu Kesehatan', 'code' => 'FIKES', 'created_at' => $now, 'updated_at' => $now, ],
@@ -51,7 +50,7 @@ class DatabaseSeeder extends Seeder
             [ 'id' => 7, 'name' => 'Fakultas Hukum', 'code' => 'FH', 'created_at' => $now, 'updated_at' => $now, ],
         ]);
         
-        // PENGISIAN ROLES (Manual Create untuk mendapatkan ID yang berurutan)
+        // DEFINISI ROLE SESUAI DENGAN ROLENYA
         $rolesData = [
             'admin' => ['display_name' => 'Admin'],
             'rektor' => ['display_name' => 'Rektor'],
@@ -68,20 +67,18 @@ class DatabaseSeeder extends Seeder
             $rolesMap[$name] = $role->id;
         }
 
-        // --- 4. PANGGIL USER SEEDER (Logika UserSeeder dipindahkan di sini) ---
-        // Karena logic UserSeeder Anda kompleks, kita panggil sebagai Seeder terpisah:
+        // --- 4. UNTUK TES SEEDER USER
         $this->call([
-            // RoleSeeder sudah dijalankan di Langkah 3.
-            UserSeeder::class,      // User dibuat (ID 1, 2, 3...)
+            UserSeeder::class,      
         ]);
         
-        // --- 5. PANGGIL SEEDER YANG MEMBUTUHKAN USER ID ---
+        // --- 5. UNTUK MENYESUAIKAN DATA DI DATABASE
         $this->call([
             KirimSuratSeeder::class,
             SuratMasukSeeder::class,
         ]);
 
-        // --- 6. AKTIFKAN KEMBALI FOREIGN KEY CHECKS ---
+        // --- 6. UNTUK NGECEK FOREIGN NI DAH KE PANGGIL BELUM
         DB::statement('SET FOREIGN_KEY_CHECKS=1;'); 
     }
 }

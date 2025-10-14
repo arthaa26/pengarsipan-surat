@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\KirimSuratController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DaftarSuratController; // Import Controller
 
 /*
 |--------------------------------------------------------------------------
@@ -27,30 +28,33 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
 // ---------------------------------------------------------------------
-//  Rute yang ade di dalam ini hanya dapat diakses same user yang udah login
+//  Rute yang ade di dalam ini hanya dapat diakses same user yang udah login
 // ---------------------------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // ================BAGIAN HALAMAN ADMIN ====================
-
     Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        Route::resource('daftarsurat', App\Http\Controllers\Admin\DaftarSuratController::class)
+        // ✅ FIX 1: Menggunakan Route Resource hanya untuk INDEX dan SHOW.
+        Route::resource('daftarsurat', DaftarSuratController::class)
+            ->only(['index', 'show']) 
             ->names('daftarsurat');
-
+        
         Route::resource('manajemenuser', App\Http\Controllers\Admin\ManajemenUserController::class)
             ->names('manajemenuser');
         
         // Rute buat admin akses untuk surat
-        Route::get('/surat/{id}/detail', [App\Http\Controllers\Admin\DaftarSuratController::class, 'showDetail'])->name('surat.view');
-        Route::get('/surat/{id}/view', [App\Http\Controllers\Admin\DaftarSuratController::class, 'previewFile'])->name('surat.view_file');
-        Route::get('/surat/{id}/download', [App\Http\Controllers\Admin\DaftarSuratController::class, 'downloadFile'])->name('surat.download');
-        Route::delete('/surat/{id}/delete', [App\Http\Controllers\Admin\DaftarSuratController::class, 'destroy'])->name('surat.delete');
-
+        // Rute file actions ini sudah benar dan akan digunakan di Blade
+        Route::get('/surat/{id}/detail', [DaftarSuratController::class, 'showDetail'])->name('surat.view');
+        Route::get('/surat/{id}/view', [DaftarSuratController::class, 'previewFile'])->name('surat.view_file');
+        Route::get('/surat/{id}/download', [DaftarSuratController::class, 'downloadFile'])->name('surat.download');
+        
+        // Rute DELETE eksplisit (yang digunakan di Blade)
+        Route::delete('/surat/{id}/delete', [DaftarSuratController::class, 'destroy'])->name('surat.delete');
     });
 
     // ================ RUTE UNTUK DOSEN / USER ====================
@@ -73,7 +77,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('user.daftar_surat.keluar');
     
     // 3. Rute Redirect Utama (user.daftar_surat.index)
-    // Diarahkan ke Controller yang melakukan redirect ke Masuk
     Route::get('/dosen/surat/daftar', [UsersController::class, 'daftarSurat'])
         ->name('user.daftar_surat.index');
     
@@ -90,7 +93,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('user.kirim_surat.store');
 
     // --- RUTE AKSI SURAT (Lihat/Download/Hapus) ---
-    // Rute harus menggunakan parameter {surat} (Model Binding) untuk Konsistensi
     Route::get('/surat/{surat}', [UsersController::class, 'viewSurat'])->name('surat.view');
     Route::delete('/surat/{surat}', [UsersController::class, 'deleteSurat'])->name('surat.delete');
     Route::get('/surat/view-file/{surat}', [UsersController::class, 'viewFileSurat'])->name('surat.view_file');

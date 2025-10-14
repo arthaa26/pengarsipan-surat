@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
 use App\Models\Role; 
-use App\Models\Users; // Impor Model Users
+use App\Models\Users; 
 
 class UserSeeder extends Seeder
 {
@@ -16,17 +16,13 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // --- LANGKAH 1: HAPUS SEMUA DATA ROLE DAN RESET AUTO INCREMENT ---
-        // Ini memastikan Role dibuat ulang dengan ID 1, 2, 3...
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;'); // Nonaktifkan FK checks sementara
-        DB::table('roles')->truncate(); // Kosongkan tabel roles
-        DB::statement('ALTER TABLE roles AUTO_INCREMENT = 1;'); // Reset auto increment
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;'); // Aktifkan kembali FK checks
+        // UNTUK HAPUS DATA ATAU ROLE DENGAN AUTO            
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;'); 
+        DB::table('roles')->truncate(); 
+        DB::statement('ALTER TABLE roles AUTO_INCREMENT = 1;'); 
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // --- LANGKAH 2: BUAT ROLE DENGAN ID BERURUTAN (1-7) ---
-        // Karena kita me-reset auto increment, ID akan berurutan secara otomatis.
-        // Kita hanya perlu menyimpan hasilnya ke variabel untuk digunakan nanti.
-        
+        //  BUAT ROLE DENGAN ID BERURUTAN (1-7) ---
         $rolesData = [
             'admin' => ['display_name' => 'Admin'],
             'rektor' => ['display_name' => 'Rektor'],
@@ -43,7 +39,7 @@ class UserSeeder extends Seeder
             $rolesMap[$name] = $role->id;
         }
 
-        // Ambil semua ID role yang diperlukan
+        // ID ROLE USER
         $adminId            = $rolesMap['admin']; // ID 1
         $rektorId           = $rolesMap['rektor']; // ID 2
         $dekanId            = $rolesMap['dekan']; // ID 3
@@ -52,7 +48,7 @@ class UserSeeder extends Seeder
         $tenagaPendidikId   = $rolesMap['tenaga_pendidik']; // ID 6
         $dosenTugasKhususId = $rolesMap['dosen_tugas_khusus']; // ID 7
 
-        // DAFTAR FAKULTAS (ID harus cocok dengan tabel 'faculties')
+        // ID FAKULTAS SESUAI DENGAN DATABASE, BIAR GA BUG SESUAIKAN DARI DATABASE
         $faculties = [
             1 => 'Fakultas Ekonomi dan Bisnis',
             2 => 'Fakultas Ilmu Kesehatan',
@@ -104,7 +100,7 @@ class UserSeeder extends Seeder
                 'role_id' => $dekanId,
             ];
 
-            // AKUN KAPRODI (Contoh Kaprodi di Fakultas tersebut)
+            // AKUN KAPRODI (Contoh Kaprodi di Salah Satu Fakultas Itu
             $data_users[] = [
                 'username' => 'kaprodi_' . $code,
                 'name' => 'Kaprodi ' . $name,
@@ -116,7 +112,7 @@ class UserSeeder extends Seeder
                 'role_id' => $kaprodiId,
             ];
             
-            // AKUN DOSEN (Contoh Dosen di Fakultas tersebut)
+            // AKUN DOSEN (Contoh Dosen di Salah Satu Fakultas Itu)
             $data_users[] = [
                 'username' => 'dosen_' . $code,
                 'name' => 'Dosen ' . $name,
@@ -129,8 +125,8 @@ class UserSeeder extends Seeder
             ];
         }
 
-        // --- 3. AKUN LAINNYA (Tenaga Pendidik & Dosen Tugas Khusus) ---
-        // Menggunakan Fakultas FAI (ID 6) dan FH (ID 7) sebagai contoh unit kerja
+        // --- 3. AKUN LAENNYA MISAL (Tenaga Pendidik & Dosen Tugas Khusus) ---
+        // Ini pake  (ID 6) dan FH (ID 7) NANTI ROLENYA NULL ATAU TAK TERINDETIFIKASI
         $data_users[] = [
             'username' => 'staff_adm',
             'name' => 'Iwan Susanto (Staff Adm FAI)',
@@ -153,7 +149,6 @@ class UserSeeder extends Seeder
             'role_id' => $dosenTugasKhususId,
         ];
         
-        // Masukkan data menggunakan Model::create()
         foreach ($data_users as $user_data) {
             Users::create($user_data);
         }

@@ -14,8 +14,6 @@ return new class extends Migration
             // Kolom User ID
             $table->foreignId('user_id_1')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_id_2')->nullable()->constrained('users')->onDelete('cascade');
-            
-            // Kolom Baru Sesuai Model KirimSurat:
             $table->string('kode_surat')->unique()->nullable(); 
             $table->string('title');
             $table->text('isi');

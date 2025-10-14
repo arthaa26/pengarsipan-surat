@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-// Impor Model yang dibutuhkan
 use App\Models\User; 
 use App\Models\Faculty; 
 
@@ -35,11 +34,6 @@ class KirimSurat extends Model
     {
         return $this->belongsTo(User::class, 'user_id_2');
     }
-    
-    // --- RELASI BARU ---
-    /**
-     * Relasi ke Fakultas tujuan surat (digunakan untuk Dekan/Dosen/Kaprodi).
-     */
     public function tujuanFaculty(): BelongsTo
     {
         return $this->belongsTo(Faculty::class, 'tujuan_faculty_id');

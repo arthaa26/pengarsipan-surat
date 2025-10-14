@@ -119,9 +119,8 @@
             justify-content: center;
             border-radius: 6px;
             padding: 0;
-            margin: 2px 0; /* Add margin for small screens */
+            margin: 2px 0; 
         }
-        /* PROFILE STYLING */
         .user-info { 
             display: flex;
             align-items: center;
@@ -153,16 +152,15 @@
         }
         .action-buttons {
             display: flex;
-            flex-direction: column; /* Stack buttons vertically on small screens */
+            flex-direction: column; 
             gap: 5px;
             align-items: center;
         }
         @media (min-width: 992px) {
              .action-buttons {
-                flex-direction: row; /* Horizontal layout on large screens */
+                flex-direction: row; 
             }
         }
-        /* [UPDATED] LOGO STYLING */
         .sidebar-header {
             display: flex;
             align-items: center;

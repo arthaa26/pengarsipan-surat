@@ -5,108 +5,70 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\surat; 
-use App\Models\Surat_keluar; 
-use App\Models\Surat_masuk;  
-use App\Models\KirimSurat;
+use App\Models\KirimSurat; 
+use Illuminate\Support\Facades\Response; 
+use Illuminate\Support\Facades\Log; 
 
 class DaftarSuratController extends Controller
 {
-    /**
-     * Menampilkan daftar semua surat (History Surat) dengan penggabungan data.
-     * Route: admin.daftarsurat.index
-     */
+
     public function index()
     {
         try {
-            // 1. Ambil data dari Surat Masuk (Menggunakan aliasing yang akurat)
-            $dataMasuk = KirimSurat::select(
-                'id_surat_keluar as id', // Alias ID dari kolom id_surat_keluar
-                'kode_surat', 
-                'tittle as title',      // Alias tittle (salah ketik di DB) menjadi title (di View)
-                'isi_surat as isi',     // Alias isi_surat menjadi isi
-                'created_at as tanggal_surat'
-            )->get();
-            
-            $dataKeluar = KirimSurat::select(
-                'id as id',            
-                'kode_surat', 
-                'title',                
-                'isi_surat as isi',     
-                'created_at as tanggal_surat'
-            )->get();
-            
-            // 3. Gabungkan semua data, urutkan, dan terapkan Pagination Manual
-            $allData = $dataMasuk->merge($dataKeluar)->sortByDesc('tanggal_surat');
-            
-            // Logika Pagination Manual
-            $perPage = 10;
-            $currentPage = LengthAwarePaginator::resolveCurrentPage();
-            $currentItems = $allData->slice(($currentPage - 1) * $perPage, $perPage)->values();
-
-            $suratHistory = new LengthAwarePaginator(
-                $currentItems, 
-                $allData->count(), 
-                $perPage, 
-                $currentPage,
-                ['path' => LengthAwarePaginator::resolveCurrentPath()]
-            );
-
+            $suratList = KirimSurat::with(['user1.faculty'])
+                                     ->orderBy('created_at', 'desc')
+                                     // ✅ FIX 2: Use Eloquent's built-in paginate() for simplicity and efficiency
+                                     ->paginate(10);
             
         } catch (\Exception $e) {
-          
-            $suratHistory = collect([
-                (object)['id' => 101, 'kode_surat' => 'GAGAL', 'title' => 'KONEKSI / MODEL ERROR', 'isi' => 'Data untuk memastikan tombol muncul'],
-            ]);
-        
+            Log::error('Error loading Admin DaftarSurat index: ' . $e->getMessage());
+            
+            $suratList = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+            session()->flash('error', 'Gagal memuat data surat. Lihat log server.');
         }
 
-        return view('admin.daftarsurat.index', compact('suratHistory'));
+        return view('admin.daftarsurat.index', compact('suratList'));
     }
 
-    public function showDetail($id)
-    {
-        $surat = Surat::findOrFail($id); 
-        return view('admin.daftarsurat.show_detail', compact('surat'));
-    }
     public function downloadFile($id)
     {
-        // Asumsi file_surat ada di Model Surat
-        $surat = Surat::findOrFail($id);
-        $filePath = 'public/' . $surat->file_surat; 
+        $surat = KirimSurat::findOrFail($id); 
+        $filePath = $surat->file_path; 
 
-        if (!Storage::exists($filePath)) {
-            abort(404, "File lampiran tidak ditemukan.");
+        if (!$surat->file_path || !Storage::disk('public')->exists($filePath)) {
+            return redirect()->back()->with('error', "File lampiran tidak ditemukan.");
         }
 
-        $fileName = $surat->kode_surat . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-        return Storage::download($filePath, $fileName);
+        $fileName = $surat->kode_surat . '_' . basename($surat->file_path);
+        
+        return Storage::disk('public')->download($filePath, $fileName);
     }
 
-    /**
-     * Mengambil file surat untuk dilihat (Preview/Cetak). Route: surat.preview_file
-     */
     public function previewFile($id)
     {
-        $surat = Surat::findOrFail($id);
-        $filePath = 'public/' . $surat->file_surat; 
+        $surat = KirimSurat::findOrFail($id);
+        $filePath = $surat->file_path; 
 
-        if (!Storage::exists($filePath)) {
-            abort(404, "File lampiran tidak ditemukan.");
+        if (!$surat->file_path || !Storage::disk('public')->exists($filePath)) {
+             abort(404, "File lampiran tidak ditemukan.");
         }
 
-        return Storage::response($filePath, null, [
-            'Content-Type' => Storage::mimeType($filePath),
-            'Content-Disposition' => 'inline; filename="' . basename($surat->kode_surat) . '"'
+        return Storage::disk('public')->response($filePath, null, [
+            'Content-Type' => Storage::disk('public')->mimeType($filePath),
+            'Content-Disposition' => 'inline; filename="' . basename($surat->kode_surat) . '"' 
         ]);
     }
-    
-    // Method resource lainnya
-    public function create() { return view('admin.daftarsurat.create'); }
-    public function store(Request $request) { /* ... */ }
-    public function show($id) { return $this->showDetail($id); }
-    public function edit($id) { /* ... */ }
-    public function update(Request $request, $id) { /* ... */ }
-    public function destroy($id) { /* ... */ }
+    public function destroy($id)
+    {
+        $surat = KirimSurat::findOrFail($id);
+        
+        // Untuk menghapus file dari storage
+        if ($surat->file_path && Storage::disk('public')->exists($surat->file_path)) {
+            Storage::disk('public')->delete($surat->file_path);
+        }
+        
+        $surat->delete();
+
+        return redirect()->route('admin.daftarsurat.index')->with('success', 'Surat berhasil dihapus.');
+    }
 }

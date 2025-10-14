@@ -8,12 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* === WARNA UTAMA === */
         :root {
             --color-bg-body: #4db8ff;
-            --color-sidebar-primary: #0066cc; /* Biru gelap untuk tombol utama */
+            --color-sidebar-primary: #0066cc; 
             --color-sidebar-link-hover: #0059b3;
-            --color-table-accent: #f7c948; /* Kuning cerah untuk card */
+            --color-table-accent: #f7c948;
             --color-text-white: #fff;
             --color-text-dark: #000000;
         }
@@ -23,20 +22,19 @@
             color: var(--color-text-white);
         }
         
-        /* Tambahan Styling Form yang Disederhanakan */
         .card {
-            border: none !important; /* Hapus border 3px */
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Tambah bayangan */
+            border: none !important;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); 
             background-color: var(--color-table-accent) !important;
         }
-        .form-label, .form-label-dark { /* Menggunakan form-label-dark untuk semua label */
+        .form-label, .form-label-dark { 
             color: var(--color-text-dark) !important; 
             font-weight: bold;
             margin-bottom: 5px;
         }
         .form-control, .form-select {
             border: 1px solid rgba(0, 0, 0, 0.3);
-            color: var(--color-text-dark); /* Teks input harus gelap */
+            color: var(--color-text-dark); 
             background-color: var(--color-text-white);
             padding: 10px;
             border-radius: 6px;
@@ -46,12 +44,11 @@
             box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.25);
         }
         .form-text.text-muted {
-            color: rgba(0, 0, 0, 0.6) !important; /* Agar terbaca di background kuning */
+            color: rgba(0, 0, 0, 0.6) !important; 
             font-size: 0.85rem;
         }
-        /* Styling Tombol Simpan (Success/Primary) */
         .btn-success {
-            background-color: var(--color-sidebar-primary); /* Ubah Simpan ke warna Primary (Biru) */
+            background-color: var(--color-sidebar-primary);
             border-color: var(--color-sidebar-primary);
             color: var(--color-text-white);
             font-weight: bold;

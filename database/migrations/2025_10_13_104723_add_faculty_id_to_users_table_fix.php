@@ -12,10 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Cek dulu, untuk menghindari error jika kolom sudah ada (untuk amannya)
             if (!Schema::hasColumn('users', 'faculty_id')) {
-                // Tambahkan kolom faculty_id yang merupakan foreign key ke tabel faculties
-                // Asumsi tabel 'faculties' sudah ada dan 'role_id' adalah kolom terakhir
                 $table->foreignId('faculty_id')->nullable()->after('role_id')->constrained('faculties');
             }
         });

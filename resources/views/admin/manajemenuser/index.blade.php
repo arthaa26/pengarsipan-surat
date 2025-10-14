@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* === WARNA UTAMA === */
         :root {
             --color-bg-body: #4db8ff;
             --color-sidebar-primary: #0066cc;
@@ -20,7 +19,6 @@
             --color-text-dark: #000;
         }
 
-        /* === GLOBAL STYLES === */
         body {
             background-color: var(--color-bg-body); 
             font-family: 'Arial', sans-serif;
@@ -29,7 +27,6 @@
             padding: 0; 
         }
 
-        /* === LAYOUT & SIDEBAR === */
         .app-layout {
             display: flex;
             min-height: 100vh;
@@ -58,7 +55,8 @@
             font-size: 1.2rem;
         }
         .sidebar-menu a.active-menu {
-            background: var(--color-sidebar-link-hover);
+            background: var(--color-text-white);
+            color: var(--color-text-dark);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
         .sidebar-menu a:hover {
@@ -70,13 +68,19 @@
         }
 
         /* === LOGO === */
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
         .logo-img {
-            width: 85px;
-            height: 85px;
+            width: 65px;
+            height: 65px;
             object-fit: cover;
             margin-right: 10px;
             display: block;
-            }
+            border-radius: 50%;
+        }
         .logo-text {
             font-size: 1.4rem;
             font-weight: bold;
@@ -84,7 +88,6 @@
             margin: 0;
         }
 
-        /* === TABLE STYLES (REFINED) === */
         .table-container {
             background: var(--color-text-white); 
             border-radius: 10px;
@@ -117,7 +120,6 @@
             background-color: var(--color-table-accent);
             border-bottom: 2px solid rgba(0, 0, 0, 0.1);
         }
-        /* Alternating row colors */
         .table-striped > tbody > tr:nth-of-type(odd) > * {
             background-color: #ffffff;
         }
@@ -127,15 +129,12 @@
         .table-striped > tbody > tr:hover > * {
             background-color: #e9ecef;
         }
-        /* Footer Keterangan Role */
         .table tfoot tr td {
             color: var(--color-text-dark); 
             background-color: #fff !important;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
             padding: 20px 20px;
         }
-        
-        /* Tombol Aksi */
         .btn-action {
             width: 32px; 
             height: 32px;
@@ -152,8 +151,6 @@
             align-items: center;
             justify-content: center;
         }
-
-        /* Tombol Utama (Tambah Pengguna) */
         .btn-primary {
             background-color: var(--color-sidebar-primary);
             border-color: var(--color-sidebar-primary);
@@ -162,14 +159,36 @@
             background-color: var(--color-sidebar-link-hover);
             border-color: var(--color-sidebar-link-hover);
         }
-
-        /* === PROFILE === */
         .user-info { 
             display: flex;
             align-items: center;
             cursor: pointer;
         }
+        
+        .user-identity {
+            display: flex; 
+            flex-direction: column; 
+            line-height: 1.2;
+            margin-right: 10px; 
+            margin-left: 0;
+            text-align: right; 
+        }
+        
+        .user-name { 
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--color-text-white);
+            display: block; 
+        }
+        .user-role-display { 
+            font-size: 0.85rem; 
+            font-weight: normal; 
+            color: rgba(255, 255, 255, 0.8);
+            display: block; 
+        }
+
         .profile-img {
+            direction: ltr;
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -180,31 +199,8 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem; 
+            color: var(--color-sidebar-primary);
         }
-
-        /* === PAGINATION === */
-        .pagination {
-            justify-content: flex-end;
-            margin: 15px 20px 20px 0;
-        }
-        .pagination .page-link {
-            color: var(--color-sidebar-link);
-            border: 1px solid var(--color-sidebar-link);
-            background-color: #fff;
-            transition: all 0.2s ease-in-out;
-        }
-        .pagination .page-link:hover {
-            background-color: var(--color-sidebar-link-hover);
-            color: #fff;
-            border-color: var(--color-sidebar-link-hover);
-        }
-        .pagination .page-item.active .page-link {
-            background-color: var(--color-sidebar-link-hover);
-            border-color: var(--color-sidebar-link-hover);
-            color: #fff;
-            box-shadow: 0 0 6px rgba(0,0,0,0.2);
-        }
-
         /* === MEDIA QUERIES (RESPONSIVITAS) === */
         @media (max-width: 768px) {
             .app-layout {
@@ -265,12 +261,46 @@
             
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
+                    @auth
+                        @php
+                            // Asumsi Auth::user()->load(['role', 'faculty']) sudah dipanggil di Controller.
+                            // Catatan: Variabel $role seharusnya diambil dari relasi Auth::user()->role->name, tetapi menggunakan $role untuk keamanan
+                            $userName = Auth::user()->name ?? 'Admin';
+                            $userRole = Auth::user()->role->display_name ?? 'Administrator';
+                            $displayTitle = "({$userRole})";
+                        @endphp
+                        
+                        {{-- Nama dan Role di Kiri --}}
+                        <div class="user-identity">
+                            <span class="user-name">{{ $userName }}</span>
+                            <span class="user-role-display">{{ $displayTitle }}</span>
+                        </div>
+                        {{-- Ikon Profil di Kanan --}}
+                        <div class="profile-icon">
+                            @if (Auth::user()->profile_photo_url)
+                                <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ $userName }}" class="profile-img">
+                            @else
+                                <div class="profile-img"><i class="bi bi-person-circle"></i></div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="user-identity">
+                            <span class="user-name">Admin User</span>
+                            <span class="user-role-display">(Administrator)</span>
+                        </div>
+                        <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
+                    @endauth
                     <i class="bi bi-chevron-down ms-2 fs-5 text-white"></i>
                 </div>
                 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                    <li class="dropdown-header">{{ Auth::user()?->name ?? 'Admin' }}</li>
+                    <li class="dropdown-header">
+                        @auth {{ $userName }} <br><small class="text-muted">{{ $displayTitle }}</small> @else Admin @endauth
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.daftarsurat.index') ?? '#' }}"><i class="bi bi-folder-fill me-2"></i>Daftar Surat</a></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.manajemenuser.index') ?? '#' }}"><i class="bi bi-person-fill-gear me-2"></i>Manajemen User</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item" href="{{ route('logout') }}" 
@@ -285,16 +315,39 @@
 
         {{-- START CONTENT MANAJEMEN USER --}}
         <div class="container-fluid mt-4 p-0">
-            <div class="row mb-3">
-                <div class="col-12">
-                    <a href="{{ route('admin.manajemenuser.create') ?? '#' }}" class="btn btn-primary">
+            
+            {{-- FITUR PENCARIAN & TAMBAH PENGGUNA --}}
+            <div class="row mb-3 align-items-center">
+                <div class="col-12 col-md-4 mb-3 mb-md-0">
+                    <a href="{{ route('admin.manajemenuser.create') ?? '#' }}" class="btn btn-primary w-100">
                         <i class="bi bi-person-plus-fill me-2"></i> Tambah Pengguna Baru
                     </a>
                 </div>
+                <div class="col-12 col-md-8">
+                    {{-- Form Pencarian (Menggunakan GET Request ke route index saat ini) --}}
+                    <form method="GET" action="{{ route('admin.manajemenuser.index') ?? '#' }}" class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Cari Nama, Email, atau Fakultas..." aria-label="Search" name="search" value="{{ request('search') }}">
+                        <button class="btn btn-outline-light text-dark bg-white" type="submit" title="Cari">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        @if (request('search'))
+                            <a href="{{ route('admin.manajemenuser.index') ?? '#' }}" class="btn btn-outline-danger ms-2" title="Reset Pencarian">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        @endif
+                    </form>
+                </div>
             </div>
-
+            
             <div class="table-container mt-4">
-                <div class="table-header">DAFTAR PENGGUNA SISTEM</div>
+                <div class="table-header">
+                    DAFTAR PENGGUNA SISTEM 
+                    @if (request('search'))
+                        <span class="badge bg-danger ms-2" style="font-size: 0.7em;">
+                            Hasil Pencarian: "{{ request('search') }}"
+                        </span>
+                    @endif
+                </div>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover mt-0">
                         <thead>
@@ -309,7 +362,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- PENTING: Untuk pengurutan di sini, pastikan data $users di Controller sudah di-order by Faculty Name. --}}
+                            {{-- PENTING: Asumsi variabel $users dikirim dari Controller dengan relasi 'faculty' sudah di-load --}}
                             @forelse ($users as $index => $user)
                                 <tr>
                                     <td>{{ $users->firstItem() + $index }}</td>
@@ -318,11 +371,12 @@
                                     
                                     {{-- DATA FAKULTAS --}}
                                     <td>
+                                        {{-- Menampilkan nama fakultas melalui relasi --}}
                                         {{ $user->faculty->name ?? '-' }}
                                     </td>
                                     
                                     <td>
-                                        {{-- LOGIKA PEMETAAN ROLE YANG BENAR --}}
+                                        {{-- LOGIKA PEMETAAN ROLE DARI DB --}}
                                         @if ($user->role_id == 1)
                                             <span class="badge bg-danger">Admin</span>
                                         @elseif ($user->role_id == 2)
@@ -363,14 +417,18 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    {{-- Colspan disesuaikan menjadi 7 --}}
-                                    <td colspan="7" class="text-center">Tidak ada data pengguna ditemukan.</td> 
+                                    <td colspan="7" class="text-center">
+                                        @if (request('search'))
+                                            Tidak ada pengguna ditemukan untuk pencarian: "<b>{{ request('search') }}</b>"
+                                        @else
+                                            Tidak ada data pengguna ditemukan.
+                                        @endif
+                                    </td> 
                                 </tr>
                             @endforelse
                         </tbody>
                         <tfoot>
                             <tr>
-                                {{-- Colspan disesuaikan menjadi 4 dan 3 --}}
                                 <td colspan="4" class="text-end fw-bold">Keterangan ID Role di DB:</td>
                                 <td colspan="3">
                                     <span class="badge bg-danger">1=Admin</span> 
@@ -385,10 +443,10 @@
                         </tfoot>
                     </table>
 
-                    {{-- Pagination --}}
+                    {{-- Pagination (mempertahankan query search) --}}
                     @if(is_object($users) && method_exists($users, 'links'))
                         <div class="d-flex justify-content-end p-3">
-                            {{ $users->onEachSide(1)->links('pagination::bootstrap-5') }}
+                            {{ $users->onEachSide(1)->appends(request()->query())->links('pagination::bootstrap-5') }}
                         </div>
                     @endif
                 </div>

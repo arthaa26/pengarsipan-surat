@@ -27,11 +27,9 @@
             color: var(--color-text-white);
         }
 
-        /* LAYOUT & SIDEBAR */
         .app-layout { display: flex; min-height: 100vh; }
         .sidebar { background: var(--color-sidebar-primary); padding: 20px 10px; width: 250px; flex-shrink: 0; }
 
-        /* DEFAULT MENU LINK STYLE */
         .sidebar-menu > a {
             display: flex; align-items: center; background: var(--color-sidebar-link);
             color: var(--color-text-white); text-decoration: none; margin: 8px 0;
@@ -40,7 +38,6 @@
         .sidebar-menu > a:hover { background: var(--color-sidebar-link-hover); }
         .sidebar-menu a.active-link { background: var(--color-text-white); color: var(--color-text-dark); }
 
-        /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES --- */
         .sidebar-dropdown-item { margin: 8px 0; }
         .sidebar-dropdown-toggle {
             display: flex !important; align-items: center; justify-content: space-between;
@@ -53,7 +50,6 @@
         .sidebar-dropdown-toggle[aria-expanded="true"] { background: var(--color-sidebar-link-hover); border-radius: 5px 5px 0 0; }
         .sidebar-dropdown-toggle .bi-chevron-down { transition: transform 0.3s; }
         .sidebar-dropdown-toggle[aria-expanded="true"] .bi-chevron-down { transform: rotate(-180deg); }
-
         .sidebar-dropdown-menu {
             list-style: none; padding-left: 0; margin-bottom: 0; position: static;
             background-color: var(--color-sidebar-link-hover); border: none;
@@ -65,19 +61,15 @@
             margin: 2px 0; border-radius: 3px; text-decoration: none;
         }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
-        
-        /* ACTIVE SUBLINK STYLE untuk Surat Keluar */
         .sidebar-dropdown-menu li a.active-sublink { 
             background: var(--color-sidebar-primary) !important; 
             font-weight: bold;
         }
-        /* --- END SIDEBAR DROPDOWN STYLES --- */
-
         .main-content-col { flex-grow: 1; padding: 20px; }
         .table-container { 
             background: var(--color-table-accent); border-radius: 10px; padding: 0; 
             overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-            overflow-x: auto; /* Memastikan responsif */
+            overflow-x: auto; 
         }
         .table-header { 
             background: var(--color-table-accent); color: var(--color-text-dark); 
@@ -101,13 +93,13 @@
             display: flex; 
             align-items: center; 
             cursor: pointer; 
-            direction: rtl; /* Membalik urutan elemen dalam flex container */
+            direction: rtl; 
         }
         
         .user-identity {
-            direction: ltr; /* Mengembalikan arah teks dan elemen internal ke normal (LTR) */
+            direction: ltr;
             display: flex; flex-direction: column; line-height: 1.2; 
-            margin-left: 10px; /* Memberi jarak ke ikon profil */
+            margin-left: 10px; 
             margin-right: 0; 
             text-align: right; 
         }
