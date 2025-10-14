@@ -22,7 +22,7 @@
 
         /* === GLOBAL STYLES === */
         body {
-            background-color: var(--color-bg-body); /* Perbaikan: gunakan background-color */
+            background-color: var(--color-bg-body); 
             font-family: 'Arial', sans-serif;
             color: var(--color-text-white);
             margin: 0; 
@@ -33,7 +33,7 @@
         .app-layout {
             display: flex;
             min-height: 100vh;
-            width: 100%; /* Agar lebih solid */
+            width: 100%; 
         }
         .sidebar {
             background: var(--color-sidebar-primary);
@@ -71,14 +71,12 @@
 
         /* === LOGO === */
         .logo-img {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
+            width: 85px;
+            height: 85px;
             object-fit: cover;
-            background-color: #fff;
             margin-right: 10px;
-            border: 2px solid var(--color-text-white);
-        }
+            display: block;
+            }
         .logo-text {
             font-size: 1.4rem;
             font-weight: bold;
@@ -88,7 +86,7 @@
 
         /* === TABLE STYLES (REFINED) === */
         .table-container {
-            background: var(--color-text-white); /* Ubah ke putih/latar belakang */
+            background: var(--color-text-white); 
             border-radius: 10px;
             padding: 0;
             overflow-x: auto;
@@ -109,10 +107,10 @@
         }
         /* Isi dan Header Tabel */
         .table th, .table td {
-            color: var(--color-text-dark); /* Selalu gelap */
-            padding: 12px 10px; /* Padding lebih ringkas */
+            color: var(--color-text-dark); 
+            padding: 12px 10px; 
             vertical-align: middle;
-            border: none; /* Hapus border default */
+            border: none; 
         }
         .table thead tr th {
             color: var(--color-text-dark);
@@ -127,19 +125,19 @@
             background-color: #f8f9fa;
         }
         .table-striped > tbody > tr:hover > * {
-            background-color: #e9ecef; /* Efek hover */
+            background-color: #e9ecef;
         }
         /* Footer Keterangan Role */
         .table tfoot tr td {
             color: var(--color-text-dark); 
             background-color: #fff !important;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
-            padding: 10px 10px;
+            padding: 20px 20px;
         }
         
         /* Tombol Aksi */
         .btn-action {
-            width: 32px; /* Lebih ringkas */
+            width: 32px; 
             height: 32px;
             display: inline-flex;
             align-items: center;
@@ -304,18 +302,25 @@
                                 <th>No</th>
                                 <th>Nama</th>
                                 <th>Email</th>
+                                <th>Fakultas</th> {{-- KOLOM FAKULTAS --}}
                                 <th>Role</th>
                                 <th>Dibuat Pada</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- Menghilangkan style="color: black;" --}}
+                            {{-- PENTING: Untuk pengurutan di sini, pastikan data $users di Controller sudah di-order by Faculty Name. --}}
                             @forelse ($users as $index => $user)
                                 <tr>
                                     <td>{{ $users->firstItem() + $index }}</td>
                                     <td>{{ $user->name ?? 'Nama Pengguna' }}</td>
                                     <td>{{ $user->email ?? 'email@example.com' }}</td>
+                                    
+                                    {{-- DATA FAKULTAS --}}
+                                    <td>
+                                        {{ $user->faculty->name ?? '-' }}
+                                    </td>
+                                    
                                     <td>
                                         {{-- LOGIKA PEMETAAN ROLE YANG BENAR --}}
                                         @if ($user->role_id == 1)
@@ -357,16 +362,16 @@
                                     </td>
                                 </tr>
                             @empty
-                                {{-- Menghilangkan style="color: black;" --}}
                                 <tr>
-                                    <td colspan="6" class="text-center">Tidak ada data pengguna ditemukan.</td> 
+                                    {{-- Colspan disesuaikan menjadi 7 --}}
+                                    <td colspan="7" class="text-center">Tidak ada data pengguna ditemukan.</td> 
                                 </tr>
                             @endforelse
                         </tbody>
                         <tfoot>
-                            {{-- Menghilangkan style="color: black; background: #fff;" (background ditangani oleh CSS) --}}
                             <tr>
-                                <td colspan="3" class="text-end fw-bold">Keterangan ID Role di DB:</td>
+                                {{-- Colspan disesuaikan menjadi 4 dan 3 --}}
+                                <td colspan="4" class="text-end fw-bold">Keterangan ID Role di DB:</td>
                                 <td colspan="3">
                                     <span class="badge bg-danger">1=Admin</span> 
                                     <span class="badge bg-primary">2=Rektor</span> 

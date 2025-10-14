@@ -66,7 +66,7 @@
         }
         .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
 
-        /* [BARU] ACTIVE SUBLINK STYLE untuk Surat Masuk */
+        /* ACTIVE SUBLINK STYLE untuk Surat Masuk */
         .sidebar-dropdown-menu li a.active-sublink-masuk {
             background: var(--color-sidebar-primary) !important;
             font-weight: bold;
@@ -77,58 +77,76 @@
         .table-container { 
             background: var(--color-table-accent); border-radius: 10px; padding: 0; 
             overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+            overflow-x: auto; /* Memastikan responsif */
         }
         .table-header { 
-            background: var(--color-table-accent); color: var(--color-text-white); 
+            background: var(--color-table-accent); color: var(--color-text-dark); /* Mengubah header text agar kontras */
             padding: 15px 20px; font-size: 1.2rem; font-weight: bold; 
         }
-        .table th, .table td { color: var(--color-text-dark); padding: 15px 10px; vertical-align: middle; }
-        .table thead tr { color: var(--color-text-white); font-weight: bold; background-color: var(--color-table-accent); }
-        .table-striped > tbody > tr:nth-of-type(odd) > * { background-color: rgba(255, 255, 255, 0.7); }
-        .table-striped > tbody > tr:nth-of-type(even) > * { background-color: rgba(255, 255, 255, 0.9); }
-        .btn-action { 
-            width: 35px; height: 35px; display: inline-flex; align-items: center; 
-            justify-content: center; border-radius: 6px; padding: 0; margin: 2px 0; 
+        .table th, .table td { color: var(--color-text-dark); padding: 12px 10px; vertical-align: middle; border: none; }
+        .table thead tr th { color: var(--color-text-dark); font-weight: bold; background-color: var(--color-table-accent); border-bottom: 2px solid rgba(0, 0, 0, 0.1); }
+        .table-striped > tbody > tr:nth-of-type(odd) > * { background-color: rgba(255, 255, 255, 0.9); }
+        .table-striped > tbody > tr:nth-of-type(even) > * { background-color: #f8f9fa; }
+        .table-striped > tbody > tr:hover > * { background-color: #e9ecef; }
+        
+        .btn-action {
+            width: 30px; height: 30px; display: inline-flex; align-items: center;
+            justify-content: center; border-radius: 5px; padding: 0; margin: 2px 0; 
+        }
+        .action-buttons { 
+            display: flex; 
+            flex-direction: row; 
+            gap: 5px; 
+            align-items: center;
+            justify-content: center;
         }
         
         /* Profile Styles */
-        .user-info { display: flex; align-items: center; cursor: pointer; }
-
-        /* [BARU] Container untuk Nama dan Role/Fakultas */
+        .user-info { 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+            /* PENTING: Untuk memastikan identitas di kiri ikon */
+            direction: rtl; /* Membalik urutan flex, tapi item-content tetap LTR */
+        }
         .user-identity {
-            display: flex;
-            flex-direction: column; 
-            line-height: 1.2;
-            margin-right: 10px;
+            direction: ltr; /* Memastikan teks nama tetap LTR */
+            display: flex; flex-direction: column; line-height: 1.2; margin-left: 10px; /* Diubah dari margin-right */
             text-align: right; 
         }
-        
         .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
-        
-        /* [BARU] Gaya untuk Role dan Fakultas */
         .user-role-display { 
-            font-size: 0.9rem; 
-            font-weight: normal; 
-            color: rgba(255, 255, 255, 0.8); /* Agak redup */
-            display: none; 
+            font-size: 0.9rem; font-weight: normal; color: rgba(255, 255, 255, 0.8); display: none; 
         }
-        
         @media (min-width: 576px) { 
             .user-name, .user-role-display { display: block; } 
         }
         
         .profile-img { 
+            direction: ltr; /* Mengembalikan ikon profil ke LTR */
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
             background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
             display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
             color: var(--color-sidebar-primary);
         }
-        .action-buttons { display: flex; flex-direction: column; gap: 5px; align-items: center; }
-        @media (min-width: 992px) { .action-buttons { flex-direction: row; } }
+        
         /* Logo Styles */
-        .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .sidebar-header { 
+            display: flex; 
+            align-items: center; /* PENTING: Menyusun item vertikal di tengah */
+            margin-bottom: 20px; 
+        }
         .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
+
+        /* Media Query untuk Sidebar Responsif */
+        @media (max-width: 768px) {
+            .app-layout { flex-direction: column; }
+            .sidebar { width: 100%; position: static; padding: 15px 10px; }
+            .sidebar-header { justify-content: center; }
+            .sidebar-menu { display: flex; flex-wrap: wrap; justify-content: space-around; gap: 5px; }
+            .sidebar-menu > a, .sidebar-dropdown-item { flex-basis: 48%; }
+        }
     </style>
 </head>
 <body>
@@ -141,7 +159,7 @@
                 alt="Logo Muhammadiyah"
                 class="logo-img"
                 title="Logo Muhammadiyah"
-                onerror="this.onerror=null; this.src='https://placehold.co/35x35/f7c948/0066cc?text=M';"
+                onerror="this.onerror=null; this.src='https://placehold.co/85x85/f7c948/0066cc?text=M';"
             >
             <p class="logo-text">E-ARSIP</p>
         </div>
@@ -192,13 +210,10 @@
                     @auth
                         @php
                             // LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS
-                            // Catatan: Pastikan di Controller Anda memuat relasi 'role' dan 'faculty' (contoh: Auth::user()->load(['role', 'faculty']))
                             $roleName = Auth::user()->role->name ?? 'N/A';
-                            // Mengakses code Fakultas (Jika relasi faculty ada)
                             $facultyCode = Auth::user()->faculty->code ?? '';
                             
                             $displayRole = ucwords(str_replace('_', ' ', $roleName));
-                            // Format: (ROLE KODEFACULTY) atau (ROLE)
                             $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
                         @endphp
 
@@ -261,7 +276,6 @@
         {{-- END: NOTIFIKASI SUKSES --}}
 
         {{-- TABLE: SURAT MASUK --}}
-        {{-- Mengambil data dari variabel $suratList yang dikirim oleh UsersController@daftarSuratMasuk --}}
         <div class="table-container mt-5">
             <div class="table-header">SURAT MASUK (Total: {{ $suratList->total() ?? 0 }})</div>
             <div class="table-responsive">
@@ -269,12 +283,12 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
-                            {{-- [BARU] Tambah kolom Tanggal Masuk --}}
-                            <th style="width: 15%;">Tgl. Masuk</th> 
-                            <th style="width: 15%;">Kode Surat</th>
+                            <th style="width: 10%;">Tgl. Masuk</th> 
+                            <th style="width: 15%;">Pengirim</th>         {{-- KOLOM BARU: PENGIRIM --}}
+                            <th style="width: 15%;">Fakultas</th>         {{-- KOLOM BARU: FAKULTAS --}}
+                            <th style="width: 10%;">Kode Surat</th>
                             <th style="width: 25%;">Title</th>
-                            <th style="width: 25%;">Isi</th>
-                            <th style="width: 10%;">Lampiran</th> 
+                            <th style="width: 15%;">Lampiran</th> 
                             <th style="width: 5%;">Aksi</th> 
                         </tr>
                     </thead>
@@ -284,23 +298,31 @@
                             <tr style="color: black;">
                                 {{-- Penomoran yang benar dengan pagination --}}
                                 <td>{{ ($suratList->firstItem() ?? 0) + $index }}</td>
-                                {{-- [BARU] Tampilkan Tanggal Masuk (asumsi kolom 'created_at' ada dan berupa instance Carbon) --}}
-                                <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d M y H:i') }}</td>
+                                {{-- Tampilkan Tanggal Masuk --}}
+                                <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d/m/y H:i') }}</td>
+                                
+                                {{-- DATA PENGIRIM (user_id_1) --}}
+                                <td>{{ $surat->user1->name ?? 'N/A' }}</td>
+                                
+                                {{-- FAKULTAS PENGIRIM (melalui relasi user1->faculty) --}}
+                                <td>
+                                    {{ $surat->user1->faculty->name ?? '-' }}
+                                </td>
+                                
                                 <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
-                                <td>{{ $surat->title ?? 'Judul Tidak Ada' }}</td>
-                                <td>{{ Illuminate\Support\Str::limit($surat->isi ?? '', 50) }}</td>
-
+                                <td>{{ Illuminate\Support\Str::limit($surat->title ?? 'Judul Tidak Ada', 25) }}</td>
+                                
                                 {{-- Kolom Lampiran (Menggunakan file_path) --}}
                                 <td>
                                     @if (!empty($surat->file_path))
-                                        <div class="action-buttons">
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Lampiran" target="_blank">
+                                        <div class="action-buttons justify-content-center">
+                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat" target="_blank">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download Lampiran">
+                                            <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download">
                                                 <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                             </a>
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
+                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
                                                 <i class="bi bi-printer-fill"></i>
                                             </a>
                                         </div>
@@ -311,7 +333,7 @@
 
                                 <td>
                                     <div class="d-flex flex-column align-items-center">
-                                        <button class="btn btn-action btn-danger mt-1" title="Hapus"
+                                        <button class="btn btn-action btn-danger" title="Hapus"
                                             onclick="confirmDelete('{{ $surat->id }}')">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -325,12 +347,14 @@
                             </tr>
                         @empty
                             <tr style="color: black;">
-                                <td colspan="7" class="text-center">Tidak ada surat masuk yang ditemukan.</td>
+                                {{-- Colspan 8 untuk mencakup kolom baru --}}
+                                <td colspan="8" class="text-center">Tidak ada surat masuk yang ditemukan.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+            
             {{-- Link Pagination --}}
             <div class="d-flex justify-content-center p-3">
                 {{ $suratList->links() ?? '' }}

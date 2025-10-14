@@ -168,14 +168,11 @@
         margin-bottom: 20px;    
     }
     .logo-img {
-        width: 65px;
-        height: 65px;
-        border-radius: 50%;
+        width: 85px;
+        height: 85px;
         object-fit: cover;
-        background-color: #fbfbfbff;
         margin-right: 10px;
         display: block;
-        border: 2px solid var(--color-text-white);
     }
     .logo-text {
         font-size: 1.4rem;

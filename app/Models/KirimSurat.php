@@ -16,11 +16,11 @@ class KirimSurat extends Model
         'user_id_1',
         'user_id_2',
         'kode_surat',
-        'title',          // <--- Masalah sintaks teratasi di sini
+        'title',
         'isi',
         'tujuan',
         'file_path',
-        'tujuan_faculty_id', // <--- FIX: KOLOM YANG HILANG
+        'tujuan_faculty_id',
     ];
 
     public $timestamps = true;
