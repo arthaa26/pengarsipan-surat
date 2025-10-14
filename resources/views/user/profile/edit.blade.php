@@ -271,6 +271,9 @@
                 <a href="{{ route('user.dashboard') }}" class="btn btn-secondary">Batal</a>
             </form>
         </div>
+        {{-- START: FOOTER HAK CIPTA --}}
+        @include('partials.footer')
+        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 
@@ -288,7 +291,6 @@
         }
     });
 
-    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup (dari kode sebelumnya)
     document.addEventListener('DOMContentLoaded', function () {
         const toggleButton = document.getElementById('daftarSuratDropdown');
         const chevronIcon = toggleButton ? toggleButton.querySelector('.bi-chevron-down') : null;

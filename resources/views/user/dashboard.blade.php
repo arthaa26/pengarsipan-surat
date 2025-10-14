@@ -27,7 +27,6 @@
             color: var(--color-text-white);
         }
 
-        /* LAYOUT & SIDEBAR */
         .app-layout {
             display: flex;
             min-height: 100vh;
@@ -40,7 +39,6 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
         }
 
-        /* DEFAULT MENU LINK STYLE */
         .sidebar-menu > a { 
             display: flex; 
             align-items: center;
@@ -57,13 +55,11 @@
             background: var(--color-sidebar-link-hover);
         }
         
-        /* ACTIVE LINK STYLE (DASHBOARD) */
         .sidebar-menu a.active-link { 
             background: var(--color-text-white);
             color: var(--color-text-dark);
         }
         
-        /* --- SIDEBAR DROPDOWN (COLLAPSE) STYLES --- */
         .sidebar-dropdown-item { margin: 8px 0; }
         .sidebar-dropdown-toggle {
             display: flex !important; align-items: center; justify-content: space-between; 
@@ -131,20 +127,44 @@
             align-items: center;
             justify-content: center;
         }
+        
         .user-info { 
             display: flex; 
             align-items: center; 
             cursor: pointer; 
-            direction: rtl; 
-        }
-        .user-identity {
-            direction: ltr; 
-            display: flex; flex-direction: column; line-height: 1.2; 
-            margin-left: 10px; 
-            margin-right: 0; 
-            text-align: right; 
+            /* Hapus: direction: rtl; */ 
         }
         
+        .user-identity {
+            /* Hapus: direction: ltr; */ 
+            display: flex; 
+            flex-direction: column; 
+            line-height: 1.2; 
+            margin-left: 0; 
+            margin-right: 10px;
+            text-align: right;
+            order: -1; 
+        }
+        
+        .profile-icon {
+            order: 0; 
+        }
+        
+        .profile-img { 
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
+            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            color: var(--color-sidebar-primary);
+        }
+        
+        .user-info .dropdown-toggle::after {
+            display: none; 
+        }
+        
+        .user-info .bi-chevron-down.ms-2 {
+            order: 1;
+        }
+
         .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
         
         .user-role-display { 
@@ -154,14 +174,7 @@
         @media (min-width: 576px) { 
             .user-name, .user-role-display { display: block; } 
         }
-        
-        .profile-img { 
-            direction: ltr; 
-            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
-            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
-            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
-            color: var(--color-sidebar-primary);
-        }
+
         .sidebar-header { 
             display: flex; 
             align-items: center;
@@ -170,7 +183,6 @@
         .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
 
-        /* Media Query untuk Sidebar Responsif */
         @media (max-width: 768px) {
             .app-layout { flex-direction: column; }
             .sidebar { width: 100%; position: static; padding: 15px 10px; }
@@ -235,6 +247,7 @@
             <h2 class="fw-bold text-white">DASHBOARD USER</h2>
             
             <div class="dropdown">
+                {{-- Hapus chevron ganda dari sini --}}
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
                         {{-- START: LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS --}}
@@ -266,7 +279,8 @@
                         <span class="user-name d-none d-sm-block">Guest User</span>
                         <div class="profile-img"><i class="bi bi-person-circle"></i></div>
                     @endauth
-                    <i class="bi bi-chevron-down ms-2 fs-5 text-white"></i>
+                    {{-- Tambahkan kembali ikon chevron di sini jika Anda ingin ikonnya tetap ada, dan atur stylenya di CSS agar tampil di kanan --}}
+                    <i class="bi bi-chevron-down ms-2 fs-5 text-white"></i> 
                 </div>
                 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
@@ -413,6 +427,9 @@
                 </table>
             </div>
         </div>
+        {{-- START: FOOTER HAK CIPTA --}}
+        @include('partials.footer')
+        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 

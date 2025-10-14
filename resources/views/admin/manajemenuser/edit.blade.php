@@ -152,6 +152,9 @@
                 </div>
             </form>
         </div>
+        {{-- START: FOOTER HAK CIPTA --}}
+        @include('partials.footer')
+        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 

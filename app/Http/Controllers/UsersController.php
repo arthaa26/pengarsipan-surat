@@ -19,19 +19,40 @@ class UsersController extends Controller
     {
         $userId = $user->id;
         $userFacultyId = $user->faculty_id;
+        // Gunakan nilai default yang aman jika role atau name null
         $userRoleName = $user->role->name ?? 'dosen'; 
+        
+        // Konversi nama role ke format tujuan DB (snake_case)
         $roleTujuan = strtolower(str_replace(' ', '_', $userRoleName));
+        
+        // Role Rektor dan Admin biasanya melihat semua surat yang ditujukan ke role mereka
         $isUniversityLevel = in_array($roleTujuan, ['rektor', 'admin', 'dosen_tugas_khusus']);
+        
         return KirimSurat::where(function ($query) use ($userId, $roleTujuan, $userFacultyId, $isUniversityLevel) {
             
+            // Kriteria 1: Surat ditujukan secara PERSONAL (user_id_2 tidak NULL)
             $query->where('user_id_2', $userId)
+                  
+                  // Kriteria 2: Surat ditujukan secara ROLE/FAKULTAS (user_id_2 NULL)
                   ->orWhere(function ($q) use ($roleTujuan, $userFacultyId, $isUniversityLevel) {
+                      
+                      // Filter awal: Surat ditujukan ke role user ini
                       $q->whereNull('user_id_2')
                         ->where('tujuan', $roleTujuan); 
 
+                      // Logika Filter Fakultas:
+                      // Jika pengguna BUKAN level Universitas (e.g., Dekan, Dosen, Kaprodi)
                       if (!$isUniversityLevel) {
-                          $q->where('tujuan_faculty_id', $userFacultyId);
+                          // Pengguna level Fakultas harus melihat surat yang:
+                          $q->where(function($subQ) use ($userFacultyId) {
+                              // A) Ditujukan spesifik ke Fakultas mereka (ID Fakultas match)
+                              $subQ->where('tujuan_faculty_id', $userFacultyId)
+                                   // B) ATAU Ditujukan ke SELURUH FAKULTAS (tujuan_faculty_id IS NULL)
+                                   ->orWhereNull('tujuan_faculty_id');
+                          });
                       }
+                      // Jika pengguna level Universitas (Rektor, Admin), filter fakultas tidak diterapkan,
+                      // sehingga mereka akan melihat SEMUA surat universal yang ditujukan ke role mereka.
                   });
         });
     }
@@ -40,7 +61,7 @@ class UsersController extends Controller
     {
         $user = Auth::user();
         if (!$user) {
-             return redirect()->route('login');
+            return redirect()->route('login');
         }
         
         $user->load(['role', 'faculty']); 
@@ -52,7 +73,8 @@ class UsersController extends Controller
 
         $suratMasukQuery = $this->getSuratMasukQuery($user); 
         $suratMasukCount = $suratMasukQuery->count();
-        $suratMasuk = $suratMasukQuery->orderBy('created_at', 'desc')->limit(10)->get();
+        // Memuat relasi untuk data di dashboard
+        $suratMasuk = $suratMasukQuery->with('user1.faculty')->orderBy('created_at', 'desc')->limit(10)->get();
 
         $suratKeluarQuery = KirimSurat::where('user_id_1', $userId);
         $suratKeluarCount = $suratKeluarQuery->count();
@@ -73,6 +95,7 @@ class UsersController extends Controller
         $user->load(['role', 'faculty']); 
 
         $suratList = $this->getSuratMasukQuery($user)
+                            ->with('user1.faculty')
                             ->orderBy('created_at', 'desc')
                             ->paginate(15);
         
@@ -90,7 +113,7 @@ class UsersController extends Controller
         
         $userId = $user->id;
         $suratList = KirimSurat::where('user_id_1', $userId)
-                                 ->with('user2')
+                                 ->with(['user2', 'user2.faculty', 'tujuanFaculty']) // Tambahkan relasi tujuanFaculty untuk melihat tujuan
                                  ->orderBy('created_at', 'desc')
                                  ->paginate(15);
                                  
@@ -182,7 +205,8 @@ class UsersController extends Controller
     public function downloadSurat(KirimSurat $surat)
     {
         if (Storage::disk('public')->exists($surat->file_path)) {
-            return Storage::disk('public')->download($surat->file_path);
+            $fileName = $surat->kode_surat . '_' . basename($surat->file_path);
+            return Storage::disk('public')->download($surat->file_path, $fileName);
         }
         abort(404, 'File lampiran tidak ditemukan.');
     }

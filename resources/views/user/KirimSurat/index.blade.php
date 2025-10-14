@@ -216,6 +216,7 @@
                 @csrf 
                 
                 {{-- Input Hidden untuk Faculty ID tujuan (Digunakan jika tujuan adalah level Fakultas) --}}
+                {{-- Dibiarkan tanpa atribut disabled di HTML agar JS yang mengontrol --}}
                 <input type="hidden" name="tujuan_faculty_id" id="tujuan_faculty_id_input" value=""> 
                 
                 {{-- KODE SURAT Field --}}
@@ -275,7 +276,7 @@
                 {{-- DROPDOWN PILIH FAKULTAS (Tersembunyi secara default) --}}
                 <div class="mb-4" id="faculty_dropdown_container" style="display: none;">
                     <label for="target_faculty_id" class="form-label-custom">PILIH FAKULTAS TUJUAN</label>
-                    <select class="form-select form-control-custom @error('target_faculty_id') is-invalid @enderror" id="target_faculty_id" name="target_faculty_id">
+                    <select class="form-select form-control-custom @error('target_faculty_id') is-invalid @enderror" id="target_faculty_id" name="target_faculty_id" disabled>
                         <option value="">-- Pilih Fakultas Tujuan --</option>
                         
                         {{-- Loop data Fakultas (Asumsi $allFaculties dikirim dari Controller) --}}
@@ -299,31 +300,35 @@
                 <div class="radio-group-container">
                     <p class="form-label-custom">TUJUAN JABATAN (Di level yang dipilih di atas)</p>
                     <div class="d-flex flex-wrap gap-3">
-                        @php $oldTujuan = old('tujuan'); @endphp
+                        @php 
+                            // Menggunakan Laravel old() helper dengan fallback 'rektor' jika tidak ada input 'tujuan'
+                            $currentTujuan = old('tujuan', 'rektor'); 
+                        @endphp
 
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_rektor" value="rektor" {{ $oldTujuan == 'rektor' ? 'checked' : '' }}>
+                            {{-- FIX: Gunakan $currentTujuan untuk menentukan yang tercentang --}}
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_rektor" value="rektor" {{ $currentTujuan == 'rektor' ? 'checked' : '' }}>
                             <label class="form-check-label radio-label-custom" for="tujuan_rektor">REKTOR</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dekan" value="dekan" {{ $oldTujuan == 'dekan' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dekan" value="dekan" {{ $currentTujuan == 'dekan' ? 'checked' : '' }}>
                             <label class="form-check-label radio-label-custom" for="tujuan_dekan">DEKAN</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen" value="dosen" {{ $oldTujuan == 'dosen' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen" value="dosen" {{ $currentTujuan == 'dosen' ? 'checked' : '' }}>
                             <label class="form-check-label radio-label-custom" for="tujuan_dosen">DOSEN</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_tenaga_pendidik" value="tenaga_pendidik" {{ $oldTujuan == 'tenaga_pendidik' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_tenaga_pendidik" value="tenaga_pendidik" {{ $currentTujuan == 'tenaga_pendidik' ? 'checked' : '' }}>
                             <label class="form-check-label radio-label-custom" for="tujuan_tenaga_pendidik">TENAGA PENDIDIK</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen_tugas_khusus" value="dosen_tugas_khusus" {{ $oldTujuan == 'dosen_tugas_khusus' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen_tugas_khusus" value="dosen_tugas_khusus" {{ $currentTujuan == 'dosen_tugas_khusus' ? 'checked' : '' }}>
                             <label class="form-check-label radio-label-custom" for="tujuan_dosen_tugas_khusus">DOSEN TUGAS KHUSUS</label>
                         </div>
                         {{-- Tambahkan radio untuk Kaprodi jika ada di daftar role --}}
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_kaprodi" value="kaprodi" {{ $oldTujuan == 'kaprodi' ? 'checked' : '' }}>
+                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_kaprodi" value="kaprodi" {{ $currentTujuan == 'kaprodi' ? 'checked' : '' }}>
                             <label class="form-check-label radio-label-custom" for="tujuan_kaprodi">KAPRODI</label>
                         </div>
                     </div>
@@ -340,6 +345,9 @@
             </form>
         </div>
         {{-- END: KIRIM SURAT FORM CONTENT --}}
+        {{-- START: FOOTER HAK CIPTA --}}
+        @include('partials.footer')
+        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 
@@ -347,55 +355,66 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const currentUserFacultyId = '{{ Auth::user()->faculty_id ?? '' }}';
         const hiddenFacultyInput = document.getElementById('tujuan_faculty_id_input');
-        const purposeRadios = document.querySelectorAll('input[name="tujuan"]');
         const targetTypeRadios = document.querySelectorAll('input[name="target_type"]');
         const facultyDropdownContainer = document.getElementById('faculty_dropdown_container');
-        const targetFacultyIdInput = document.getElementById('target_faculty_id'); // Select dropdown
+        const targetFacultyIdSelect = document.getElementById('target_faculty_id'); // Select dropdown
         const collapseElement = document.getElementById('submenuDaftarSurat');
         const toggleButton = document.getElementById('daftarSuratDropdown');
         
+        // Inisialisasi: Pastikan dropdown fakultas dinonaktifkan saat pertama kali dimuat
+        targetFacultyIdSelect.setAttribute('disabled', 'disabled');
+
         function toggleFacultyDropdown() {
             const checkedTargetType = document.querySelector('input[name="target_type"]:checked');
             const selectedTargetType = checkedTargetType ? checkedTargetType.value : 'universitas'; 
 
             if (selectedTargetType === 'spesifik') {
                 facultyDropdownContainer.style.display = 'block';
-                targetFacultyIdInput.setAttribute('required', 'required'); 
-                hiddenFacultyInput.value = ''; 
-            } else {
+                
+                // Aktifkan dropdown dan hidden input
+                targetFacultyIdSelect.setAttribute('required', 'required'); 
+                targetFacultyIdSelect.removeAttribute('disabled');
+                hiddenFacultyInput.removeAttribute('disabled');
+                
+                // Sinkronisasi value: ambil value dari dropdown
+                hiddenFacultyInput.value = targetFacultyIdSelect.value;
+
+            } else { // 'universitas'
                 facultyDropdownContainer.style.display = 'none';
-                targetFacultyIdInput.removeAttribute('required');
-                targetFacultyIdInput.value = ''; 
+                
+                // Hapus requirement, NONAKTIFKAN dropdown
+                targetFacultyIdSelect.removeAttribute('required');
+                targetFacultyIdSelect.setAttribute('disabled', 'disabled');
+                
+                // KOSONGKAN dan NONAKTIFKAN hidden input agar TIDAK ikut terkirim
                 hiddenFacultyInput.value = ''; 
+                hiddenFacultyInput.setAttribute('disabled', 'disabled'); 
             }
         }
-
-        function updateHiddenFacultyId() {
-            const checkedRadio = document.querySelector('input[name="tujuan"]:checked');
-            if (!checkedRadio) {
-                hiddenFacultyInput.value = '';
-                return;
-            }
-        }
-
+        
+        // Listener untuk radio target_type
         targetTypeRadios.forEach(radio => {
             radio.addEventListener('change', toggleFacultyDropdown);
         });
 
+        // Listener untuk dropdown fakultas spesifik (jika diubah)
+        targetFacultyIdSelect.addEventListener('change', function() {
+            // Memastikan hidden input terisi hanya jika tidak disabled
+            if (!hiddenFacultyInput.disabled) {
+                hiddenFacultyInput.value = this.value;
+            }
+        });
+
+        // Inisialisasi awal
         toggleFacultyDropdown();
         
-        purposeRadios.forEach(radio => {
-            radio.addEventListener('change', updateHiddenFacultyId);
-        });
-        updateHiddenFacultyId(); 
-
         document.getElementById('upload_file').addEventListener('change', function() {
             const fileName = this.files.length > 0 ? this.files[0].name : '';
             document.getElementById('file_display').value = fileName;
         });
         
+        // Logic Sidebar Dropdown (tidak diubah)
         const chevronIcon = toggleButton ? toggleButton.querySelector('.bi-chevron-down') : null;
         if (collapseElement && toggleButton && chevronIcon) {
             collapseElement.addEventListener('show.bs.collapse', function () {

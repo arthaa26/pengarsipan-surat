@@ -453,6 +453,9 @@
             </div>
         </div>
         {{-- END CONTENT --}}
+        {{-- START: FOOTER HAK CIPTA --}}
+        @include('partials.footer')
+        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 

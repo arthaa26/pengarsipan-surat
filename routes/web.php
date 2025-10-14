@@ -28,7 +28,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
 // ---------------------------------------------------------------------
-//  Rute yang ade di dalam ini hanya dapat diakses same user yang udah login
+//  Rute yang ade di dalam ini hanya dapat diakses same user yang udah login
 // ---------------------------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
@@ -39,7 +39,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        // ✅ FIX 1: Menggunakan Route Resource hanya untuk INDEX dan SHOW.
+        // ✅ Menggunakan Route Resource hanya untuk INDEX dan SHOW.
         Route::resource('daftarsurat', DaftarSuratController::class)
             ->only(['index', 'show']) 
             ->names('daftarsurat');
@@ -49,7 +49,8 @@ Route::middleware(['auth'])->group(function () {
         
         // Rute buat admin akses untuk surat
         // Rute file actions ini sudah benar dan akan digunakan di Blade
-        Route::get('/surat/{id}/detail', [DaftarSuratController::class, 'showDetail'])->name('surat.view');
+        // FIX: Mengubah 'showDetail' menjadi 'show' untuk memanggil metode show() standar di resource controller.
+        Route::get('/surat/{id}/detail', [DaftarSuratController::class, 'show'])->name('surat.view');
         Route::get('/surat/{id}/view', [DaftarSuratController::class, 'previewFile'])->name('surat.view_file');
         Route::get('/surat/{id}/download', [DaftarSuratController::class, 'downloadFile'])->name('surat.download');
         
@@ -93,9 +94,15 @@ Route::middleware(['auth'])->group(function () {
         ->name('user.kirim_surat.store');
 
     // --- RUTE AKSI SURAT (Lihat/Download/Hapus) ---
-    Route::get('/surat/{surat}', [UsersController::class, 'viewSurat'])->name('surat.view');
-    Route::delete('/surat/{surat}', [UsersController::class, 'deleteSurat'])->name('surat.delete');
+    // Pastikan rute yang berpotensi memiliki URL yang mirip (seperti rute file actions) diletakkan
+    // sebelum rute generik seperti Route::get('/surat/{surat}') agar tidak terjadi konflik routing.
+
+    // ✅ Rute file actions untuk USER (Dosen) - DIPERBAIKI
     Route::get('/surat/view-file/{surat}', [UsersController::class, 'viewFileSurat'])->name('surat.view_file');
     Route::get('/surat/download/{surat}', [UsersController::class, 'downloadSurat'])->name('surat.download');
+    
+    // Rute untuk melihat detail surat atau rute generik
+    Route::get('/surat/{surat}', [UsersController::class, 'viewSurat'])->name('surat.view');
+    Route::delete('/surat/{surat}', [UsersController::class, 'deleteSurat'])->name('surat.delete');
 
 });

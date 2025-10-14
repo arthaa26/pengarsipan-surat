@@ -95,31 +95,52 @@
             justify-content: center;
         }
         
+        /* === PERBAIKAN PROFIL START === */
         .user-info { 
             display: flex; 
             align-items: center; 
             cursor: pointer; 
-            direction: rtl; 
+            /* Hapus: direction: rtl; */ 
         }
+
+        /* Container Nama/Role */
         .user-identity {
-            direction: ltr;
-            display: flex; flex-direction: column; line-height: 1.2; margin-left: 10px; /* Diubah dari margin-right */
-            text-align: right; 
+            /* Hapus: direction: ltr; */
+            display: flex; 
+            flex-direction: column; 
+            line-height: 1.2; 
+            margin-left: 0; /* Hapus margin kiri lama */
+            margin-right: 10px; /* Tambah margin kanan agar terpisah dari ikon */
+            text-align: right; /* Nama dan Role rata kanan */
+            order: -1; /* Pindah ke paling kiri di dalam user-info */
         }
+        .profile-icon {
+            order: 0; /* Tetap di tengah */
+        }
+        /* Ikon Profil */
+        .profile-img { 
+            /* Hapus: direction: ltr; */
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
+            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            color: var(--color-sidebar-primary);
+        }
+        /* Sembunyikan chevron bawaan bootstrap */
+        .user-info .dropdown-toggle::after {
+            display: none;
+        }
+        /* Atur order untuk chevron kustom (jika ada) */
+        .user-info .bi-chevron-down.ms-2 {
+            order: 1; /* Pindah ke paling kanan di dalam user-info */
+        }
+        /* === PERBAIKAN PROFIL END === */
+
         .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
         .user-role-display { 
             font-size: 0.9rem; font-weight: normal; color: rgba(255, 255, 255, 0.8); display: none; 
         }
         @media (min-width: 576px) { 
             .user-name, .user-role-display { display: block; } 
-        }
-        
-        .profile-img { 
-            direction: ltr;
-            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
-            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
-            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
-            color: var(--color-sidebar-primary);
         }
         
         .sidebar-header { 
@@ -207,7 +228,7 @@
                             $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
                         @endphp
 
-                        {{-- CONTAINER NAMA & ROLE/FAKULTAS --}}
+                        {{-- CONTAINER NAMA & ROLE/FAKULTAS (Akan diorder ke kiri oleh CSS order:-1) --}}
                         <div class="user-identity">
                             <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
                             {{-- Tampilkan role dan fakultas --}}
@@ -225,8 +246,8 @@
                         <span class="user-name d-none d-sm-block">Guest User</span>
                         <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
                     @endauth
-                    <i class="bi bi-chevron-down ms-2 fs-5 text-white"></i>
-                </div>
+                    {{-- HAPUS CHEVRON GANDA: Hapus ikon chevron ganda ini: --}}
+                    </div>
 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li class="dropdown-header">
@@ -274,8 +295,8 @@
                         <tr>
                             <th style="width: 5%;">No</th>
                             <th style="width: 10%;">Tgl. Masuk</th> 
-                            <th style="width: 15%;">Pengirim</th>         {{-- KOLOM BARU: PENGIRIM --}}
-                            <th style="width: 15%;">Fakultas</th>         {{-- KOLOM BARU: FAKULTAS --}}
+                            <th style="width: 15%;">Pengirim</th> 	
+                            <th style="width: 15%;">Fakultas</th> 	
                             <th style="width: 10%;">Kode Surat</th>
                             <th style="width: 25%;">Title</th>
                             <th style="width: 15%;">Lampiran</th> 
@@ -345,11 +366,16 @@
                 </table>
             </div>
             
-            {{-- Link Pagination --}}
+            {{-- Link Pagination (SUDAH DIPERBAIKI) --}}
             <div class="d-flex justify-content-center p-3">
-                {{ $suratList->links() ?? '' }}
+                @if(is_object($suratList) && method_exists($suratList, 'links'))
+                    {{ $suratList->links('pagination::bootstrap-5') }}
+                @endif
             </div>
         </div>
+        {{-- START: FOOTER HAK CIPTA --}}
+        @include('partials.footer')
+        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 

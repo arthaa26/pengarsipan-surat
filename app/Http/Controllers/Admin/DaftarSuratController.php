@@ -16,9 +16,9 @@ class DaftarSuratController extends Controller
     {
         try {
             $suratList = KirimSurat::with(['user1.faculty'])
-                                     ->orderBy('created_at', 'desc')
-                                     // ✅ FIX 2: Use Eloquent's built-in paginate() for simplicity and efficiency
-                                     ->paginate(10);
+                                           ->orderBy('created_at', 'desc')
+                                           // ✅ FIX 2: Use Eloquent's built-in paginate() for simplicity and efficiency
+                                           ->paginate(10);
             
         } catch (\Exception $e) {
             Log::error('Error loading Admin DaftarSurat index: ' . $e->getMessage());
@@ -28,6 +28,24 @@ class DaftarSuratController extends Controller
         }
 
         return view('admin.daftarsurat.index', compact('suratList'));
+    }
+
+    /**
+     * Menampilkan detail surat tertentu.
+     * Metode ini dipanggil oleh rute admin.surat.view (GET /admin/surat/{id}/detail)
+     *
+     * @param  int  $id
+     * @return \Illuminate\View\View
+     */
+    public function show($id)
+    {
+        // Cari surat berdasarkan ID, memuat relasi yang diperlukan (user1, user2, tujuanFaculty).
+        $surat = KirimSurat::with(['user1.faculty', 'user2.faculty', 'tujuanFaculty'])
+                      ->findOrFail($id);
+        
+        // Mengirim data ke view Blade
+        // Anda harus membuat file view ini di resources/views/admin/surat/show_detail.blade.php
+        return view('admin.surat.show_detail', compact('surat'));
     }
 
     public function downloadFile($id)
@@ -58,6 +76,7 @@ class DaftarSuratController extends Controller
             'Content-Disposition' => 'inline; filename="' . basename($surat->kode_surat) . '"' 
         ]);
     }
+    
     public function destroy($id)
     {
         $surat = KirimSurat::findOrFail($id);

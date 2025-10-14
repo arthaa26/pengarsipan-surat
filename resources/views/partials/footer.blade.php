@@ -1,3 +1,5 @@
-<footer style="background:#0077b6;color:#fff;padding:12px 32px;text-align:center">
-	&copy; {{ date('Y') }} Universitas Muhammadiyah Pontianak
-</footer>
+{{-- START: FOOTER HAK CIPTA --}}
+<div class="text-center mt-4 p-3 footer-copyright">
+    <small>&copy; {{ date('Y') }} E-ARSIP. Dibuat dengan <i class="bi bi-heart-fill text-danger"></i>. Hak Cipta Dilindungi.</small>
+</div>
+{{-- END: FOOTER HAK CIPTA --}}

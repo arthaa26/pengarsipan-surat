@@ -88,22 +88,51 @@
             display: flex; flex-direction: row; gap: 5px; align-items: center; justify-content: center; 
         }
         
-        /* === PERBAIKAN TATA LETAK PROFILE START === */
+        /* === PERBAIKAN PROFIL START === */
         .user-info { 
             display: flex; 
             align-items: center; 
             cursor: pointer; 
-            direction: rtl; 
         }
         
+        /* Container Nama/Role */
         .user-identity {
-            direction: ltr;
-            display: flex; flex-direction: column; line-height: 1.2; 
-            margin-left: 10px; 
-            margin-right: 0; 
+            display: flex; 
+            flex-direction: column; 
+            line-height: 1.2; 
+            margin-right: 10px; 
             text-align: right; 
+            order: -1; 
         }
         
+        /* Container Ikon Profil */
+        .profile-icon {
+            order: 0; 
+        }
+        
+        /* Ikon Profil */
+        .profile-img { 
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
+            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            color: var(--color-sidebar-primary);
+        }
+        
+        /* Chevron Dropdown Bootstrap (yang ada di dalam user-info) */
+        .user-info .dropdown-toggle::after {
+            /* Pastikan chevron bawaan Bootstrap Sembunyi */
+            display: none; 
+        }
+        
+        /* PENTING: Tambahkan styling untuk pagination agar terlihat bagus */
+        .pagination-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 0 0 10px 10px; 
+        }
+
+
         .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
         
         .user-role-display { 
@@ -114,16 +143,6 @@
             .user-name, .user-role-display { display: block; } 
         }
         
-        .profile-img { 
-            direction: ltr; /* Mengembalikan ikon profil ke LTR */
-            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
-            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
-            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
-            color: var(--color-sidebar-primary);
-        }
-        /* === PERBAIKAN TATA LETAK PROFILE END === */
-
-        /* Logo Styles */
         .sidebar-header { 
             display: flex; 
             align-items: center; 
@@ -132,7 +151,6 @@
         .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; }
         .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
 
-        /* Media Query untuk Sidebar Responsif */
         @media (max-width: 768px) {
             .app-layout { flex-direction: column; }
             .sidebar { width: 100%; position: static; padding: 15px 10px; }
@@ -165,8 +183,8 @@
             {{-- DROPDOWN DAFTAR SURAT --}}
             <div class="sidebar-dropdown-item">
                 <a class="sidebar-dropdown-toggle" id="daftarSuratDropdown"
-                   data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="true"
-                   aria-controls="submenuDaftarSurat">
+                    data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="true"
+                    aria-controls="submenuDaftarSurat">
                     <i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT
                     <i class="bi bi-chevron-down" style="font-size: 1em;"></i>
                 </a>
@@ -199,6 +217,7 @@
             <h2 class="fw-bold text-white">DAFTAR SURAT KELUAR</h2>
 
             <div class="dropdown">
+                {{-- MENGHAPUS 'direction: rtl;' dari CSS dan memperbaiki urutan menggunakan order di dalam div ini --}}
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
                         @php
@@ -210,7 +229,7 @@
                             $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
                         @endphp
 
-                        {{-- CONTAINER NAMA & ROLE/FAKULTAS (Berada di kiri ikon karena .user-info menggunakan direction: rtl) --}}
+                        {{-- CONTAINER NAMA & ROLE/FAKULTAS (Diposisikan di kiri ikon dengan order:-1 di CSS) --}}
                         <div class="user-identity">
                             <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
                             {{-- Tampilkan role dan fakultas --}}
@@ -228,7 +247,7 @@
                         <span class="user-name d-none d-sm-block">Guest User</span>
                         <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
                     @endauth
-                    <i class="bi bi-chevron-down ms-2 fs-5 text-white"></i>
+                    {{-- HAPUS CHEVRON GANDA: Chevron bawaan dari .dropdown-toggle akan disembunyikan di CSS --}}
                 </div>
 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
@@ -276,8 +295,8 @@
                         <tr>
                             <th style="width: 5%;">No</th>
                             <th style="width: 10%;">Tgl. Keluar</th> 
-                            <th style="width: 12%;">Pengirim</th>         
-                            <th style="width: 13%;">Fakultas</th>         
+                            <th style="width: 12%;">Pengirim</th>       
+                            <th style="width: 13%;">Fakultas</th>       
                             <th style="width: 10%;">Kode Surat</th>
                             <th style="width: 15%;">Tujuan</th>
                             <th style="width: 25%;">Title</th>
@@ -307,11 +326,11 @@
                                 {{-- TAMPILKAN TUJUAN AKHIR (user2/tujuanFaculty/tujuan) --}}
                                 <td>
                                     @if ($surat->user2 ?? false)
-                                         {{ $surat->user2->name }}
+                                            {{ $surat->user2->name }}
                                     @elseif ($surat->tujuanFaculty ?? false)
-                                         {{ $surat->tujuanFaculty->code }} ({{ ucwords($surat->tujuan) }})
+                                            {{ $surat->tujuanFaculty->code }} ({{ ucwords($surat->tujuan) }})
                                     @else
-                                         {{ ucwords(str_replace('_', ' ', $surat->tujuan)) }}
+                                            {{ ucwords(str_replace('_', ' ', $surat->tujuan)) }}
                                     @endif
                                 </td>
                                 
@@ -358,11 +377,15 @@
                     </tbody>
                 </table>
             </div>
-            {{-- Link Pagination --}}
-            <div class="d-flex justify-content-center p-3">
-                {{ $suratList->links() ?? '' }}
+            
+            {{-- PERBAIKAN LINK PAGINATION DENGAN STYLING BOOTSTRAP 5 --}}
+            <div class="d-flex justify-content-center pagination-container">
+                {{ $suratList->links('pagination::bootstrap-5') ?? '' }}
             </div>
         </div>
+        {{-- START: FOOTER HAK CIPTA --}}
+        @include('partials.footer')
+        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 
@@ -378,7 +401,6 @@
         }
     }
 
-    // Menangani rotasi ikon panah saat dropdown dibuka/ditutup
     document.addEventListener('DOMContentLoaded', function () {
         const collapseElement = document.getElementById('submenuDaftarSurat');
         const toggleButton = document.getElementById('daftarSuratDropdown');
@@ -386,14 +408,15 @@
 
 
         if (collapseElement && toggleButton && chevronIcon) {
-            // Inisialisasi: Pastikan panah menghadap ke bawah saat ditutup
-            if (!collapseElement.classList.contains('show')) {
+            // Logika untuk memastikan ikon chevron sesuai dengan status collapse saat halaman dimuat
+            // Karena default adalah 'show', maka harus dirotasi -180deg
+             if (collapseElement.classList.contains('show')) {
+                chevronIcon.style.transform = 'rotate(-180deg)';
+             } else {
                  chevronIcon.style.transform = 'rotate(0deg)';
-            } else {
-                 chevronIcon.style.transform = 'rotate(-180deg)';
-            }
+             }
 
-
+            // Event listener untuk collapse
             collapseElement.addEventListener('show.bs.collapse', function () {
                 toggleButton.setAttribute('aria-expanded', 'true');
                 chevronIcon.style.transform = 'rotate(-180deg)';
