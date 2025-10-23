@@ -90,6 +90,12 @@ Route::middleware(['auth'])->group(function () {
     // --- RUTE KIRIM SURAT ---
     Route::get('/dosen/surat/kirim', [UsersController::class, 'createSurat'])
         ->name('user.kirim_surat.index');
+    
+    // FIX: Menambahkan rute AJAX yang hilang
+    // Rute ini digunakan oleh JavaScript di KirimSurat/index.blade.php untuk mengambil daftar pengguna
+    Route::get('/get-target-users', [UsersController::class, 'getTargetUsers'])
+        ->name('get.target.users');
+
     Route::post('/kirim-surat', [KirimSuratController::class, 'store'])
         ->name('user.kirim_surat.store');
 

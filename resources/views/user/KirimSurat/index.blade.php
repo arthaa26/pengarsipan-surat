@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* BASE STYLES */
+        /* ... (Keep all existing CSS styles as they are) ... */
         :root {
             --color-bg-body: #4db8ff;
             --color-sidebar-primary: #0066cc;
@@ -86,6 +86,14 @@
             background-color: var(--color-button-kirim-hover);
             color: var(--color-text-white);
         }
+        
+        /* Penyesuaian tampilan radio button */
+        .form-check {
+            margin-right: 1.5rem;
+        }
+        .form-check-label.radio-label-custom {
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -147,22 +155,24 @@
             <div class="dropdown">
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
-                        {{-- START: TAMPILAN NAMA DAN JABATAN/FAKULTAS --}}
+                        {{-- START: TAMPILAN NAMA DAN JABATAN/FAKULTAS (Contoh Data Dummy jika tidak ada Auth::user()) --}}
                         @php
-                            $roleName = Auth::user()->role->name ?? 'N/A';
-                            $facultyCode = Auth::user()->faculty->code ?? '';
+                            // Asumsi data ini ada di variabel Blade jika user terautentikasi
+                            $user = Auth::user() ?? (object)['name' => 'Demo User', 'role' => (object)['name' => 'admin_fakultas'], 'faculty' => (object)['code' => 'FT'], 'profile_photo_url' => null];
+                            $roleName = $user->role->name ?? 'N/A';
+                            $facultyCode = $user->faculty->code ?? '';
                             $displayRole = ucwords(str_replace('_', ' ', $roleName));
                             $fullTitle = $facultyCode ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
                         @endphp
                         <div class="user-identity">
-                            <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
+                            <span class="user-name d-none d-sm-block">{{ $user->name }}</span>
                             <span class="user-role-display d-none d-sm-block">{{ $fullTitle }}</span>
                         </div>
                         {{-- END: TAMPILAN NAMA DAN JABATAN/FAKULTAS --}}
 
                         <div class="profile-icon">
-                            @if (Auth::user()->profile_photo_url)
-                                <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="profile-img">
+                            @if ($user->profile_photo_url)
+                                <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="profile-img">
                             @else
                                 <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
                             @endif
@@ -176,7 +186,7 @@
                 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li class="dropdown-header">
-                        @auth {{ Auth::user()->name }} <br><small class="text-muted">{{ $fullTitle }}</small> @else Guest @endauth
+                        @auth {{ $user->name }} <br><small class="text-muted">{{ $fullTitle }}</small> @else Guest @endauth
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     
@@ -215,10 +225,6 @@
             <form action="{{ route('user.kirim_surat.store') ?? '#' }}" method="POST" enctype="multipart/form-data">
                 @csrf 
                 
-                {{-- Input Hidden untuk Faculty ID tujuan (Digunakan jika tujuan adalah level Fakultas) --}}
-                {{-- Dibiarkan tanpa atribut disabled di HTML agar JS yang mengontrol --}}
-                <input type="hidden" name="tujuan_faculty_id" id="tujuan_faculty_id_input" value=""> 
-                
                 {{-- KODE SURAT Field --}}
                 <div class="mb-4">
                     <label for="kode_surat" class="form-label-custom">KODE SURAT (Otomatis)</label>
@@ -248,38 +254,56 @@
                     <label for="upload_file" class="form-label-custom">UPLOAD FILE</label>
                     <div class="input-group input-group-upload">
                         <input type="file" class="form-control d-none @error('file_surat') is-invalid @enderror" id="upload_file" name="file_surat" required>
-                        <input type="text" class="form-control form-control-custom" id="file_display" placeholder="Pilih file..." readonly onclick="document.getElementById('upload_file').click();">
+                        <input type="text" class="form-control form-control-custom" id="file_display" placeholder="Pilih file... (Format PDF)" readonly onclick="document.getElementById('upload_file').click();">
                         <span class="input-group-text" onclick="document.getElementById('upload_file').click();"><i class="bi bi-upload"></i></span>
                     </div>
                     @error('file_surat')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
+                    <small class="text-dark">Max: 5MB. Format yang diperbolehkan: .pdf , doc, docx, jpg, jpeg, png.</small>
                 </div>
 
-                {{-- TUJUAN (Destination) Radio Buttons --}}
+                <hr style="border-top: 2px solid var(--color-text-dark);">
+
+                {{-- TARGET TUJUAN Radio Buttons - Target Level (UNIVERSITAS / FAKULTAS SPESIFIK) --}}
                 <div class="radio-group-container mb-4">
-                    <p class="form-label-custom">TUJUAN KE LEVEL</p>
+                    <p class="form-label-custom">TARGET TUJUAN</p>
                     <div class="d-flex flex-wrap gap-3 mb-3">
                         {{-- OPSI 1: TINGKAT UNIVERSITAS (SEMUA FAKULTAS) --}}
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="target_type" id="target_universitas" value="universitas" checked>
-                            <label class="form-check-label radio-label-custom" for="target_universitas">UNIVERSITAS (SEMUA FAKULTAS)</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="target_type" id="target_universitas" value="universitas" {{ old('target_type', 'universitas') == 'universitas' ? 'checked' : '' }}>
+                            <label class="form-check-label radio-label-custom" for="target_universitas">
+                                <i class="bi bi-bank me-1"></i> UNIVERSITAS (Semua Fakultas)
+                            </label>
                         </div>
                         {{-- OPSI 2: TINGKAT FAKULTAS SPESIFIK --}}
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="target_type" id="target_spesifik" value="spesifik">
-                            <label class="form-check-label radio-label-custom" for="target_spesifik">FAKULTAS SPESIFIK</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="target_type" id="target_spesifik" value="spesifik" {{ old('target_type') == 'spesifik' ? 'checked' : '' }}>
+                            <label class="form-check-label radio-label-custom" for="target_spesifik">
+                                <i class="bi bi-building me-1"></i> FAKULTAS SPESIFIK
+                            </label>
                         </div>
                     </div>
+                    @error('target_type')
+                        <div class="text-danger mt-2">Pilih salah satu target tujuan surat.</div>
+                    @enderror
                 </div>
 
-                {{-- DROPDOWN PILIH FAKULTAS (Tersembunyi secara default) --}}
-                <div class="mb-4" id="faculty_dropdown_container" style="display: none;">
-                    <label for="target_faculty_id" class="form-label-custom">PILIH FAKULTAS TUJUAN</label>
-                    <select class="form-select form-control-custom @error('target_faculty_id') is-invalid @enderror" id="target_faculty_id" name="target_faculty_id" disabled>
+                {{-- DROPDOWN PILIH FAKULTAS (Terkontrol oleh JS) --}}
+                <div class="mb-4" id="faculty_dropdown_container"> {{-- Style display: none akan diatur oleh JS --}}
+                    <label for="target_faculty_id" class="form-label-custom">PILIH FAKULTAS TUJUAN <span class="text-danger">*</span></label>
+                    <select class="form-select form-control-custom @error('target_faculty_id') is-invalid @enderror" id="target_faculty_id" name="target_faculty_id"> 
                         <option value="">-- Pilih Fakultas Tujuan --</option>
                         
                         {{-- Loop data Fakultas (Asumsi $allFaculties dikirim dari Controller) --}}
+                        @php
+                            // Dummy data Fakultas jika variabel $allFaculties tidak ada
+                            $allFaculties = $allFaculties ?? [
+                                (object)['id' => 1, 'name' => 'Fakultas Teknik', 'code' => 'FT'],
+                                (object)['id' => 2, 'name' => 'Fakultas Ekonomi', 'code' => 'FE'],
+                                (object)['id' => 3, 'name' => 'Fakultas Hukum', 'code' => 'FH']
+                            ];
+                        @endphp
                         @if (isset($allFaculties) && is_iterable($allFaculties))
                             @foreach ($allFaculties as $faculty)
                                 <option value="{{ $faculty->id ?? '' }}" 
@@ -288,7 +312,7 @@
                                 </option>
                             @endforeach
                         @else
-                             <option value="" disabled>-- Data Fakultas belum dimuat --</option>
+                            <option value="" disabled>-- Data Fakultas belum dimuat --</option>
                         @endif
                     </select>
                     @error('target_faculty_id')
@@ -296,57 +320,57 @@
                     @enderror
                 </div>
                 
-                {{-- TUJUAN ROLE (PILIHAN ROLE/JABATAN) - HANYA BERLAKU UNTUK LEVEL YANG DIPILIH --}}
-                <div class="radio-group-container">
-                    <p class="form-label-custom">TUJUAN JABATAN (Di level yang dipilih di atas)</p>
-                    <div class="d-flex flex-wrap gap-3">
+                {{-- PERBAIKAN: PILIH JABATAN TUJUAN (ROLE) --}}
+                <div class="mb-4">
+                    <label for="tujuan_role" class="form-label-custom">PILIH JABATAN TUJUAN (Role Penerima) <span class="text-danger">*</span></label>
+                    <select class="form-select form-control-custom @error('tujuan') is-invalid @enderror" id="tujuan_role" name="tujuan" required> 
+                        <option value="">-- Pilih Jabatan Penerima --</option>
                         @php 
-                            // Menggunakan Laravel old() helper dengan fallback 'rektor' jika tidak ada input 'tujuan'
-                            $currentTujuan = old('tujuan', 'rektor'); 
+                            $currentTujuan = old('tujuan'); 
+                            $roles = [
+                                'rektor' => 'REKTOR', 
+                                'dekan' => 'DEKAN', 
+                                'kaprodi' => 'KAPRODI', 
+                                'dosen' => 'DOSEN', 
+                                'dosen_tugas_khusus' => 'DOSEN TUGAS KHUSUS', 
+                                'tenaga_pendidik' => 'TENAGA PENDIDIK'
+                            ];
                         @endphp
-
-                        <div class="form-check form-check-inline">
-                            {{-- FIX: Gunakan $currentTujuan untuk menentukan yang tercentang --}}
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_rektor" value="rektor" {{ $currentTujuan == 'rektor' ? 'checked' : '' }}>
-                            <label class="form-check-label radio-label-custom" for="tujuan_rektor">REKTOR</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dekan" value="dekan" {{ $currentTujuan == 'dekan' ? 'checked' : '' }}>
-                            <label class="form-check-label radio-label-custom" for="tujuan_dekan">DEKAN</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen" value="dosen" {{ $currentTujuan == 'dosen' ? 'checked' : '' }}>
-                            <label class="form-check-label radio-label-custom" for="tujuan_dosen">DOSEN</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_tenaga_pendidik" value="tenaga_pendidik" {{ $currentTujuan == 'tenaga_pendidik' ? 'checked' : '' }}>
-                            <label class="form-check-label radio-label-custom" for="tujuan_tenaga_pendidik">TENAGA PENDIDIK</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_dosen_tugas_khusus" value="dosen_tugas_khusus" {{ $currentTujuan == 'dosen_tugas_khusus' ? 'checked' : '' }}>
-                            <label class="form-check-label radio-label-custom" for="tujuan_dosen_tugas_khusus">DOSEN TUGAS KHUSUS</label>
-                        </div>
-                        {{-- Tambahkan radio untuk Kaprodi jika ada di daftar role --}}
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tujuan" id="tujuan_kaprodi" value="kaprodi" {{ $currentTujuan == 'kaprodi' ? 'checked' : '' }}>
-                            <label class="form-check-label radio-label-custom" for="tujuan_kaprodi">KAPRODI</label>
-                        </div>
-                    </div>
+                        @foreach($roles as $value => $label)
+                            <option value="{{ $value }}" {{ $currentTujuan == $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
                     @error('tujuan')
-                        <div class="text-danger mt-2">Pilih salah satu jabatan tujuan surat.</div>
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- DROPDOWN PILIH PENGGUNA SPESIFIK (AKAN DIISI OLEH AJAX) --}}
+                <div class="mb-4" id="specific_user_dropdown_container">
+                    <label for="target_user_id" class="form-label-custom">PILIH PENGGUNA SPESIFIK (Opsional)</label>
+                    <select class="form-select form-control-custom @error('target_user_id') is-invalid @enderror" id="target_user_id" name="target_user_id">
+                        <option value="all">-- KIRIM KE SEMUA (Default) --</option>
+                        {{-- Opsi pengguna spesifik akan dimuat di sini oleh JS/AJAX --}}
+                    </select>
+                    <small class="text-dark">Pilih **KIRIM KE SEMUA** untuk mengirim ke semua pengguna dengan Jabatan di Target Tujuan yang dipilih.</small>
+                    @error('target_user_id')
+                        <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
 
                 {{-- Submit Button --}}
                 <div class="d-flex justify-content-end mt-4">
-                    <button type="submit" class="btn btn-submit-custom btn-kirim-override">KIRIM</button>
+                    <button type="submit" class="btn btn-submit-custom btn-kirim-override"><i class="bi bi-send-fill me-2"></i> KIRIM</button>
                 </div>
 
             </form>
         </div>
         {{-- END: KIRIM SURAT FORM CONTENT --}}
+
         {{-- START: FOOTER HAK CIPTA --}}
-        @include('partials.footer')
+        <div class="text-center mt-5 mb-3 text-white">
+            <p>&copy; 2024 E-ARSIP. All rights reserved.</p>
+        </div>
         {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
@@ -355,67 +379,128 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const hiddenFacultyInput = document.getElementById('tujuan_faculty_id_input');
         const targetTypeRadios = document.querySelectorAll('input[name="target_type"]');
         const facultyDropdownContainer = document.getElementById('faculty_dropdown_container');
-        const targetFacultyIdSelect = document.getElementById('target_faculty_id'); // Select dropdown
-        const collapseElement = document.getElementById('submenuDaftarSurat');
-        const toggleButton = document.getElementById('daftarSuratDropdown');
-        
-        // Inisialisasi: Pastikan dropdown fakultas dinonaktifkan saat pertama kali dimuat
-        targetFacultyIdSelect.setAttribute('disabled', 'disabled');
+        const targetFacultyIdSelect = document.getElementById('target_faculty_id'); 
+        const tujuanRoleSelect = document.getElementById('tujuan_role'); // New: Target Role Select
+        const targetUserIdSelect = document.getElementById('target_user_id'); // New: Specific User Select
+        const uploadFileInput = document.getElementById('upload_file');
+        const fileDisplayInput = document.getElementById('file_display');
 
+        // URL AJAX untuk mengambil daftar pengguna. Anda harus membuat rute ini di Laravel.
+        // Contoh: Route::get('/get-target-users', [UserController::class, 'getTargetUsers'])->name('get.target.users');
+        const getTargetUsersUrl = '{{ route("get.target.users") ?? "/get-target-users" }}';
+
+        // Fungsi untuk mengontrol Dropdown Fakultas visibility
         function toggleFacultyDropdown() {
             const checkedTargetType = document.querySelector('input[name="target_type"]:checked');
             const selectedTargetType = checkedTargetType ? checkedTargetType.value : 'universitas'; 
 
             if (selectedTargetType === 'spesifik') {
                 facultyDropdownContainer.style.display = 'block';
-                
-                // Aktifkan dropdown dan hidden input
                 targetFacultyIdSelect.setAttribute('required', 'required'); 
                 targetFacultyIdSelect.removeAttribute('disabled');
-                hiddenFacultyInput.removeAttribute('disabled');
-                
-                // Sinkronisasi value: ambil value dari dropdown
-                hiddenFacultyInput.value = targetFacultyIdSelect.value;
-
             } else { // 'universitas'
                 facultyDropdownContainer.style.display = 'none';
-                
-                // Hapus requirement, NONAKTIFKAN dropdown
                 targetFacultyIdSelect.removeAttribute('required');
                 targetFacultyIdSelect.setAttribute('disabled', 'disabled');
                 
-                // KOSONGKAN dan NONAKTIFKAN hidden input agar TIDAK ikut terkirim
-                hiddenFacultyInput.value = ''; 
-                hiddenFacultyInput.setAttribute('disabled', 'disabled'); 
+                // Reset nilai dropdown fakultas saat beralih ke universitas
+                targetFacultyIdSelect.value = ''; 
             }
+            // Panggil fungsi fetchUsers setiap kali target type berubah
+            fetchUsers();
         }
         
+        // Fungsi AJAX untuk mengambil daftar pengguna
+        function fetchUsers() {
+            const checkedTargetType = document.querySelector('input[name="target_type"]:checked');
+            const targetType = checkedTargetType ? checkedTargetType.value : 'universitas';
+            const targetRole = tujuanRoleSelect.value;
+            let targetFacultyId = null;
+
+            if (targetType === 'spesifik') {
+                targetFacultyId = targetFacultyIdSelect.value;
+            }
+
+            // Hanya proses jika target role sudah dipilih
+            if (!targetRole) {
+                // Clear dropdown pengguna jika role belum dipilih
+                targetUserIdSelect.innerHTML = '<option value="all" selected>-- KIRIM KE SEMUA (Default) --</option>';
+                return;
+            }
+            
+            // Siapkan parameter query
+            const params = new URLSearchParams({
+                role: targetRole,
+                target_type: targetType,
+                faculty_id: targetType === 'spesifik' ? targetFacultyId : ''
+            });
+
+            // Tambahkan loading state
+            targetUserIdSelect.innerHTML = '<option value="all" selected disabled>-- Sedang memuat pengguna... --</option>';
+
+            // Lakukan Fetch/AJAX Request
+            fetch(`${getTargetUsersUrl}?${params.toString()}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(users => {
+                    // Reset dropdown
+                    targetUserIdSelect.innerHTML = '<option value="all" selected>-- KIRIM KE SEMUA (Default) --</option>';
+                    
+                    // Populate dengan data pengguna yang sebenarnya
+                    users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.id;
+                        // Sesuaikan tampilan nama pengguna sesuai data dari server
+                        option.textContent = `${user.name} (${user.title})`; 
+                        targetUserIdSelect.appendChild(option);
+                    });
+                    
+                    // Cek jika ada old input untuk target_user_id (untuk validasi error)
+                    const oldUserId = "{{ old('target_user_id') }}";
+                    if (oldUserId && oldUserId !== 'all') {
+                        targetUserIdSelect.value = oldUserId;
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    targetUserIdSelect.innerHTML = '<option value="all" selected>-- KIRIM KE SEMUA (Default) --</option>';
+                    alert('Gagal memuat daftar pengguna. Periksa konsol untuk detail.');
+                });
+        }
+        
+        // --- LISTENERS ---
+
         // Listener untuk radio target_type
         targetTypeRadios.forEach(radio => {
             radio.addEventListener('change', toggleFacultyDropdown);
         });
 
-        // Listener untuk dropdown fakultas spesifik (jika diubah)
-        targetFacultyIdSelect.addEventListener('change', function() {
-            // Memastikan hidden input terisi hanya jika tidak disabled
-            if (!hiddenFacultyInput.disabled) {
-                hiddenFacultyInput.value = this.value;
-            }
-        });
+        // Listener untuk dropdown Fakultas dan Role (memicu fetchUsers)
+        targetFacultyIdSelect.addEventListener('change', fetchUsers);
+        tujuanRoleSelect.addEventListener('change', fetchUsers);
 
-        // Inisialisasi awal
-        toggleFacultyDropdown();
-        
-        document.getElementById('upload_file').addEventListener('change', function() {
-            const fileName = this.files.length > 0 ? this.files[0].name : '';
-            document.getElementById('file_display').value = fileName;
+        // Inisialisasi awal (Penting untuk mempertahankan state saat ada error validasi Old())
+        toggleFacultyDropdown(); // Mengatur visibilitas Fakultas
+        fetchUsers(); // Memuat pengguna berdasarkan state awal
+
+        // Listener untuk file upload display
+        uploadFileInput.addEventListener('change', function() {
+            const fileName = this.files.length > 0 ? this.files[0].name : 'Pilih file... (Format PDF)';
+            fileDisplayInput.value = fileName;
         });
         
-        // Logic Sidebar Dropdown (tidak diubah)
+        // ... (Keep other existing sidebar/utility JS logic) ...
+        const collapseElement = document.getElementById('submenuDaftarSurat');
+        const toggleButton = document.getElementById('daftarSuratDropdown');
         const chevronIcon = toggleButton ? toggleButton.querySelector('.bi-chevron-down') : null;
+        
         if (collapseElement && toggleButton && chevronIcon) {
             collapseElement.addEventListener('show.bs.collapse', function () {
                 toggleButton.setAttribute('aria-expanded', 'true');
@@ -426,13 +511,13 @@
                 chevronIcon.style.transform = 'rotate(0deg)';
             });
         }
-    });
-
-    function confirmDelete(suratId) {
-        if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
-            document.getElementById('delete-form-' + suratId).submit();
+        
+        window.confirmDelete = function(suratId) {
+            if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
+                document.getElementById('delete-form-' + suratId).submit();
+            }
         }
-    }
+    });
 </script>
 </body>
 </html>

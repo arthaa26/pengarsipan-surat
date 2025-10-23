@@ -2,26 +2,41 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+// use Laravel\Sanctum\HasApiTokens; // Dihapus karena Anda tidak menggunakan API Tokens
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable; // HasApiTokens dihapus
 
     protected $fillable = [
         'name',
         'email',
         'password',
         'username', 
-        'no_hp',    
+        'no_hp', 
         'profile_photo_url', 
-        'role_id',  
+        'role_id', 
         'faculty_id',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+
+    // --- RELATIONS ---
 
     public function role(): BelongsTo
     {
@@ -31,7 +46,20 @@ class User extends Authenticatable
 
     public function faculty(): BelongsTo
     {
-
         return $this->belongsTo(Faculty::class, 'faculty_id'); 
+    }
+    
+    // --- RELASI PENGIRIMAN SURAT (WAJIB ADA UNTUK CONTROLLER) ---
+
+    // Surat yang dikirim oleh user ini
+    public function suratKeluar(): HasMany
+    {
+        return $this->hasMany(KirimSurat::class, 'user_id_1');
+    }
+
+    // Surat yang ditujukan spesifik ke user ini
+    public function suratMasukPersonal(): HasMany
+    {
+        return $this->hasMany(KirimSurat::class, 'user_id_2');
     }
 }
