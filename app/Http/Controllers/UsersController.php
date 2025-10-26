@@ -12,21 +12,25 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Schema; 
+use Illuminate\Support\Str; // Tambahkan Str
+use App\Http\Controllers\KirimSuratController; // Diperlukan untuk generateSuratCode
 
 class UsersController extends Controller
 {
 
+    /**
+     * Membangun query untuk mengambil surat masuk berdasarkan role dan fakultas user.
+     */
     private function getSuratMasukQuery($user)
     {
         $userId = $user->id;
         $userFacultyId = $user->faculty_id;
-        // Gunakan nilai default yang aman jika role atau name null
-        $userRoleName = $user->role->name ?? 'dosen'; 
+        // Menggunakan Nullsafe pada relasi role
+        $userRoleName = $user->role?->name ?? 'dosen'; 
         
-        // Konversi nama role ke format tujuan DB (snake_case)
         $roleTujuan = strtolower(str_replace(' ', '_', $userRoleName));
         
-        // Role Rektor dan Admin biasanya melihat semua surat yang ditujukan ke role mereka
         $isUniversityLevel = in_array($roleTujuan, ['rektor', 'admin', 'dosen_tugas_khusus']);
         
         return KirimSurat::where(function ($query) use ($userId, $roleTujuan, $userFacultyId, $isUniversityLevel) {
@@ -42,39 +46,33 @@ class UsersController extends Controller
                             ->where('tujuan', $roleTujuan); 
 
                         // Logika Filter Fakultas:
-                        // Jika pengguna BUKAN level Universitas (e.g., Dekan, Dosen, Kaprodi)
                         if (!$isUniversityLevel) {
-                            // Pengguna level Fakultas harus melihat surat yang:
                             $q->where(function($subQ) use ($userFacultyId) {
                                 // A) Ditujukan spesifik ke Fakultas mereka (ID Fakultas match)
                                 $subQ->where('tujuan_faculty_id', $userFacultyId)
-                                        // B) ATAU Ditujukan ke SELURUH FAKULTAS (tujuan_faculty_id IS NULL)
-                                        ->orWhereNull('tujuan_faculty_id');
+                                            // B) ATAU Ditujukan ke SELURUH FAKULTAS (tujuan_faculty_id IS NULL)
+                                            ->orWhereNull('tujuan_faculty_id');
                             });
                         }
-                        // Jika pengguna level Universitas (Rektor, Admin), filter fakultas tidak diterapkan,
-                        // sehingga mereka akan melihat SEMUA surat universal yang ditujukan ke role mereka.
                     });
         });
     }
 
+    // --- LOGIKA DASHBOARD DAN DAFTAR SURAT ---
     public function index()
     {
         $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('login');
-        }
+        if (!$user) { return redirect()->route('login'); }
         
         $user->load(['role', 'faculty']); 
 
         $userId = $user->id;
         
-        $rawRoleName = $user->role->name ?? 'N/A';
+        $rawRoleName = $user->role?->name ?? 'N/A'; // Menggunakan Nullsafe
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
         $suratMasukQuery = $this->getSuratMasukQuery($user); 
         $suratMasukCount = $suratMasukQuery->count();
-        // Memuat relasi untuk data di dashboard
         $suratMasuk = $suratMasukQuery->with('user1.faculty')->orderBy('created_at', 'desc')->limit(10)->get();
 
         $suratKeluarQuery = KirimSurat::where('user_id_1', $userId);
@@ -84,11 +82,10 @@ class UsersController extends Controller
             'suratMasukCount' => $suratMasukCount,
             'suratKeluarCount' => $suratKeluarCount,
             'suratMasuk' => $suratMasuk,
-            'userRoleName' => $formattedRoleName, // Kirim role yang diformat
+            'userRoleName' => $formattedRoleName, 
         ]);
     }
     
-
     public function daftarSuratMasuk()
     {
         $user = Auth::user();
@@ -96,11 +93,11 @@ class UsersController extends Controller
         $user->load(['role', 'faculty']); 
 
         $suratList = $this->getSuratMasukQuery($user)
-                            ->with('user1.faculty')
-                            ->orderBy('created_at', 'desc')
-                            ->paginate(15);
+                             ->with('user1.faculty')
+                             ->orderBy('created_at', 'desc')
+                             ->paginate(15);
         
-        $rawRoleName = $user->role->name ?? 'N/A';
+        $rawRoleName = $user->role?->name ?? 'N/A'; // Menggunakan Nullsafe
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
         return view('user.DaftarSurat.masuk', compact('suratList', 'formattedRoleName'));
@@ -114,130 +111,210 @@ class UsersController extends Controller
         
         $userId = $user->id;
         $suratList = KirimSurat::where('user_id_1', $userId)
-                                ->with(['user2', 'user2.faculty', 'tujuanFaculty']) // Tambahkan relasi tujuanFaculty untuk melihat tujuan
-                                ->orderBy('created_at', 'desc')
-                                ->paginate(15);
-                                
-        $rawRoleName = $user->role->name ?? 'N/A';
+                                   ->with(['user2', 'user2.faculty', 'tujuanFaculty']) 
+                                   ->orderBy('created_at', 'desc')
+                                   ->paginate(15);
+                                   
+        $rawRoleName = $user->role?->name ?? 'N/A'; // Menggunakan Nullsafe
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
         return view('user.DaftarSurat.keluar', compact('suratList', 'formattedRoleName'));
     }
 
 
-    public function createSurat()
+    /**
+     * Menampilkan formulir Kirim Surat.
+     */
+    public function createSurat(Request $request) 
     {
         // 1. Ambil semua data Fakultas
         $allFaculties = Faculty::select('id', 'name', 'code')->get();
 
         // 2. Ambil semua data Pengguna (User) dengan relasi Role dan Faculty
-        try {
-            $allUsers = User::with(['role', 'faculty'])
-                ->select('id', 'name', 'role_id', 'faculty_id') // Pilih kolom-kolom inti dari tabel users
-                ->get()
-                // Map collection untuk membuat atribut role_name dan faculty_code
-                ->map(function ($user) {
-                    $user->role_name = $user->role?->name ?? 'N/A'; // Nullsafe operator untuk Role
-                    $user->faculty_code = $user->faculty?->code ?? 'Pusat'; // Nullsafe operator untuk Faculty
-                    
-                    return $user;
-                });
-        } catch (\Exception $e) {
-            Log::error("Failed to load users/faculties for Kirim Surat: " . $e->getMessage());
-            $allUsers = collect([]); // Fallback collection kosong
-        }
+        $allUsers = User::where('role_id', '!=', 1)
+            ->with(['role', 'faculty'])
+            ->select('id', 'name', 'username', 'role_id', 'faculty_id') 
+            ->get()
+            ->map(function ($user) {
+                // Menggunakan Nullsafe Operator (?->)
+                $roleName = $user->role?->name ?? 'N/A';
+                $facultyCode = $user->faculty?->code ?? 'Pusat';
+                
+                // PERBAIKAN SINTAKS: Memisahkan operator ?? dari interpolasi string kompleks.
+                $usernameDisplay = $user->username ?? 'N/A'; 
+                
+                // Format tampilan untuk Select2 / Dropdown Blade
+                $user->display_text = "{$user->name} ({$usernameDisplay}) - [{$roleName}] ({$facultyCode})";
+                
+                return $user;
+            });
         
-        // Buat kode surat otomatis
-        $nextKode = 'S-' . date('Y') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT); 
+        // 3. LOGIKA BALAS SURAT
+        $replyToUserId = $request->query('reply_to_user_id');
+        $preSelectedTarget = null;
 
-        // Kirim data ke View Blade
-        return view('user.kirimsurat.index', [
+        if ($replyToUserId) {
+            // PERBAIKAN: Cast ke integer saat memfilter koleksi untuk konsistensi tipe.
+            $targetUser = $allUsers->firstWhere('id', (int)$replyToUserId); 
+            
+            if ($targetUser) {
+                $preSelectedTarget = [
+                    'target_type' => 'user_spesifik',
+                    'target_user_id' => (int)$replyToUserId,
+                    'target_user_text' => $targetUser->display_text 
+                ];
+            }
+        }
+
+        // 4. GENERATE KODE SURAT
+        $nextKode = 'S-' . date('Y') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT); 
+        
+        // Coba instansiasi KirimSuratController jika tersedia
+        if (class_exists(KirimSuratController::class) && method_exists(KirimSuratController::class, 'generateSuratCode')) {
+            $kirimSuratController = new KirimSuratController();
+            $nextKode = $kirimSuratController->generateSuratCode();
+        }
+
+        // 5. Kirim data ke View Blade
+        return view('user.KirimSurat.index', [
             'allFaculties' => $allFaculties, 
-            'allUsers' => $allUsers,         
-            'nextKode' => $nextKode,         
+            'allUsers' => $allUsers, 
+            'nextKode' => $nextKode,
+            'preSelectedTarget' => $preSelectedTarget, 
         ]);
     }
     
+    // --- LOGIKA BALAS SURAT (REPLY FORM) DARI KIRIMSURATCONTROLLER ---
+
     /**
-     * Mengambil daftar pengguna berdasarkan filter Role dan Faculty untuk AJAX.
-     * Ditautkan ke route 'get.target.users'.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Displays the form to reply to a specific letter.
+     * @param KirimSurat $surat The original incoming letter instance.
      */
-    public function getTargetUsers(Request $request)
+    public function replyForm(KirimSurat $surat)
     {
-        Log::info("getTargetUsers dipanggil.");
+        // 1. Otorisasi: Pastikan user yang login adalah penerima (user_id_2)
+        if ($surat->user_id_2 !== Auth::id()) {
+            abort(403, 'Akses Ditolak. Anda tidak berhak membalas surat ini.');
+        }
 
-        // 1. Ambil input dari AJAX request
-        $roleName = $request->input('role');
-        $targetType = $request->input('target_type'); 
-        $facultyId = $request->input('faculty_id'); 
+        // 2. PERBAIKAN KRUSIAL: Eager Load relasi user1 untuk mendapatkan nama pengirim
+        $surat->load('user1'); 
 
-        // 2. Jika roleName tidak ada, kembalikan array kosong
-        if (empty($roleName)) {
-            Log::info("Role name kosong, mengembalikan array kosong.");
-            return response()->json([]);
+        // 3. Persiapan data form (membutuhkan KirimSuratController)
+        if (!class_exists(KirimSuratController::class) || !method_exists(KirimSuratController::class, 'generateSuratCode')) {
+             return back()->with('error', 'Gagal memuat form balasan: KirimSuratController atau generateSuratCode tidak ditemukan.');
         }
         
-        // Konversi nama role
-        $snakeCaseRoleName = strtolower(str_replace(' ', '_', $roleName));
-        Log::info("Query: Role='{$snakeCaseRoleName}', Faculty ID='{$facultyId}'");
+        $kirimSuratController = new KirimSuratController(); 
+        $nextKode = $kirimSuratController->generateSuratCode(); 
 
-        try {
-            // 3. Bangun Query dasar dengan Eager Loading
-            $query = User::with('role:id,name', 'faculty:id,code') 
-                // Filter berdasarkan nama role di tabel roles
-                ->whereHas('role', function ($q) use ($snakeCaseRoleName) {
-                    $q->where('name', $snakeCaseRoleName);
-                });
+        $allFaculties = Faculty::orderBy('name')->get(); 
+        
+        $allUsers = User::where('role_id', '!=', 1) 
+                             ->orderBy('name')
+                             ->with('role', 'faculty')
+                             ->get()
+                             ->map(function ($user) {
+                                $roleName = $user->role?->name ?? 'N/A';
+                                $facultyCode = $user->faculty?->code ?? 'Pusat';
+                                $usernameDisplay = $user->username ?? 'N/A'; 
+                                $user->display_text = "{$user->name} ({$usernameDisplay}) - {$roleName} {$facultyCode}";
+                                return $user;
+                             });
+                               
+        // 4. Setup Pre-selected Target (Pengirim asli)
+        $targetUser = $allUsers->firstWhere('id', $surat->user_id_1); 
+        $preSelectedTarget = null;
+        
+        if ($targetUser) {
+            $preSelectedTarget = [
+                'target_type' => 'user_spesifik',
+                'target_user_id' => $targetUser->id,
+                'target_user_text' => $targetUser->display_text,
+                'reply_title' => 'Re: ' . Str::limit($surat->title, 50),
+                'reply_to_surat_id' => $surat->id
+            ];
+        } else {
+             return back()->with('error', 'Gagal memuat form balasan: Pengirim asli tidak ditemukan.');
+        }
 
-            // 4. Tambahkan filter Fakultas jika targetnya 'spesifik'
-            if ($targetType === 'spesifik' && $facultyId) {
-                $query->where('faculty_id', $facultyId);
-            }
-            
-            // 5. Ambil data
-            $users = $query->select('id', 'name', 'faculty_id')
-                            ->get();
-            
-            // 6. Format ulang data untuk tampilan di dropdown/select2
-            $formattedUsers = $users->map(function ($user) {
-                $userName = $user->name ?? 'Nama Tidak Ada'; 
+        $tujuanOptions = [ /* ... */ ];
+        
+        // 5. Return view
+        return view('user.DaftarSurat.reply', compact('nextKode', 'allFaculties', 'tujuanOptions', 'allUsers', 'preSelectedTarget', 'surat')); 
+    }
+
+    /**
+     * Stores the reply letter.
+     * @param KirimSurat $surat The original incoming letter instance.
+     */
+    public function sendReply(Request $request, KirimSurat $surat)
+    {
+        // Panggil method store/sendReply dari KirimSuratController
+        $kirimSuratController = new KirimSuratController();
+        return $kirimSuratController->sendReply($request, $surat);
+    }
+    
+    // --- LOGIKA API ---
+    public function searchTargetUsers(Request $request)
+    {
+        $search = $request->input('search');
+        $perPage = 10; 
+        
+        $query = User::query()->select('id', 'name', 'faculty_id', 'role_id');
+        
+        if (Schema::hasColumn('users', 'username')) {
+            $query->addSelect('username'); 
+        }
+
+        $query->with(['faculty:id,code', 'role:id,name']);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
                 
-                // Pemeriksaan yang lebih eksplisit untuk relasi faculty (untuk compatibility)
-                if (isset($user->faculty) && $user->faculty->code) {
-                    $facultyCode = $user->faculty->code;
-                    $facultyDisplay = " ({$facultyCode})";
-                } else {
-                    $facultyDisplay = '(Tidak Ada Fakultas)';
+                if (Schema::hasColumn('users', 'username')) {
+                    $q->orWhere('username', 'like', '%' . $search . '%');
                 }
+            });
+        }
+        
+        try {
+            $users = $query->orderBy('name')
+                             ->paginate($perPage);
+
+            $formattedUsers = $users->map(function ($user) {
+                $idNumberDisplay = isset($user->username) ? ' (' . $user->username . ')' : '';
+                // Menggunakan Nullsafe Operator (?->)
+                $facultyCode = $user->faculty?->code;
+                $facultyDisplay = $facultyCode ? " ({$facultyCode})" : ''; 
                 
-                // Format tampilan: [Nama Pengguna] ([Kode Fakultas])
-                $displayName = $userName . $facultyDisplay;
+                // Menggunakan Nullsafe Operator (?->)
+                $roleName = $user->role?->name;
+                $roleDisplay = $roleName ? ' [' . ucwords(str_replace('_', ' ', $roleName)) . ']' : '';
                 
                 return [
                     'id' => $user->id,
-                    'text' => $displayName, 
+                    'text' => $user->name . $idNumberDisplay . $facultyDisplay . $roleDisplay, 
                 ];
             });
 
-            Log::info("Sukses: " . $formattedUsers->count() . " pengguna ditemukan.");
-            // 7. Kembalikan data dalam format JSON
-            return response()->json($formattedUsers);
+            return response()->json([
+                'results' => $formattedUsers,
+                'pagination' => [
+                    'more' => $users->hasMorePages()
+                ],
+                'total' => $users->total() 
+            ]);
 
         } catch (\Exception $e) {
-            // Tangkap error fatal
-            Log::error("FATAL ERROR di getTargetUsers: " . $e->getMessage() . " di baris " . $e->getLine());
-            
-            // Kembalikan error 500 yang terstruktur
-            return response()->json([
-                'error' => 'Gagal memuat daftar pengguna.',
-                'message' => $e->getMessage()
-            ], 500);
+             Log::error("FATAL ERROR di searchTargetUsers: " . $e->getMessage() . " di baris " . $e->getLine());
+             return response()->json(['results' => [], 'error' => 'Gagal memuat data pencarian. Pesan: ' . $e->getMessage()], 500);
         }
     }
-    
+
+
+    // --- LOGIKA PROFILE DAN DELETE ---
     public function editProfile()
     {
         $user = Auth::user();
@@ -294,7 +371,8 @@ class UsersController extends Controller
 
     public function viewSurat(KirimSurat $surat)
     {
-        return view('surat.view', compact('surat'));
+        // PERBAIKAN: Mengganti 'surat.show' dengan path view yang benar
+        return view('user.DaftarSurat.show_detail', compact('surat'));
     }
 
     public function viewFileSurat(KirimSurat $surat)
@@ -328,6 +406,7 @@ class UsersController extends Controller
         return redirect()->route($redirectRoute)->with('success', 'Surat berhasil dihapus.');
     }
 
+    // Metode CRUD User Placeholder
     public function create() { return view('users.create'); }
     public function store(Request $request) { /* ... */ }
     public function show($id) { $user = User::findOrFail($id); return view('users.show', compact('user')); }

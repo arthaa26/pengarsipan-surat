@@ -368,7 +368,7 @@
                     <tbody>
                         {{-- LOOPING DATA SURAT MASUK dari Controller. (Menggunakan data placeholder dari controller: $suratMasuk) --}}
                         @forelse ($suratMasuk ?? [] as $index => $surat)
-                            <tr>
+                            <tr style="color: black;">
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d/m/y H:i') }}</td>
                                 
@@ -385,26 +385,31 @@
                                 
                                 {{-- Kolom Lampiran (Menggunakan file_path) --}}
                                 <td>
-                                    @if (!empty($surat->file_path))
-                                        <div class="action-buttons justify-content-center"> 
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat" target="_blank">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
+                                    <div class="action-buttons justify-content-center"> 
+                                        {{-- PERBAIKAN UTAMA: Mengarahkan tautan 'Lihat' ke halaman detail (show_detail.blade.php) --}}
+                                        <a href="{{ route('surat.show', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Detail Surat">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        @if (!empty($surat->file_path))
                                             <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download">
                                                 <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                             </a>
                                             <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
                                                 <i class="bi bi-printer-fill"></i>
                                             </a>
-                                        </div>
-                                    @else
-                                        -
-                                    @endif
+                                        @endif
+                                    </div>
                                 </td>
                                 
+                                {{-- START PERBAIKAN: Kolom Aksi (Balas & Hapus) agar sejajar --}}
                                 <td>
-                                    <div class="d-flex flex-column align-items-center">
-                                        {{-- Tombol Hapus (Ubah ke tombol aksi standar) --}}
+                                    <div class="action-buttons justify-content-center">
+                                        {{-- Tombol Balas Surat --}}
+                                        <a href="{{ route('DaftarSurat.reply', $surat->id) ?? '#' }}" class="btn btn-action btn-primary" title="Balas Surat">
+                                            <i class="bi bi-reply-fill"></i>
+                                        </a>
+                                        
+                                        {{-- Tombol Hapus --}}
                                         <button class="btn btn-action btn-danger" title="Hapus"
                                             onclick="confirmDelete('{{ $surat->id }}')">
                                             <i class="bi bi-trash"></i>
@@ -417,10 +422,11 @@
                                         @method('DELETE')
                                     </form>
                                 </td>
+                                {{-- END PERBAIKAN --}}
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center">Tidak ada surat masuk yang ditemukan.</td> {{-- Colspan 8 --}}
+                                <td colspan="8" class="text-center">Tidak ada surat masuk yang ditemukan.</td> 
                             </tr>
                         @endforelse
                     </tbody>

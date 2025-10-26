@@ -88,13 +88,14 @@
             justify-content: center; border-radius: 5px; padding: 0; margin: 2px 0; 
         }
         .action-buttons { 
-            display: flex; 
-            flex-direction: row; 
-            gap: 5px; 
-            align-items: center;
-            justify-content: center;
+        display: flex; 
+        flex-direction: row !important; 
+        gap: 5px; 
+        align-items: center;
+        justify-content: center;
         }
         
+        /* START: PERBAIKAN USER DROPDOWN */
         .user-info { 
             display: flex; 
             align-items: center; 
@@ -120,11 +121,16 @@
             color: var(--color-sidebar-primary);
         }
         .user-info .dropdown-toggle::after {
-            display: none;
+            /* Hapus segitiga default Bootstrap */
+            display: none; 
         }
-        .user-info .bi-chevron-down.ms-2 {
-            order: 1; 
+        /* Tambahkan Ikon Chevron untuk Dropdown */
+        .user-info .bi-chevron-down-profile {
+            order: 1; /* Urutan terakhir */
+            margin-left: 5px;
+            font-size: 0.8rem;
         }
+
 
         .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
         .user-role-display { 
@@ -133,6 +139,7 @@
         @media (min-width: 576px) { 
             .user-name, .user-role-display { display: block; } 
         }
+        /* END: PERBAIKAN USER DROPDOWN */
         
         .sidebar-header { 
             display: flex; 
@@ -149,6 +156,16 @@
             .sidebar-menu { display: flex; flex-wrap: wrap; justify-content: space-around; gap: 5px; }
             .sidebar-menu > a, .sidebar-dropdown-item { flex-basis: 48%; }
         }
+
+        /* Gaya Khusus untuk Aksi */
+        .action-column {
+            display: flex;
+            flex-direction: column; 
+            gap: 5px;
+            align-items: center;
+            justify-content: center;
+        }
+
     </style>
 </head>
 <body>
@@ -167,24 +184,20 @@
         </div>
 
         <div class="sidebar-menu">
-            {{-- MENU LEVEL ATAS --}}
             <a href="#"><i class="bi bi-list-task me-2"></i>MENU</a>
             <a href="{{ route('user.dashboard') ?? '#' }}"><i class="bi bi-speedometer2 me-2"></i>DASHBOARD</a>
 
-            {{-- DROPDOWN DAFTAR SURAT --}}
             <div class="sidebar-dropdown-item">
                 <a class="sidebar-dropdown-toggle" id="daftarSuratDropdown"
-                   data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="true"
-                   aria-controls="submenuDaftarSurat">
+                    data-bs-toggle="collapse" href="#submenuDaftarSurat" role="button" aria-expanded="true"
+                    aria-controls="submenuDaftarSurat">
                     <i class="bi bi-folder-fill me-2"></i>DAFTAR SURAT
                     <i class="bi bi-chevron-down" style="font-size: 1em;"></i>
                 </a>
 
-                {{-- Submenu dibuka secara default untuk halaman ini --}}
                 <div class="collapse show" id="submenuDaftarSurat">
                     <ul class="sidebar-dropdown-menu">
                         <li>
-                            {{-- Tautan aktif untuk halaman ini --}}
                             <a href="{{ route('user.daftar_surat.masuk') ?? '#' }}" class="active-sublink-masuk">
                                 <i class="bi bi-envelope me-2"></i>Surat Masuk
                             </a>
@@ -198,7 +211,6 @@
                 </div>
             </div>
 
-            {{-- Tautan KIRIM SURAT --}}
             <a href="{{ route('user.kirim_surat.index') ?? '#' }}"><i class="bi bi-send-fill me-2"></i>KIRIM SURAT</a>
         </div>
     </div>
@@ -214,15 +226,12 @@
                             // LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS
                             $roleName = Auth::user()->role->name ?? 'N/A';
                             $facultyCode = Auth::user()->faculty->code ?? '';
-                            
                             $displayRole = ucwords(str_replace('_', ' ', $roleName));
                             $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
                         @endphp
-
-                        {{-- CONTAINER NAMA & ROLE/FAKULTAS (Akan diorder ke kiri oleh CSS order:-1) --}}
+                        
                         <div class="user-identity">
                             <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
-                            {{-- Tampilkan role dan fakultas --}}
                             <span class="user-role-display d-none d-sm-block">{{ $fullTitle }}</span> 
                         </div>
 
@@ -233,18 +242,18 @@
                                 <div class="profile-img"><i class="bi bi-person-circle"></i></div>
                             @endif
                         </div>
+                        <i class="bi bi-chevron-down-profile"></i>
                     @else
                         <span class="user-name d-none d-sm-block">Guest User</span>
                         <div class="profile-img"><i class="bi bi-person-circle text-primary"></i></div>
+                        <i class="bi bi-chevron-down-profile"></i>
                     @endauth
-                    {{-- HAPUS CHEVRON GANDA: Hapus ikon chevron ganda ini: --}}
-                    </div>
+                </div>
 
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li class="dropdown-header">
                         @auth 
                             {{ Auth::user()->name }} <br>
-                            {{-- Tampilkan role dan fakultas di header dropdown --}}
                             <small class="text-muted">{{ $fullTitle }}</small> 
                         @else 
                             Guest 
@@ -267,7 +276,6 @@
             </div>
         </div>
 
-        {{-- START: NOTIFIKASI SUKSES --}}
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show w-100 mb-4" role="alert" style="color: var(--color-text-dark);">
                 <i class="bi bi-check-circle-fill me-2"></i>
@@ -275,98 +283,104 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        {{-- END: NOTIFIKASI SUKSES --}}
-
-        {{-- TABLE: SURAT MASUK --}}
         <div class="table-container mt-5">
             <div class="table-header">SURAT MASUK (Total: {{ $suratList->total() ?? 0 }})</div>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mt-0">
-                    <thead>
-                        <tr>
-                            <th style="width: 5%;">No</th>
-                            <th style="width: 10%;">Tgl. Masuk</th> 
-                            <th style="width: 15%;">Pengirim</th> 	
-                            <th style="width: 15%;">Fakultas</th> 	
-                            <th style="width: 10%;">Kode Surat</th>
-                            <th style="width: 25%;">Title</th>
-                            <th style="width: 15%;">Lampiran</th> 
-                            <th style="width: 5%;">Aksi</th> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{-- LOOPING DATA SURAT MASUK dari Controller. --}}
-                        @forelse ($suratList ?? [] as $index => $surat)
-                            <tr style="color: black;">
-                                {{-- Penomoran yang benar dengan pagination --}}
-                                <td>{{ ($suratList->firstItem() ?? 0) + $index }}</td>
-                                {{-- Tampilkan Tanggal Masuk --}}
-                                <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d/m/y H:i') }}</td>
-                                
-                                {{-- DATA PENGIRIM (user_id_1) --}}
-                                <td>{{ $surat->user1->name ?? 'N/A' }}</td>
-                                
-                                {{-- FAKULTAS PENGIRIM (melalui relasi user1->faculty) --}}
-                                <td>
-                                    {{ $surat->user1->faculty->name ?? '-' }}
-                                </td>
-                                
-                                <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
-                                <td>{{ Illuminate\Support\Str::limit($surat->title ?? 'Judul Tidak Ada', 25) }}</td>
-                                
-                                {{-- Kolom Lampiran (Menggunakan file_path) --}}
-                                <td>
-                                    @if (!empty($surat->file_path))
-                                        <div class="action-buttons justify-content-center">
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat" target="_blank">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download">
-                                                <i class="bi bi-file-earmark-arrow-down-fill"></i>
-                                            </a>
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
-                                                <i class="bi bi-printer-fill"></i>
-                                            </a>
-                                        </div>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
+<div class="table-responsive">
+    <table class="table table-striped table-hover mt-0">
+        <thead>
+            <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 8%;">Tgl. Masuk</th> 
+                <th style="width: 12%;">Pengirim</th>   
+                <th style="width: 8%;">Fakultas</th>   
+                <th style="width: 7%;">Kode Surat</th>
+                <th style="width: 15%;">Title</th> 
+                <th style="width: 25%;">Isi Surat (Ringkasan)</th> 
+                <th style="width: 10%;">Lampiran</th>   
+                <th style="width: 10%;">Aksi</th> 
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($suratList ?? [] as $index => $surat)
+                <tr style="color: black;">
+                    <td>{{ ($suratList->firstItem() ?? 0) + $index }}</td>
+                    <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d/m/y H:i') }}</td>
+                    
+                    <td>{{ $surat->user1->name ?? 'N/A' }}</td>
+                    
+                    <td>
+                        {{ $surat->user1->faculty->name ?? '-' }}
+                    </td>
+                    
+                    <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
+                    <td>{{ Illuminate\Support\Str::limit($surat->title ?? 'Judul Tidak Ada', 20) }}</td>
 
-                                <td>
-                                    <div class="d-flex flex-column align-items-center">
-                                        <button class="btn btn-action btn-danger" title="Hapus"
-                                            onclick="confirmDelete('{{ $surat->id }}')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
+                    <td>{{ Illuminate\Support\Str::limit($surat->isi ?? 'Tidak ada ringkasan isi.', 35) }}</td>
+                    
+                    {{-- KOLOM LAMPIRAN (Tombol Lihat/Download/Cetak) --}}
+                    <td>
+                        <div class="action-buttons justify-content-center">
+                            {{-- Tombol Lihat Detail Surat (Selalu ada) --}}
+                            <a href="{{ route('surat.show', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Detail Surat">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            
+                            @if (!empty($surat->file_path))
+                                {{-- Download --}}
+                                <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download Lampiran">
+                                    <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                                </a>
+                                {{-- Cetak --}}
+                                <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
+                                    <i class="bi bi-printer-fill"></i>
+                                </a>
+                            @endif
+                        </div>
+                        @if (empty($surat->file_path))
+                             {{-- Placeholder jika tidak ada file, agar kolom tidak kosong --}}
+                             <small class="text-muted d-block text-center" style="font-size: 0.75rem;">(No File)</small>
+                        @endif
+                    </td>
 
-                                    <form id="delete-form-{{ $surat->id }}" method="POST" action="{{ route('surat.delete', $surat->id) }}" style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr style="color: black;">
-                                {{-- Colspan 8 untuk mencakup kolom baru --}}
-                                <td colspan="8" class="text-center">Tidak ada surat masuk yang ditemukan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    {{-- KOLOM AKSI (Tombol Balas & Hapus) - MENGGUNAKAN action-buttons UNTUK HORIZONTAL --}}
+                    <td>
+                        {{-- Menggunakan action-buttons agar tombol sejajar secara horizontal (flex-direction: row) --}}
+                        <div class="action-buttons justify-content-center"> 
+                            {{-- Tombol Balas Surat --}}
+                            <a href="{{ route('DaftarSurat.reply', $surat->id) ?? '#' }}" class="btn btn-action btn-primary" title="Balas Surat">
+                                <i class="bi bi-reply-fill"></i>
+                            </a>
+                            
+                            {{-- Tombol Hapus --}}
+                            <button class="btn btn-action btn-danger" title="Hapus"
+                                onclick="confirmDelete('{{ $surat->id }}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+
+                        <form id="delete-form-{{ $surat->id }}" method="POST" action="{{ route('surat.delete', $surat->id) }}" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                    </td>
+                    {{-- END KOLOM AKSI --}}
+                </tr>
+            @empty
+                <tr style="color: black;">
+                    <td colspan="10" class="text-center">Tidak ada surat masuk yang ditemukan.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
             
-            {{-- Link Pagination (SUDAH DIPERBAIKI) --}}
             <div class="d-flex justify-content-center p-3">
                 @if(is_object($suratList) && method_exists($suratList, 'links'))
                     {{ $suratList->links('pagination::bootstrap-5') }}
                 @endif
             </div>
         </div>
-        {{-- START: FOOTER HAK CIPTA --}}
         @include('partials.footer')
-        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 

@@ -98,35 +98,42 @@
                 <div class="mb-3">
                     <label for="name" class="form-label form-label-dark">Nama Lengkap</label>
                     <input type="text" class="form-control" id="name" name="name" 
-                            value="{{ old('name') }}" required>
+                           value="{{ old('name') }}" required>
                 </div>
                 
                 <div class="mb-3">
                     <label for="username" class="form-label form-label-dark">Username</label>
                     <input type="text" class="form-control" id="username" name="username" 
-                            value="{{ old('username') }}">
+                           value="{{ old('username') }}">
                     <div class="form-text text-muted">Opsional, harus unik.</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label form-label-dark">Email</label>
                     <input type="email" class="form-control" id="email" name="email" 
-                            value="{{ old('email') }}" required>
+                           value="{{ old('email') }}" required>
                 </div>
                 
                 <div class="mb-3">
                     <label for="no_hp" class="form-label form-label-dark">No. HP</label>
                     <input type="text" class="form-control" id="no_hp" name="no_hp" 
-                            value="{{ old('no_hp') }}">
+                           value="{{ old('no_hp') }}">
                     <div class="form-text text-muted">Opsional.</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label form-label-dark">Password</label>
                     <input type="password" class="form-control" id="password" name="password" 
-                            required>
+                           required>
                     <div class="form-text text-muted">Minimal 8 karakter.</div>
                 </div>
+
+                {{-- ## BAGIAN YANG DIPERBAIKI ## --}}
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label form-label-dark">Konfirmasi Password</label>
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                </div>
+                {{-- ## AKHIR BAGIAN YANG DIPERBAIKI ## --}}
 
                 <div class="mb-3">
                     <label for="role_id" class="form-label form-label-dark">Role</label>

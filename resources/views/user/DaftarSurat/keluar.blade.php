@@ -282,65 +282,53 @@
 
         {{-- TABLE: SURAT KELUAR --}}
         <div class="table-container mt-5">
-            <div class="table-header">SURAT KELUAR (Total: {{ $suratList->total() ?? 0 }})</div>
+            <div class="table-header">SURAT MASUK (Total: {{ $suratList->total() ?? 0 }})</div>
             <div class="table-responsive">
                 <table class="table table-striped table-hover mt-0">
                     <thead>
                         <tr>
                             <th style="width: 5%;">No</th>
-                            <th style="width: 10%;">Tgl. Keluar</th> 
-                            <th style="width: 12%;">Pengirim</th>       
-                            <th style="width: 13%;">Fakultas</th>       
-                            <th style="width: 10%;">Kode Surat</th>
-                            <th style="width: 15%;">Tujuan</th>
-                            <th style="width: 25%;">Title</th>
-                            <th style="width: 5%;">Lampiran</th>
-                            <th style="width: 5%;">Aksi</th>
+                            <th style="width: 8%;">Tgl. Masuk</th> 
+                            <th style="width: 12%;">Pengirim</th>   
+                            <th style="width: 8%;">Fakultas</th>   
+                            <th style="width: 7%;">Kode Surat</th>
+                            <th style="width: 15%;">Title</th> 
+                            <th style="width: 25%;">Isi Surat (Ringkasan)</th> 
+                            <th style="width: 10%;">Lampiran</th>   
+                            <th style="width: 10%;">Aksi</th> 
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- LOOPING DATA SURAT KELUAR dari Controller. --}}
                         @forelse ($suratList ?? [] as $index => $surat)
                             <tr style="color: black;">
-                                {{-- Penomoran yang benar dengan pagination --}}
                                 <td>{{ ($suratList->firstItem() ?? 0) + $index }}</td>
-                                {{-- Tampilkan Tanggal Keluar --}}
                                 <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d/m/y H:i') }}</td>
                                 
-                                {{-- DATA PENGIRIM (user_id_1) --}}
                                 <td>{{ $surat->user1->name ?? 'N/A' }}</td>
                                 
-                                {{-- FAKULTAS PENGIRIM (melalui relasi user1->faculty) --}}
                                 <td>
                                     {{ $surat->user1->faculty->name ?? '-' }}
                                 </td>
                                 
                                 <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
-                                
-                                {{-- TAMPILKAN TUJUAN AKHIR (user2/tujuanFaculty/tujuan) --}}
-                                <td>
-                                    @if ($surat->user2 ?? false)
-                                            {{ $surat->user2->name }}
-                                    @elseif ($surat->tujuanFaculty ?? false)
-                                            {{ $surat->tujuanFaculty->code }} ({{ ucwords($surat->tujuan) }})
-                                    @else
-                                            {{ ucwords(str_replace('_', ' ', $surat->tujuan)) }}
-                                    @endif
-                                </td>
-                                
-                                <td>{{ Illuminate\Support\Str::limit($surat->title ?? 'Judul Tidak Ada', 25) }}</td>
+                                <td>{{ Illuminate\Support\Str::limit($surat->title ?? 'Judul Tidak Ada', 20) }}</td>
 
-                                {{-- Kolom Lampiran (Menggunakan file_path) --}}
+                                <td>{{ Illuminate\Support\Str::limit($surat->isi ?? 'Tidak ada ringkasan isi.', 35) }}</td>
+                                
                                 <td>
                                     @if (!empty($surat->file_path))
                                         <div class="action-buttons justify-content-center">
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat" target="_blank">
+                                            {{-- PERBAIKAN UTAMA: Mengarahkan tautan 'Lihat' ke halaman detail (show_detail.blade.php) --}}
+                                            <a href="{{ route('surat.show', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Detail Surat">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download">
+                                            
+                                            <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download Lampiran">
                                                 <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                             </a>
-                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
+                                            
+                                            {{-- Tautan cetak tetap mengarah ke view_file untuk cetak langsung --}}
+                                            <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
                                                 <i class="bi bi-printer-fill"></i>
                                             </a>
                                         </div>
@@ -350,7 +338,11 @@
                                 </td>
 
                                 <td>
-                                    <div class="d-flex flex-column align-items-center">
+                                    <div class="action-column">
+                                        <a href="{{ route('DaftarSurat.reply', $surat->id) ?? '#' }}" class="btn btn-action btn-primary" title="Balas Surat">
+                                            <i class="bi bi-reply-fill"></i>
+                                        </a>
+                                        
                                         <button class="btn btn-action btn-danger" title="Hapus"
                                             onclick="confirmDelete('{{ $surat->id }}')">
                                             <i class="bi bi-trash"></i>
@@ -365,21 +357,20 @@
                             </tr>
                         @empty
                             <tr style="color: black;">
-                                <td colspan="9" class="text-center">Tidak ada surat keluar yang ditemukan.</td>
+                                <td colspan="9" class="text-center">Tidak ada surat masuk yang ditemukan.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
             
-            {{-- PERBAIKAN LINK PAGINATION DENGAN STYLING BOOTSTRAP 5 --}}
-            <div class="d-flex justify-content-center pagination-container">
-                {{ $suratList->links('pagination::bootstrap-5') ?? '' }}
+            <div class="d-flex justify-content-center p-3">
+                @if(is_object($suratList) && method_exists($suratList, 'links'))
+                    {{ $suratList->links('pagination::bootstrap-5') }}
+                @endif
             </div>
         </div>
-        {{-- START: FOOTER HAK CIPTA --}}
         @include('partials.footer')
-        {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>
 

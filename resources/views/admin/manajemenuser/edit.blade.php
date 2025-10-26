@@ -34,6 +34,9 @@
             border: 1px solid rgba(0, 0, 0, 0.3);
             color: var(--color-text-dark); /* Agar teks input terlihat jelas */
         }
+        .form-text.text-muted {
+            color: rgba(0, 0, 0, 0.6) !important; 
+        }
     </style>
 </head>
 <body>
@@ -141,6 +144,15 @@
                         Hanya isi jika Anda ingin mengganti password. Minimal 8 karakter.
                     </div>
                 </div>
+
+                {{-- ## BAGIAN YANG DIPERBAIKI ## --}}
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label text-dark fw-bold">
+                        Konfirmasi Password Baru
+                    </label>
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
+                </div>
+                {{-- ## AKHIR BAGIAN YANG DIPERBAIKI ## --}}
 
                 <div class="d-flex justify-content-between">
                     <a href="{{ route('admin.manajemenuser.index') }}" class="btn btn-secondary">
