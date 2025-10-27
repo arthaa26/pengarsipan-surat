@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Schema; 
-use Illuminate\Support\Str; // Tambahkan Str
-use App\Http\Controllers\KirimSuratController; // Diperlukan untuk generateSuratCode
+use Illuminate\Support\Str; 
+use App\Http\Controllers\KirimSuratController; 
 
 class UsersController extends Controller
 {
@@ -79,7 +79,7 @@ class UsersController extends Controller
         $suratKeluarCount = $suratKeluarQuery->count();
         
         return view('user.dashboard', [ 
-            'user' => $user, // <<< TAMBAHKAN INI
+            'user' => $user, 
             'suratMasukCount' => $suratMasukCount,
             'suratKeluarCount' => $suratKeluarCount,
             'suratMasuk' => $suratMasuk,
@@ -112,10 +112,10 @@ class UsersController extends Controller
         
         $userId = $user->id;
         $suratList = KirimSurat::where('user_id_1', $userId)
-                                   ->with(['user2', 'user2.faculty', 'tujuanFaculty']) 
-                                   ->orderBy('created_at', 'desc')
-                                   ->paginate(15);
-                                   
+                                       ->with(['user2', 'user2.faculty', 'tujuanFaculty']) 
+                                       ->orderBy('created_at', 'desc')
+                                       ->paginate(15);
+                                        
         $rawRoleName = $user->role?->name ?? 'N/A'; // Menggunakan Nullsafe
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
@@ -216,13 +216,13 @@ class UsersController extends Controller
                              ->with('role', 'faculty')
                              ->get()
                              ->map(function ($user) {
-                                $roleName = $user->role?->name ?? 'N/A';
-                                $facultyCode = $user->faculty?->code ?? 'Pusat';
-                                $usernameDisplay = $user->username ?? 'N/A'; 
-                                $user->display_text = "{$user->name} ({$usernameDisplay}) - {$roleName} {$facultyCode}";
-                                return $user;
+                                 $roleName = $user->role?->name ?? 'N/A';
+                                 $facultyCode = $user->faculty?->code ?? 'Pusat';
+                                 $usernameDisplay = $user->username ?? 'N/A'; 
+                                 $user->display_text = "{$user->name} ({$usernameDisplay}) - {$roleName} {$facultyCode}";
+                                 return $user;
                              });
-                               
+                                
         // 4. Setup Pre-selected Target (Pengirim asli)
         $targetUser = $allUsers->firstWhere('id', $surat->user_id_1); 
         $preSelectedTarget = null;
@@ -376,18 +376,59 @@ class UsersController extends Controller
         return view('user.DaftarSurat.show_detail', compact('surat'));
     }
 
+    /**
+     * Menampilkan file surat secara inline di browser.
+     * Termasuk otorisasi dan penentuan MIME type.
+     */
     public function viewFileSurat(KirimSurat $surat)
     {
-        if (Storage::disk('public')->exists($surat->file_path)) {
-            return Storage::disk('public')->response($surat->file_path);
+        // Otorisasi: Hanya pengirim (user_id_1) atau penerima (user_id_2) yang boleh melihat.
+        $currentUser = Auth::id();
+        if ($surat->user_id_1 !== $currentUser && $surat->user_id_2 !== $currentUser) {
+            abort(403, 'Akses Ditolak. Anda tidak berhak melihat file surat ini.');
         }
-        abort(404, 'File lampiran tidak ditemukan.');
+
+        // Pastikan file_path terisi dan file ada di storage
+        if (!$surat->file_path || !Storage::disk('public')->exists($surat->file_path)) {
+            abort(404, 'File lampiran tidak ditemukan.');
+        }
+        
+        // Dapatkan tipe MIME
+        $mimeType = Storage::disk('public')->mimeType($surat->file_path);
+        $fileName = basename($surat->file_path);
+        
+        // Tampilkan file secara inline (di dalam browser)
+        return Storage::disk('public')->response($surat->file_path, $fileName, [
+            'Content-Type'        => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . $fileName . '"',
+        ]);
     }
-    
+
+    /**
+     * Mengunduh file surat.
+     * Termasuk otorisasi dan perbaikan nama file untuk menghindari InvalidArgumentException.
+     */
     public function downloadSurat(KirimSurat $surat)
     {
-        if (Storage::disk('public')->exists($surat->file_path)) {
-            $fileName = $surat->kode_surat . '_' . basename($surat->file_path);
+        // Otorisasi: Hanya pengirim (user_id_1) atau penerima (user_id_2) yang boleh mengunduh.
+        $currentUser = Auth::id();
+        if ($surat->user_id_1 !== $currentUser && $surat->user_id_2 !== $currentUser) {
+            abort(403, 'Akses Ditolak. Anda tidak berhak mengunduh file surat ini.');
+        }
+        
+        if ($surat->file_path && Storage::disk('public')->exists($surat->file_path)) {
+            
+            // 1. Bersihkan kode_surat dari karakter yang tidak valid (seperti '/')
+            // Ini untuk mengatasi InvalidArgumentException karena karakter / atau \
+            $safeKodeSurat = str_replace(['/', '\\'], '-', $surat->kode_surat);
+            
+            // 2. Dapatkan ekstensi file dari file_path
+            $fileExtension = pathinfo($surat->file_path, PATHINFO_EXTENSION);
+            
+            // 3. Gabungkan untuk membuat nama file yang aman dan informatif
+            $fileName = $safeKodeSurat . '_' . Str::slug($surat->title) . '.' . $fileExtension;
+            
+            // Laravel download() secara otomatis menambahkan header Content-Disposition: attachment
             return Storage::disk('public')->download($surat->file_path, $fileName);
         }
         abort(404, 'File lampiran tidak ditemukan.');
@@ -401,9 +442,9 @@ class UsersController extends Controller
         $surat->delete();
         
         $redirectRoute = ($surat->user_id_1 == Auth::id()) 
-                            ? 'user.daftar_surat.keluar' 
-                            : 'user.daftar_surat.masuk';
-                            
+                             ? 'user.daftar_surat.keluar' 
+                             : 'user.daftar_surat.masuk';
+                             
         return redirect()->route($redirectRoute)->with('success', 'Surat berhasil dihapus.');
     }
 

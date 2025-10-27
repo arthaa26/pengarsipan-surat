@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
 use App\Models\Role; 
-use App\Models\Users; 
+use App\Models\User; // <-- PERBAIKAN: Ganti 'Users' menjadi 'User' (sesuai konvensi Laravel)
 
 class UserSeeder extends Seeder
 {
@@ -16,13 +16,13 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // UNTUK HAPUS DATA ATAU ROLE DENGAN AUTO            
+        // UNTUK HAPUS DATA ATAU ROLE DENGAN AUTO            
         DB::statement('SET FOREIGN_KEY_CHECKS=0;'); 
         DB::table('roles')->truncate(); 
         DB::statement('ALTER TABLE roles AUTO_INCREMENT = 1;'); 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        //  BUAT ROLE DENGAN ID BERURUTAN (1-7) ---
+        //  BUAT ROLE DENGAN ID BERURUTAN (1-7) ---
         $rolesData = [
             'admin' => ['display_name' => 'Admin'],
             'rektor' => ['display_name' => 'Rektor'],
@@ -40,13 +40,13 @@ class UserSeeder extends Seeder
         }
 
         // ID ROLE USER
-        $adminId            = $rolesMap['admin']; // ID 1
-        $rektorId           = $rolesMap['rektor']; // ID 2
-        $dekanId            = $rolesMap['dekan']; // ID 3
-        $kaprodiId          = $rolesMap['kaprodi']; // ID 5
-        $dosenId            = $rolesMap['dosen']; // ID 4
-        $tenagaPendidikId   = $rolesMap['tenaga_pendidik']; // ID 6
-        $dosenTugasKhususId = $rolesMap['dosen_tugas_khusus']; // ID 7
+        $adminId             = $rolesMap['admin']; // ID 1
+        $rektorId            = $rolesMap['rektor']; // ID 2
+        $dekanId             = $rolesMap['dekan']; // ID 3
+        $kaprodiId           = $rolesMap['kaprodi']; // ID 5
+        $dosenId             = $rolesMap['dosen']; // ID 4
+        $tenagaPendidikId    = $rolesMap['tenaga_pendidik']; // ID 6
+        $dosenTugasKhususId  = $rolesMap['dosen_tugas_khusus']; // ID 7
 
         // ID FAKULTAS SESUAI DENGAN DATABASE, BIAR GA BUG SESUAIKAN DARI DATABASE
         $faculties = [
@@ -150,7 +150,7 @@ class UserSeeder extends Seeder
         ];
         
         foreach ($data_users as $user_data) {
-            Users::create($user_data);
+            User::create($user_data); // <-- PERBAIKAN: Ganti 'Users' menjadi 'User'
         }
     }
 }
