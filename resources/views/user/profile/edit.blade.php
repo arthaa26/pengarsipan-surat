@@ -9,30 +9,123 @@
 
     <style>
         :root {
-            --color-bg-body: #4db8ff; --color-sidebar-primary: #0066cc;
-            --color-sidebar-link: #0080ff; --color-sidebar-link-hover: #0059b3;
-            --color-text-white: #fff; --color-text-dark: #000000;
+            --color-bg-body: #4db8ff; /* Light Blue */
+            --color-sidebar-primary: #0066cc; /* Darker Blue */
+            --color-sidebar-link: #0080ff; /* Medium Blue */
+            --color-sidebar-link-hover: #0059b3; /* Slightly Darker Blue */
+            --color-text-white: #fff;
+            --color-text-dark: #000000;
         }
 
-        body { background: var(--color-bg-body); font-family: 'Arial', sans-serif; color: var(--color-text-white); }
-        .app-layout { display: flex; min-height: 100vh; }
-        .sidebar { background: var(--color-sidebar-primary); padding: 20px 10px; width: 250px; flex-shrink: 0; }
-        .sidebar-menu > a { display: flex; align-items: center; background: var(--color-sidebar-link); color: var(--color-text-white); text-decoration: none; margin: 8px 0; padding: 10px; border-radius: 5px; font-weight: bold; transition: background 0.2s; }
-        .sidebar-menu > a:hover { background: var(--color-sidebar-link-hover); }
-        .sidebar-menu a.active-link { background: var(--color-text-white); color: var(--color-text-dark); }
-        .sidebar-dropdown-item { margin: 8px 0; }
-        .sidebar-dropdown-toggle { display: flex !important; align-items: center; justify-content: space-between; background: var(--color-sidebar-link); color: var(--color-text-white); padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; text-align: left; border: none; line-height: 1.2; transition: background 0.2s; }
-        .sidebar-dropdown-toggle:hover { background: var(--color-sidebar-link-hover); }
-        .sidebar-dropdown-toggle[aria-expanded="true"] { background: var(--color-sidebar-link-hover); border-radius: 5px 5px 0 0; }
-        .sidebar-dropdown-menu { list-style: none; padding-left: 0; margin-bottom: 0; position: static; background-color: var(--color-sidebar-link-hover); border: none; padding: 0 10px 5px 10px; border-radius: 0 0 5px 5px; box-shadow: none; width: 100%; margin-top: 0; }
-        .sidebar-dropdown-menu li a { display: flex; align-items: center; background: transparent !important; color: var(--color-text-white); font-weight: normal; padding: 8px 10px 8px 30px; margin: 2px 0; border-radius: 3px; text-decoration: none; }
-        .sidebar-dropdown-menu li a:hover { background: var(--color-sidebar-primary) !important; color: var(--color-text-white) !important; }
+        body { 
+            background: var(--color-bg-body); 
+            font-family: 'Arial', sans-serif; 
+            color: var(--color-text-white); 
+        }
+        .app-layout { 
+            display: flex; 
+            min-height: 100vh; 
+        }
+        .sidebar { 
+            background: var(--color-sidebar-primary); 
+            padding: 20px 10px; 
+            width: 250px; 
+            flex-shrink: 0; 
+        }
+        .sidebar-menu > a { 
+            display: flex; 
+            align-items: center; 
+            background: var(--color-sidebar-link); 
+            color: var(--color-text-white); 
+            text-decoration: none; 
+            margin: 8px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            transition: background 0.2s; 
+        }
+        .sidebar-menu > a:hover { 
+            background: var(--color-sidebar-link-hover); 
+        }
+        .sidebar-menu a.active-link { 
+            background: var(--color-text-white); 
+            color: var(--color-text-dark); 
+        }
+        .sidebar-dropdown-item { 
+            margin: 8px 0; 
+        }
+        .sidebar-dropdown-toggle { 
+            display: flex !important; 
+            align-items: center; 
+            justify-content: space-between; 
+            background: var(--color-sidebar-link); 
+            color: var(--color-text-white); 
+            padding: 10px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            width: 100%; 
+            text-align: left; 
+            border: none; 
+            line-height: 1.2; 
+            transition: background 0.2s; 
+        }
+        .sidebar-dropdown-toggle:hover { 
+            background: var(--color-sidebar-link-hover); 
+        }
+        .sidebar-dropdown-toggle[aria-expanded="true"] { 
+            background: var(--color-sidebar-link-hover); 
+            border-radius: 5px 5px 0 0; 
+        }
+        .sidebar-dropdown-menu { 
+            list-style: none; 
+            padding-left: 0; 
+            margin-bottom: 0; 
+            position: static; 
+            background-color: var(--color-sidebar-link-hover); 
+            border: none; 
+            padding: 0 10px 5px 10px; 
+            border-radius: 0 0 5px 5px; 
+            box-shadow: none; 
+            width: 100%; 
+            margin-top: 0; 
+        }
+        .sidebar-dropdown-menu li a { 
+            display: flex; 
+            align-items: center; 
+            background: transparent !important; 
+            color: var(--color-text-white); 
+            font-weight: normal; 
+            padding: 8px 10px 8px 30px; 
+            margin: 2px 0; 
+            border-radius: 3px; 
+            text-decoration: none; 
+        }
+        .sidebar-dropdown-menu li a:hover { 
+            background: var(--color-sidebar-primary) !important; 
+            color: var(--color-text-white) !important; 
+        }
 
-        .main-content-col { flex-grow: 1; padding: 20px; }
-        .card-box-profile { border-radius: 10px; padding: 30px; background: var(--color-text-white); color: var(--color-text-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .form-label { font-weight: bold; }
+        .main-content-col { 
+            flex-grow: 1; 
+            padding: 20px; 
+        }
+        .card-box-profile { 
+            border-radius: 10px; 
+            padding: 30px; 
+            background: var(--color-text-white); 
+            color: var(--color-text-dark); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+        }
+        .form-label { 
+            font-weight: bold; 
+        }
         
-        .user-info { display: flex; align-items: center; cursor: pointer; }
+        .user-info { 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+        }
         
         .user-identity {
             display: flex;
@@ -42,35 +135,77 @@
             text-align: right; 
         }
 
-        .user-name { font-size: 1.1rem; font-weight: bold; color: var(--color-text-white); display: none; }
+        /* --- PERBAIKAN: Hapus display: none; agar nama dan role tampil (mengikuti d-sm-block) --- */
+        .user-name { 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            color: var(--color-text-white); 
+            /* display: none; <--- DIHAPUS */
+        }
         
         .user-role-display { 
             font-size: 0.9rem; 
             font-weight: normal; 
-            display: none; 
-            .user-name, .user-role-display { display: block; } 
+            /* display: none; <--- DIHAPUS */
+
+            /* Blok CSS yang ambigu/salah di bawah ini DIHAPUS */
+            /* .user-name, .user-role-display { display: block; } */ 
         }
+        /* --- END PERBAIKAN --- */
+
 
         .profile-img { 
-            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
-            background-color: var(--color-text-white); border: 2px solid var(--color-text-white); 
-            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+            width: 40px; height: 40px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            background-color: var(--color-text-white); 
+            border: 2px solid var(--color-text-white); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.5rem; 
             color: var(--color-sidebar-primary); 
         }
-        .sidebar-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .sidebar-header { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }
         
-        .logo-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; margin-right: 10px; display: block; border: none; }
-        .logo-text { font-size: 1.4rem; font-weight: bold; color: var(--color-text-white); margin: 0; }
+        .logo-img { 
+            width: 85px; 
+            height: 85px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            margin-right: 10px; 
+            display: block; 
+            border: none; 
+        }
+        .logo-text { 
+            font-size: 1.4rem; 
+            font-weight: bold; 
+            color: var(--color-text-white); 
+            margin: 0; 
+        }
 
         .profile-image-area {
-            text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;
+            text-align: center; 
+            margin-bottom: 25px; 
+            padding-bottom: 20px; 
+            border-bottom: 1px solid #ddd;
         }
         .profile-image-preview {
-            width: 120px; height: 120px; object-fit: cover; border-radius: 50%;
-            border: 4px solid var(--color-sidebar-primary); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 120px; 
+            height: 120px; 
+            object-fit: cover; 
+            border-radius: 50%;
+            border: 4px solid var(--color-sidebar-primary); 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             cursor: pointer;
         }
-        .btn-upload-trigger { margin-top: 10px; }
+        .btn-upload-trigger { 
+            margin-top: 10px; 
+        }
     </style>
 </head>
 <body>
@@ -123,26 +258,24 @@
                     @auth
                         @php
                             // LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS
-                            // Catatan: Pastikan di Controller Anda memuat relasi 'role' dan 'faculty' (contoh: Auth::user()->load(['role', 'faculty']))
-                            $roleName = Auth::user()->role->name ?? 'N/A';
-                            // Mengakses code Fakultas (Jika relasi faculty ada)
-                            $facultyCode = Auth::user()->faculty->code ?? '';
+                            // Variabel $user diasumsikan sudah ada di Blade dari Controller
+                            $user = Auth::user(); 
+                            $roleName = $user->role->name ?? 'N/A';
+                            $facultyCode = $user->faculty->code ?? '';
                             
                             $displayRole = ucwords(str_replace('_', ' ', $roleName));
-                            // Format: (ROLE KODEFACULTY) atau (ROLE)
                             $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
                         @endphp
 
-                        {{-- CONTAINER NAMA & ROLE/FAKULTAS --}}
+                        {{-- CONTAINER NAMA & ROLE/FAKULTAS (d-sm-block sekarang efektif) --}}
                         <div class="user-identity">
-                            <span class="user-name d-none d-sm-block">{{ Auth::user()->name }}</span>
-                            {{-- Tampilkan role dan fakultas --}}
+                            <span class="user-name d-none d-sm-block">{{ $user->name }}</span>
                             <span class="user-role-display d-none d-sm-block">{{ $fullTitle }}</span> 
                         </div>
 
                         <div class="profile-icon">
-                            @if (Auth::user()->profile_photo_url)
-                                <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="profile-img">
+                            @if ($user->profile_photo_url)
+                                <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="profile-img">
                             @else
                                 <div class="profile-img"><i class="bi bi-person-circle"></i></div>
                             @endif
@@ -157,8 +290,7 @@
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li class="dropdown-header">
                         @auth 
-                            {{ Auth::user()->name }} <br>
-                            {{-- Tampilkan role dan fakultas di header dropdown --}}
+                            {{ $user->name }} <br>
                             <small class="text-muted">{{ $fullTitle }}</small> 
                         @else 
                             Guest 
@@ -198,6 +330,7 @@
 
         {{-- FORM UPDATE PROFIL --}}
         <div class="card-box-profile">
+            {{-- Menggunakan $user untuk form, memastikan variabel ini tersedia di controller --}}
             <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -205,7 +338,7 @@
                 {{-- AREA FOTO PROFIL BARU --}}
                 <div class="profile-image-area">
                     <img 
-                        src="{{ Auth::user()->profile_photo_url ?? 'https://placehold.co/120x120/0066cc/ffffff?text=User' }}" 
+                        src="{{ $user->profile_photo_url ?? 'https://placehold.co/120x120/0066cc/ffffff?text=User' }}" 
                         alt="Foto Profil" 
                         id="profile_preview"
                         class="profile-image-preview" 
@@ -272,7 +405,8 @@
             </form>
         </div>
         {{-- START: FOOTER HAK CIPTA --}}
-        @include('partials.footer')
+        {{-- Asumsi 'partials.footer' ada dan bekerja --}}
+        @include('partials.footer') 
         {{-- END: FOOTER HAK CIPTA --}}
     </div>
 </div>

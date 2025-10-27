@@ -309,10 +309,11 @@
                                 <td>
                                     @if (!empty($surat->file_path))
                                         <div class="action-buttons justify-content-center">
-                                            {{-- RUTE LIHAT (Admin) --}}
-                                            <a href="{{ route('admin.surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat" target="_blank">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
+                                        {{-- Tombol Lihat Detail Surat (Menggunakan Rute Admin yang benar) --}}
+                                        <button class="btn btn-action btn-primary" title="Lihat Detail"
+                                            onclick="window.location.href='{{ route('admin.surat.view', $surat->id) ?? '#' }}'">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
                                             {{-- RUTE DOWNLOAD (Admin) --}}
                                             <a href="{{ route('admin.surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download">
                                                 <i class="bi bi-file-earmark-arrow-down-fill"></i>

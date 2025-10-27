@@ -79,6 +79,7 @@ class UsersController extends Controller
         $suratKeluarCount = $suratKeluarQuery->count();
         
         return view('user.dashboard', [ 
+            'user' => $user, // <<< TAMBAHKAN INI
             'suratMasukCount' => $suratMasukCount,
             'suratKeluarCount' => $suratKeluarCount,
             'suratMasuk' => $suratMasuk,

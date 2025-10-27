@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
     <style>
-        /* BASE STYLES - DIKEMBALIKAN KE WARNA ASLI */
         :root {
             --color-bg-body: #4db8ff;
             --color-sidebar-primary: #0066cc;
@@ -85,7 +84,6 @@
         }
         .text-danger { color: red !important; }
 
-        /* SELECT2 CUSTOM STYLES */
         .select2-container--bootstrap-5 .select2-selection {
             min-height: 50px !important; border-radius: 10px !important;
             border: 2px solid var(--color-text-dark) !important; font-weight: bold !important;
@@ -505,7 +503,6 @@ $(document).ready(function() {
         });
     }
 
-    // Jalankan fungsi saat dokumen siap
     toggleTargetTypeDisplay();
 });
 </script>
