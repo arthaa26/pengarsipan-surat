@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\KirimSurat; 
-use App\Models\User; // Mengasumsikan Anda mungkin butuh model User untuk relasi
+use App\Models\User; 
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -15,7 +15,6 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // 1. Hitung Total Keseluruhan Surat (Lebih efisien daripada mengambil semua data)
         $totalSuratCount = KirimSurat::count();
 
         // CATATAN: Berdasarkan skema tabel 'kirim_surat':

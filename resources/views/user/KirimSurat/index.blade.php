@@ -247,10 +247,21 @@
                 {{-- Input Hidden untuk menyimpan target role (pengganti radio jabatan) --}}
                 <input type="hidden" name="tujuan" id="tujuan_hidden_input" value="{{ old('tujuan', 'rektor') }}">
 
-                {{-- KODE SURAT --}}
+                {{-- KODE SURAT (PERBAIKAN: MANUAL INPUT) --}}
                 <div class="mb-4">
-                    <label for="kode_surat" class="form-label-custom">KODE SURAT (Otomatis)</label>
-                    <input type="text" class="form-control form-control-custom" id="kode_surat" value="{{ $nextKode ?? 'Kode Akan Dibuat Otomatis' }}" placeholder="Kode akan di-generate oleh sistem" readonly>
+                    <label for="kode_surat" class="form-label-custom">KODE SURAT *</label>
+                    <input 
+                        type="text" 
+                        class="form-control form-control-custom @error('kode_surat') is-invalid @enderror" 
+                        id="kode_surat" 
+                        name="kode_surat" 
+                        value="{{ old('kode_surat') }}" 
+                        placeholder="Masukkan Kode Surat, cth: UM/001/I/2025" 
+                        required
+                    >
+                    @error('kode_surat')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
                 
                 {{-- TITLE --}}
@@ -348,7 +359,7 @@
                     <label for="target_user_id" class="form-label-custom">CARI & PILIH USER TUJUAN</label>
                     <select class="form-select form-control-custom @error('target_user_id') is-invalid @enderror" id="target_user_id" name="target_user_id" style="width: 100%;" disabled>
                         {{-- Data akan dimuat via AJAX --}}
-                         {{-- Jika ada old user_id, tampilkan opsi default --}}
+                        {{-- Jika ada old user_id, tampilkan opsi default --}}
                         @if (old('target_user_id'))
                             <option value="{{ old('target_user_id') }}" selected>Memuat User...</option>
                         @endif
@@ -378,10 +389,9 @@
 <script>
 $(document).ready(function() {
     // =========================================================================
-    // INITIALIZATION
+    // INISSIALIASI
     // =========================================================================
     
-    // Cache jQuery selectors for performance
     const hiddenTujuanInput = $('#tujuan_hidden_input');
     const targetTypeRadios = $('input[name="target_type"]');
     
@@ -389,12 +399,11 @@ $(document).ready(function() {
     const facultySelect = $('#target_faculty_id');
 
     const roleDropdownContainer = $('#role_dropdown_container'); 
-    const roleSelect = $('#target_role_id');                       
+    const roleSelect = $('#target_role_id');                       
     
     const userDropdownContainer = $('#user_dropdown_container');
     const userSelect = $('#target_user_id');
 
-    // Initialize Select2 for User Search
     userSelect.select2({
         theme: 'bootstrap-5',
         placeholder: '-- Ketik Nama atau Username User --',
@@ -411,7 +420,6 @@ $(document).ready(function() {
                 };
             },
             processResults: function (data) {
-                // Ensure the data structure is what Select2 expects
                 return {
                     results: data.results || [],
                     pagination: data.pagination || { more: false }
@@ -421,10 +429,12 @@ $(document).ready(function() {
         }
     });
 
-    // Perbaikan UX: Jika ada old user_id, kita perlu memuat data user tersebut ke Select2 saat load
     @if (old('target_user_id'))
+        const oldTargetUserId = '{{ old('target_user_id') }}';
+        const userApiRoute = '{{ route("api.get.user", ["id" => 'TEMP_ID']) }}'.replace('TEMP_ID', oldTargetUserId);
+        
         $.ajax({
-            url: '{{ route("api.get.user", ["id" => old("target_user_id")]) }}', // Asumsi ada route untuk ambil user berdasarkan ID
+            url: userApiRoute,
             dataType: 'json',
             success: function (data) {
                 if (data.id && data.text) {
@@ -437,14 +447,10 @@ $(document).ready(function() {
         });
     @endif
     
-    // =========================================================================
-    // CORE FUNCTION: Controls form display based on selected target level
-    // =========================================================================
+    // LOGIKA SELECT
     function toggleTargetTypeDisplay() {
-        // Ambil nilai dari radio yang ter-check, atau pakai old('target_type'), default 'universitas'
         const selectedTargetType = $('input[name="target_type"]:checked').val() || '{{ old('target_type', 'universitas') }}';
 
-        // 1. Reset and hide all conditional sections first
         facultyDropdownContainer.hide();
         facultySelect.prop('disabled', true).prop('required', false);
 
@@ -454,14 +460,12 @@ $(document).ready(function() {
         userDropdownContainer.hide();
         userSelect.prop('disabled', true).prop('required', false);
 
-        // 2. Set the target role and show the relevant section based on selection
         switch (selectedTargetType) {
             case 'universitas':
                 hiddenTujuanInput.val('rektor');
                 break;
 
             case 'spesifik':
-                // Diperlukan Fakultas DAN Role
                 hiddenTujuanInput.val('fakultas');
                 
                 facultyDropdownContainer.show();
@@ -484,7 +488,7 @@ $(document).ready(function() {
     }
     targetTypeRadios.on('change', toggleTargetTypeDisplay);
 
-    // File input display logic
+    // logika UNTOK UPLOD FILE
     $('#upload_file').on('change', function() {
         const fileName = this.files.length > 0 ? this.files[0].name : 'Pilih file...';
         $('#file_display').val(fileName);

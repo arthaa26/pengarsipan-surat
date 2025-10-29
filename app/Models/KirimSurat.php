@@ -29,7 +29,6 @@ class KirimSurat extends Model
         return $this->belongsTo(User::class, 'user_id_1');
     }
 
-    // Relasi ke user penerima (opsional)
     public function user2(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id_2');

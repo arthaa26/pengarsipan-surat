@@ -132,15 +132,12 @@
             display: flex; 
             align-items: center; 
             cursor: pointer; 
-            /* Hapus: direction: rtl; */ 
         }
         
         .user-identity {
-            /* Hapus: direction: ltr; */ 
             display: flex; 
             flex-direction: column; 
             line-height: 1.2; 
-            margin-left: 0; 
             margin-right: 10px;
             text-align: right;
             order: -1; 
@@ -247,17 +244,14 @@
             <h2 class="fw-bold text-white">DASHBOARD USER</h2>
             
             <div class="dropdown">
-                {{-- Hapus chevron ganda dari sini --}}
                 <div class="user-info dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     @auth
-                        {{-- START: LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS --}}
                         @php
-                            // Catatan: Pastikan di Controller Anda memuat relasi 'role' dan 'faculty' (contoh: Auth::user()->load(['role', 'faculty']))
+                            // LOGIKA PHP UNTUK MENAMPILKAN ROLE & FAKULTAS
                             $roleName = Auth::user()->role->name ?? 'N/A';
                             $facultyCode = Auth::user()->faculty->code ?? ''; 
                             
                             $displayRole = ucwords(str_replace('_', ' ', $roleName));
-                            // Format: (ROLE KODEFACULTY) atau (ROLE)
                             $fullTitle = trim($facultyCode) ? "({$displayRole} {$facultyCode})" : "({$displayRole})";
                         @endphp
 
@@ -279,7 +273,6 @@
                         <span class="user-name d-none d-sm-block">Guest User</span>
                         <div class="profile-img"><i class="bi bi-person-circle"></i></div>
                     @endauth
-                    {{-- Tambahkan kembali ikon chevron di sini jika Anda ingin ikonnya tetap ada, dan atur stylenya di CSS agar tampil di kanan --}}
                     <i class="bi bi-chevron-down ms-2 fs-5 text-white"></i> 
                 </div>
                 
@@ -287,7 +280,6 @@
                     <li class="dropdown-header">
                         @auth 
                             {{ Auth::user()->name }} <br>
-                            {{-- Tampilkan role dan fakultas di header dropdown --}}
                             <small class="text-muted">{{ $fullTitle }}</small> 
                         @else 
                             Guest 
@@ -360,8 +352,10 @@
                             <th style="width: 15%;">Pengirim</th> 
                             <th style="width: 15%;">Fakultas Pengirim</th> 
                             <th style="width: 10%;">Kode Surat</th>
-                            <th style="width: 25%;">Title</th>
-                            <th style="width: 15%;">Lampiran</th> 
+                            <th style="width: 15%;">Title</th>
+                            {{-- PERBAIKAN LEBAR KOLOM RINGKASAN --}}
+                            <th style="width: 15%;">Isi Surat (Ringkasan)</th> 
+                            <th style="width: 10%;">Lampiran</th> 
                             <th style="width: 5%;">Aksi</th> 
                         </tr>
                     </thead>
@@ -383,25 +377,33 @@
                                 <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
                                 <td>{{ Illuminate\Support\Str::limit($surat->title ?? 'Judul Tidak Ada', 30) }}</td>
                                 
-                                {{-- Kolom Lampiran (Menggunakan file_path) --}}
+                                {{-- START PERBAIKAN: Kolom Isi Surat (Ringkasan) --}}
+                                <td>{{ Illuminate\Support\Str::limit($surat->isi ?? 'Tidak ada ringkasan isi.', 35) }}</td>
+                                {{-- END PERBAIKAN: Kolom Isi Surat (Ringkasan) --}}
+                                
+                                {{-- START PERBAIKAN: Kolom Lampiran (Tombol Lihat Detail Selalu Ada) --}}
                                 <td>
                                     <div class="action-buttons justify-content-center"> 
-                                        {{-- PERBAIKAN UTAMA: Mengarahkan tautan 'Lihat' ke halaman detail (show_detail.blade.php) --}}
+                                        {{-- TOMBOL LIHAT DETAIL (Selalu ada) --}}
                                         <a href="{{ route('surat.show', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Detail Surat">
                                             <i class="bi bi-eye"></i>
                                         </a>
+                                        
                                         @if (!empty($surat->file_path))
+                                            {{-- TOMBOL DOWNLOAD (Hanya jika ada file) --}}
                                             <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download">
                                                 <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                             </a>
+                                            {{-- TOMBOL CETAK (Hanya jika ada file) --}}
                                             <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
                                                 <i class="bi bi-printer-fill"></i>
                                             </a>
                                         @endif
                                     </div>
                                 </td>
+                                {{-- END PERBAIKAN: Kolom Lampiran --}}
                                 
-                                {{-- START PERBAIKAN: Kolom Aksi (Balas & Hapus) agar sejajar --}}
+                                {{-- Kolom Aksi (Balas & Hapus) --}}
                                 <td>
                                     <div class="action-buttons justify-content-center">
                                         {{-- Tombol Balas Surat --}}
@@ -422,11 +424,10 @@
                                         @method('DELETE')
                                     </form>
                                 </td>
-                                {{-- END PERBAIKAN --}}
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="8" class="text-center">Tidak ada surat masuk yang ditemukan.</td> 
+                            <tr style="color: black;">
+                                <td colspan="9" class="text-center">Tidak ada surat masuk yang ditemukan.</td> 
                             </tr>
                         @endforelse
                     </tbody>

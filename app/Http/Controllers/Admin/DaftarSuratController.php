@@ -17,7 +17,6 @@ class DaftarSuratController extends Controller
         try {
             $suratList = KirimSurat::with(['user1.faculty'])
                                            ->orderBy('created_at', 'desc')
-                                           // ✅ FIX 2: Use Eloquent's built-in paginate() for simplicity and efficiency
                                            ->paginate(10);
             
         } catch (\Exception $e) {
@@ -39,12 +38,9 @@ class DaftarSuratController extends Controller
      */
     public function show($id)
     {
-        // Cari surat berdasarkan ID, memuat relasi yang diperlukan (user1, user2, tujuanFaculty).
         $surat = KirimSurat::with(['user1.faculty', 'user2.faculty', 'tujuanFaculty'])
                       ->findOrFail($id);
         
-        // Mengirim data ke view Blade
-        // Anda harus membuat file view ini di resources/views/admin/surat/show_detail.blade.php
         return view('admin.surat.show_detail', compact('surat'));
     }
 
@@ -81,7 +77,6 @@ class DaftarSuratController extends Controller
     {
         $surat = KirimSurat::findOrFail($id);
         
-        // Untuk menghapus file dari storage
         if ($surat->file_path && Storage::disk('public')->exists($surat->file_path)) {
             Storage::disk('public')->delete($surat->file_path);
         }

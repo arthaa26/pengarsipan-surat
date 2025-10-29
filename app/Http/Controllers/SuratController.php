@@ -155,7 +155,6 @@ class SuratController extends Controller
 
     public function downloadSurat(Surat $surat)
     {
-        // Permisionn izin: untuk pengirim atau penerima yang boleh mengunduh
         if ($surat->to_user_id !== Auth::id() && $surat->from_user_id !== Auth::id()) {
             abort(403, 'Akses Ditolak. Anda tidak memiliki izin untuk mengunduh lampiran surat ini.');
         }

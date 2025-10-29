@@ -96,7 +96,7 @@
             <p class="text-dark">{{ $surat->kode_surat ?? 'N/A' }}</p>
         </div>
         <div class="col-md-6 mb-3">
-            <p class="info-label">Judul Surat:</p>
+            <p class="info-label">Tittle Surat:</p>
             <p class="text-dark">{{ $surat->title ?? 'N/A' }}</p>
         </div>
         <div class="col-md-6 mb-3">

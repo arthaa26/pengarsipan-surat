@@ -88,11 +88,11 @@
             justify-content: center; border-radius: 5px; padding: 0; margin: 2px 0; 
         }
         .action-buttons { 
-        display: flex; 
-        flex-direction: row !important; 
-        gap: 5px; 
-        align-items: center;
-        justify-content: center;
+            display: flex; 
+            flex-direction: row !important; 
+            gap: 5px; 
+            align-items: center;
+            justify-content: center;
         }
         
         /* START: PERBAIKAN USER DROPDOWN */
@@ -164,6 +164,12 @@
             gap: 5px;
             align-items: center;
             justify-content: center;
+        }
+        /* Mengatur agar konten di kolom title dan isi tidak terpotong (word-wrap) */
+        .table td { 
+            white-space: normal; 
+            max-width: 250px; /* Batasi lebar agar tidak terlalu panjang */
+            word-wrap: break-word;
         }
 
     </style>
@@ -303,67 +309,65 @@
         <tbody>
             @forelse ($suratList ?? [] as $index => $surat)
                 <tr style="color: black;">
-                    <td>{{ ($suratList->firstItem() ?? 0) + $index }}</td>
-                    <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d/m/y H:i') }}</td>
-                    
-                    <td>{{ $surat->user1->name ?? 'N/A' }}</td>
-                    
-                    <td>
+                <td>{{ ($suratList->firstItem() ?? 0) + $index }}</td>
+                <td>{{ \Carbon\Carbon::parse($surat->created_at)->format('d/m/y H:i') }}</td>
+                
+                <td>{{ $surat->user1->name ?? 'N/A' }}</td>
+                
+                <td>
                         {{ $surat->user1->faculty->name ?? '-' }}
-                    </td>
-                    
-                    <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
-                    <td>{{ Illuminate\Support\Str::limit($surat->title ?? 'Judul Tidak Ada', 20) }}</td>
+                </td>
+                
+                <td>{{ $surat->kode_surat ?? 'N/A' }}</td>
+                <td>{{ Illuminate\Support\Str::limit($surat->title ?? 'Judul Tidak Ada', 20) }}</td>
 
-                    <td>{{ Illuminate\Support\Str::limit($surat->isi ?? 'Tidak ada ringkasan isi.', 35) }}</td>
-                    
-                    {{-- KOLOM LAMPIRAN (Tombol Lihat/Download/Cetak) --}}
-                    <td>
+                <td>{{ Illuminate\Support\Str::limit($surat->isi ?? 'Tidak ada ringkasan isi.', 35) }}</td>
+                
+                {{-- START: PERUBAHAN DI SINI UNTUK KOLOM LAMPIRAN --}}
+                <td>
                         <div class="action-buttons justify-content-center">
-                            {{-- Tombol Lihat Detail Surat (Selalu ada) --}}
-                            <a href="{{ route('surat.show', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Detail Surat">
+                        {{-- TOMBOL LIHAT DETAIL (selalu ada) --}}
+                        <a href="{{ route('surat.show', $surat->id) ?? '#' }}" class="btn btn-action btn-info" title="Lihat Detail Surat">
                                 <i class="bi bi-eye"></i>
-                            </a>
-                            
-                            @if (!empty($surat->file_path))
-                                {{-- Download --}}
-                                <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download Lampiran">
-                                    <i class="bi bi-file-earmark-arrow-down-fill"></i>
-                                </a>
-                                {{-- Cetak --}}
-                                <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
-                                    <i class="bi bi-printer-fill"></i>
-                                </a>
-                            @endif
-                        </div>
-                        @if (empty($surat->file_path))
-                             {{-- Placeholder jika tidak ada file, agar kolom tidak kosong --}}
-                             <small class="text-muted d-block text-center" style="font-size: 0.75rem;">(No File)</small>
-                        @endif
-                    </td>
+                        </a>
 
-                    {{-- KOLOM AKSI (Tombol Balas & Hapus) - MENGGUNAKAN action-buttons UNTUK HORIZONTAL --}}
-                    <td>
-                        {{-- Menggunakan action-buttons agar tombol sejajar secara horizontal (flex-direction: row) --}}
-                        <div class="action-buttons justify-content-center"> 
-                            {{-- Tombol Balas Surat --}}
-                            <a href="{{ route('DaftarSurat.reply', $surat->id) ?? '#' }}" class="btn btn-action btn-primary" title="Balas Surat">
+                        @if (!empty($surat->file_path))
+                                {{-- TOMBOL DOWNLOAD (hanya jika ada file) --}}
+                                <a href="{{ route('surat.download', $surat->id) ?? '#' }}" class="btn btn-action btn-success" title="Download Lampiran">
+                                <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                                </a>
+                                
+                                {{-- TOMBOL CETAK/VIEW FILE (hanya jika ada file) --}}
+                                <a href="{{ route('surat.view_file', $surat->id) ?? '#' }}" class="btn btn-action btn-warning" title="Cetak Lampiran" target="_blank" onclick="setTimeout(() => { window.open(this.href, '_blank', 'noopener,noreferrer').print(); }, 100); return false;">
+                                <i class="bi bi-printer-fill"></i>
+                                </a>
+                        @else
+                                {{-- Teks atau ikon pengganti jika tidak ada lampiran selain tombol Lihat Detail --}}
+                                <span class="text-muted" title="Tidak ada lampiran">-</span>
+                        @endif
+                        </div>
+                </td>
+                {{-- END: PERUBAHAN DI SINI --}}
+
+                <td>
+                        <div class="action-column">
+                        {{-- TOMBOL BALAS --}}
+                        <a href="{{ route('DaftarSurat.reply', $surat->id) ?? '#' }}" class="btn btn-action btn-primary" title="Balas Surat">
                                 <i class="bi bi-reply-fill"></i>
-                            </a>
-                            
-                            {{-- Tombol Hapus --}}
-                            <button class="btn btn-action btn-danger" title="Hapus"
+                        </a>
+                        
+                        {{-- TOMBOL HAPUS --}}
+                        <button class="btn btn-action btn-danger" title="Hapus"
                                 onclick="confirmDelete('{{ $surat->id }}')">
                                 <i class="bi bi-trash"></i>
-                            </button>
+                        </button>
                         </div>
 
                         <form id="delete-form-{{ $surat->id }}" method="POST" action="{{ route('surat.delete', $surat->id) }}" style="display: none;">
-                            @csrf
-                            @method('DELETE')
+                        @csrf
+                        @method('DELETE')
                         </form>
-                    </td>
-                    {{-- END KOLOM AKSI --}}
+                </td>
                 </tr>
             @empty
                 <tr style="color: black;">
@@ -391,6 +395,9 @@
      * Konfir hapus & submit form DELETE yang sesuai.
      */
     function confirmDelete(suratId) {
+        // PERBAIKAN: Gunakan custom modal daripada alert/confirm
+        // Catatan: Karena custom modal tidak disertakan, saya pertahankan confirm() 
+        // yang disarankan Laravel untuk environment non-iframe.
         if (confirm("Apakah Anda yakin ingin menghapus surat ini?")) {
             document.getElementById('delete-form-' + suratId).submit();
         }

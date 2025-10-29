@@ -19,9 +19,6 @@ use App\Http\Controllers\KirimSuratController;
 class UsersController extends Controller
 {
 
-    /**
-     * Membangun query untuk mengambil surat masuk berdasarkan role dan fakultas user.
-     */
     private function getSuratMasukQuery($user)
     {
         $userId = $user->id;
@@ -35,22 +32,16 @@ class UsersController extends Controller
         
         return KirimSurat::where(function ($query) use ($userId, $roleTujuan, $userFacultyId, $isUniversityLevel) {
             
-            // Kriteria 1: Surat ditujukan secara PERSONAL (user_id_2 tidak NULL)
             $query->where('user_id_2', $userId)
                     
-                    // Kriteria 2: Surat ditujukan secara ROLE/FAKULTAS (user_id_2 NULL)
                     ->orWhere(function ($q) use ($roleTujuan, $userFacultyId, $isUniversityLevel) {
                         
-                        // Filter awal: Surat ditujukan ke role user ini
                         $q->whereNull('user_id_2')
                             ->where('tujuan', $roleTujuan); 
 
-                        // Logika Filter Fakultas:
                         if (!$isUniversityLevel) {
                             $q->where(function($subQ) use ($userFacultyId) {
-                                // A) Ditujukan spesifik ke Fakultas mereka (ID Fakultas match)
                                 $subQ->where('tujuan_faculty_id', $userFacultyId)
-                                            // B) ATAU Ditujukan ke SELURUH FAKULTAS (tujuan_faculty_id IS NULL)
                                             ->orWhereNull('tujuan_faculty_id');
                             });
                         }
@@ -68,7 +59,7 @@ class UsersController extends Controller
 
         $userId = $user->id;
         
-        $rawRoleName = $user->role?->name ?? 'N/A'; // Menggunakan Nullsafe
+        $rawRoleName = $user->role?->name ?? 'N/A'; 
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
         $suratMasukQuery = $this->getSuratMasukQuery($user); 
@@ -98,7 +89,7 @@ class UsersController extends Controller
                              ->orderBy('created_at', 'desc')
                              ->paginate(15);
         
-        $rawRoleName = $user->role?->name ?? 'N/A'; // Menggunakan Nullsafe
+        $rawRoleName = $user->role?->name ?? 'N/A'; 
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
         return view('user.DaftarSurat.masuk', compact('suratList', 'formattedRoleName'));
@@ -116,46 +107,33 @@ class UsersController extends Controller
                                        ->orderBy('created_at', 'desc')
                                        ->paginate(15);
                                         
-        $rawRoleName = $user->role?->name ?? 'N/A'; // Menggunakan Nullsafe
+        $rawRoleName = $user->role?->name ?? 'N/A'; 
         $formattedRoleName = ucwords(str_replace('_', ' ', $rawRoleName));
 
         return view('user.DaftarSurat.keluar', compact('suratList', 'formattedRoleName'));
     }
 
-
-    /**
-     * Menampilkan formulir Kirim Surat.
-     */
     public function createSurat(Request $request) 
     {
-        // 1. Ambil semua data Fakultas
         $allFaculties = Faculty::select('id', 'name', 'code')->get();
 
-        // 2. Ambil semua data Pengguna (User) dengan relasi Role dan Faculty
         $allUsers = User::where('role_id', '!=', 1)
             ->with(['role', 'faculty'])
             ->select('id', 'name', 'username', 'role_id', 'faculty_id') 
             ->get()
             ->map(function ($user) {
-                // Menggunakan Nullsafe Operator (?->)
                 $roleName = $user->role?->name ?? 'N/A';
                 $facultyCode = $user->faculty?->code ?? 'Pusat';
-                
-                // PERBAIKAN SINTAKS: Memisahkan operator ?? dari interpolasi string kompleks.
                 $usernameDisplay = $user->username ?? 'N/A'; 
-                
-                // Format tampilan untuk Select2 / Dropdown Blade
                 $user->display_text = "{$user->name} ({$usernameDisplay}) - [{$roleName}] ({$facultyCode})";
                 
                 return $user;
             });
         
-        // 3. LOGIKA BALAS SURAT
         $replyToUserId = $request->query('reply_to_user_id');
         $preSelectedTarget = null;
 
         if ($replyToUserId) {
-            // PERBAIKAN: Cast ke integer saat memfilter koleksi untuk konsistensi tipe.
             $targetUser = $allUsers->firstWhere('id', (int)$replyToUserId); 
             
             if ($targetUser) {
@@ -167,7 +145,6 @@ class UsersController extends Controller
             }
         }
 
-        // 4. GENERATE KODE SURAT
         $nextKode = 'S-' . date('Y') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT); 
         
         // Coba instansiasi KirimSuratController jika tersedia
@@ -176,7 +153,6 @@ class UsersController extends Controller
             $nextKode = $kirimSuratController->generateSuratCode();
         }
 
-        // 5. Kirim data ke View Blade
         return view('user.KirimSurat.index', [
             'allFaculties' => $allFaculties, 
             'allUsers' => $allUsers, 
@@ -193,15 +169,12 @@ class UsersController extends Controller
      */
     public function replyForm(KirimSurat $surat)
     {
-        // 1. Otorisasi: Pastikan user yang login adalah penerima (user_id_2)
         if ($surat->user_id_2 !== Auth::id()) {
             abort(403, 'Akses Ditolak. Anda tidak berhak membalas surat ini.');
         }
 
-        // 2. PERBAIKAN KRUSIAL: Eager Load relasi user1 untuk mendapatkan nama pengirim
         $surat->load('user1'); 
 
-        // 3. Persiapan data form (membutuhkan KirimSuratController)
         if (!class_exists(KirimSuratController::class) || !method_exists(KirimSuratController::class, 'generateSuratCode')) {
              return back()->with('error', 'Gagal memuat form balasan: KirimSuratController atau generateSuratCode tidak ditemukan.');
         }
@@ -223,7 +196,6 @@ class UsersController extends Controller
                                  return $user;
                              });
                                 
-        // 4. Setup Pre-selected Target (Pengirim asli)
         $targetUser = $allUsers->firstWhere('id', $surat->user_id_1); 
         $preSelectedTarget = null;
         
@@ -241,7 +213,6 @@ class UsersController extends Controller
 
         $tujuanOptions = [ /* ... */ ];
         
-        // 5. Return view
         return view('user.DaftarSurat.reply', compact('nextKode', 'allFaculties', 'tujuanOptions', 'allUsers', 'preSelectedTarget', 'surat')); 
     }
 
@@ -251,7 +222,6 @@ class UsersController extends Controller
      */
     public function sendReply(Request $request, KirimSurat $surat)
     {
-        // Panggil method store/sendReply dari KirimSuratController
         $kirimSuratController = new KirimSuratController();
         return $kirimSuratController->sendReply($request, $surat);
     }
@@ -372,63 +342,40 @@ class UsersController extends Controller
 
     public function viewSurat(KirimSurat $surat)
     {
-        // PERBAIKAN: Mengganti 'surat.show' dengan path view yang benar
         return view('user.DaftarSurat.show_detail', compact('surat'));
     }
 
-    /**
-     * Menampilkan file surat secara inline di browser.
-     * Termasuk otorisasi dan penentuan MIME type.
-     */
+
     public function viewFileSurat(KirimSurat $surat)
     {
-        // Otorisasi: Hanya pengirim (user_id_1) atau penerima (user_id_2) yang boleh melihat.
         $currentUser = Auth::id();
         if ($surat->user_id_1 !== $currentUser && $surat->user_id_2 !== $currentUser) {
             abort(403, 'Akses Ditolak. Anda tidak berhak melihat file surat ini.');
         }
 
-        // Pastikan file_path terisi dan file ada di storage
         if (!$surat->file_path || !Storage::disk('public')->exists($surat->file_path)) {
             abort(404, 'File lampiran tidak ditemukan.');
         }
         
-        // Dapatkan tipe MIME
         $mimeType = Storage::disk('public')->mimeType($surat->file_path);
         $fileName = basename($surat->file_path);
         
-        // Tampilkan file secara inline (di dalam browser)
         return Storage::disk('public')->response($surat->file_path, $fileName, [
             'Content-Type'        => $mimeType,
             'Content-Disposition' => 'inline; filename="' . $fileName . '"',
         ]);
     }
-
-    /**
-     * Mengunduh file surat.
-     * Termasuk otorisasi dan perbaikan nama file untuk menghindari InvalidArgumentException.
-     */
     public function downloadSurat(KirimSurat $surat)
     {
-        // Otorisasi: Hanya pengirim (user_id_1) atau penerima (user_id_2) yang boleh mengunduh.
         $currentUser = Auth::id();
         if ($surat->user_id_1 !== $currentUser && $surat->user_id_2 !== $currentUser) {
             abort(403, 'Akses Ditolak. Anda tidak berhak mengunduh file surat ini.');
         }
         
         if ($surat->file_path && Storage::disk('public')->exists($surat->file_path)) {
-            
-            // 1. Bersihkan kode_surat dari karakter yang tidak valid (seperti '/')
-            // Ini untuk mengatasi InvalidArgumentException karena karakter / atau \
             $safeKodeSurat = str_replace(['/', '\\'], '-', $surat->kode_surat);
-            
-            // 2. Dapatkan ekstensi file dari file_path
             $fileExtension = pathinfo($surat->file_path, PATHINFO_EXTENSION);
-            
-            // 3. Gabungkan untuk membuat nama file yang aman dan informatif
             $fileName = $safeKodeSurat . '_' . Str::slug($surat->title) . '.' . $fileExtension;
-            
-            // Laravel download() secara otomatis menambahkan header Content-Disposition: attachment
             return Storage::disk('public')->download($surat->file_path, $fileName);
         }
         abort(404, 'File lampiran tidak ditemukan.');
@@ -448,7 +395,6 @@ class UsersController extends Controller
         return redirect()->route($redirectRoute)->with('success', 'Surat berhasil dihapus.');
     }
 
-    // Metode CRUD User Placeholder
     public function create() { return view('users.create'); }
     public function store(Request $request) { /* ... */ }
     public function show($id) { $user = User::findOrFail($id); return view('users.show', compact('user')); }

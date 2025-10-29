@@ -6,11 +6,10 @@ use App\Models\Kirim_surat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str; 
-use Illuminate\Support\Facades\Storage; // Import Storage facade for file handling
+use Illuminate\Support\Facades\Storage; 
 
 class KirimSuratController extends Controller
 {
-    // --- PRIVATE METHOD FOR CODE GENERATION ---
     
     /**
      * Helper to convert an integer month to Roman numeral
@@ -33,12 +32,10 @@ class KirimSuratController extends Controller
      */
     private function generateSuratCode(): string
     {
-        // Define the base components
-        $prefix = 'UM'; // Example: Umum/General. You can adjust this.
+        $prefix = 'UM'; 
         $currentYear = Carbon::now()->year;
         $currentMonthRoman = $this->convertToRoman(Carbon::now()->month);
 
-        // Get the last surat code created this year, regardless of type
         $lastSurat = Kirim_surat::whereYear('created_at', $currentYear)
                                 ->orderBy('id', 'desc')
                                 ->first();
@@ -54,32 +51,26 @@ class KirimSuratController extends Controller
             }
         }
 
-        // Format the sequence number to be 3 digits (e.g., 1 -> 001, 15 -> 015)
         $formattedSequence = str_pad($newSequence, 3, '0', STR_PAD_LEFT);
 
-        // Construct the final code
         return "{$prefix}/{$formattedSequence}/{$currentMonthRoman}/{$currentYear}";
     }
 
-    // --- CRUD METHODS ---
 
     public function index()
     {
-        // NOTE: 'surats.index' should show Kirim_surat data, not all Surat data.
         $kirimSurat = Kirim_surat::all();
         return view('surats.index', compact('kirimSurat'));
     }
 
     public function create()
     {
-        // Pass the next generated code to display it to the user in the form
         $nextKode = $this->generateSuratCode(); 
         return view('surats.create', compact('nextKode'));
     }
 
     public function store(Request $request)
     {
-        // 1. Validation 
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'isi' => 'required|string',
@@ -87,28 +78,21 @@ class KirimSuratController extends Controller
             'file_surat' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // Max 10MB
         ]);
 
-        // 2. File Upload Handling
         $filePath = null;
         if ($request->hasFile('file_surat')) {
             $file = $request->file('file_surat');
             $fileName = time() . '_' . $file->getClientOriginalName();
             
-            // Store the file in 'public/surat_keluar' directory
             $filePath = $file->storeAs('surat_keluar', $fileName, 'public'); 
         }
 
-        // 3. Generate the unique code and compile data
         $validatedData['kode_surat'] = $this->generateSuratCode();
-        // The column in the database is likely named 'file_path', so we map it here.
         $validatedData['file_path'] = $filePath; 
         
-        // Remove the temporary file instance used for validation
         unset($validatedData['file_surat']); 
 
-        // 4. Create the record (Kode, Title, Isi, Tujuan, File_path are all ready)
         Kirim_surat::create($validatedData); 
         
-        // 5. Redirect
         return redirect()->route('kirim-surat.index')->with('success', 'Surat berhasil dikirim dengan kode: ' . $validatedData['kode_surat']);
     }
 
