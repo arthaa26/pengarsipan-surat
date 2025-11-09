@@ -19,7 +19,8 @@
         }
         .logo {
             width: 120px;
-            margin-bottom: 24px;
+            display: block; 
+            margin: 0 auto 24px auto;
         }
         .title {
             color: #fff;

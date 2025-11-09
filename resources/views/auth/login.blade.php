@@ -24,6 +24,15 @@
             justify-content: center;
             font-family: 'Montserrat', Arial, sans-serif;
         }
+        /* BARU: Gaya untuk Logo di Halaman Login */
+        .logo-login {
+            width: 120px; /* Sesuaikan ukuran */
+            display: block;
+            margin-bottom: 24px;
+            margin-top: -80px; /* Sesuaikan agar tidak terlalu dekat ke atas/bawah */
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+        }
+
         .container-center {
             flex: 1;
             display: flex;
@@ -38,8 +47,9 @@
             font-size: 2rem;
             font-weight: 700;
             text-align: center;
+            /* Margin bottom 32px sudah cukup, margin top 32px bisa disesuaikan */
             margin-bottom: 32px;
-            margin-top: 32px;
+            margin-top: 32px; 
             letter-spacing: 2px;
         }
         .login-box {
@@ -113,6 +123,8 @@
 </head>
 <body>
     <div class="container-center">
+        <img src="/images/unmuh.png" alt="Logo UNMUH" class="logo-login">
+        
         <div class="login-title">MASUK</div>
         <div class="login-box">
             <form method="POST" action="{{ url('/login') }}">
